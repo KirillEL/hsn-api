@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "hsn_system"
+version = "0.1.0"
+description = ""
+authors = ["kirill <kirya9981@mail.ru>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+uvicorn = "^0.27.0.post1"
+pydantic-settings = "^2.1.0"
+fastapi = "^0.109.0"
+alembic = "^1.13.1"
+asyncpg = "^0.29.0"
+pyjwt = "^2.8.0"
+
+[tool.poetry.dev-dependencies]
+SQLAlchemy = "^2.0.25"
+pydantic = "^2.6.0"
+pytest = "^8.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
