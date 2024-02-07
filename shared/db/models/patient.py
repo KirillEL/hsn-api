@@ -15,10 +15,10 @@ class PatientDBModel(BaseDBModel):
     gender = Column(String(1), nullable=False)
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
-    cabinet = relationship('CabinetDBModel', back_populates="patients")
+    #cabinet = relationship('CabinetDBModel', back_populates="patients")
 
     contragent_id = Column(BigInteger, ForeignKey('public.contragents.id'), nullable=False, unique=True)
-    contragent = relationship('ContragentDBModel', back_populates="patients")
+    #contragent = relationship('ContragentDBModel', back_populates="patients")
 
 
 

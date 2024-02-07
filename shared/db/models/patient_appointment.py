@@ -12,9 +12,9 @@ class PatientAppointmentsDBModel(BaseDBModel):
     doctor_id = Column(BigInteger, ForeignKey('public.doctors.id'))
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'))
 
-    patient = relationship('PatientDBModel', back_populates="patient_appointments")
-    doctor = relationship('DoctorDBModel', back_populates="patient_appointments")
-    cabinet = relationship('CabinetDBModel', back_populates="patient_appointments")
+    #patient = relationship('PatientDBModel', back_populates="patient_appointments")
+    #doctor = relationship('DoctorDBModel', back_populates="patient_appointments")
+    #cabinet = relationship('CabinetDBModel', back_populates="patient_appointments")
 
     date = Column(DateTime, nullable=False)
 

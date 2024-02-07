@@ -17,7 +17,5 @@ class DoctorDBModel(BaseDBModel):
 
     is_glav = Column(Boolean, nullable=False, server_default='f')
 
-
-    cabinet = relationship("CabinetDBModel", back_populates="doctors")
-    user = relationship("UserDBModel", back_populates="doctors")
-
+    #cabinet = relationship("CabinetDBModel", back_populates="doctor")
+    #user = relationship("UserDBModel", back_populates="doctor")

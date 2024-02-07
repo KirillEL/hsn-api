@@ -10,7 +10,7 @@ class PatientHospitalizationsDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     patient_id = Column(BigInteger, ForeignKey('public.patients.id'))
-    patient = relationship('PatientDBModel', back_populates='patient_hospitalizations')
+    #patient = relationship('PatientDBModel', back_populates='patient_hospitalizations')
 
     date_start = Column(DateTime, nullable=False)
     date_end = Column(DateTime, nullable=False)

@@ -13,5 +13,5 @@ class MedicinesCatalogDBModel(BaseDBModel):
 
     group_id = Column(BigInteger, ForeignKey('public.medicines_group.id'), nullable=False)
 
-    group = relationship('MedicinesGroupDBModel', back_populates='medicines_catalog')
+    #group = relationship('MedicinesGroupDBModel', back_populates='medicines_catalog')
 
