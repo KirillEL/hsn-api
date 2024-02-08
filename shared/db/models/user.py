@@ -19,6 +19,6 @@ class UserDBModel(BaseDBModel):
 
     is_active = Column(Boolean, server_default=text("true"))
 
-    role = Column(PGEnum(RoleEnum, name='role', create_type=True), nullable=False, default=RoleEnum.DOCTOR)
+    role = Column(PGEnum(RoleEnum, name='role', create_type=True), nullable=False, server_default=text('doctor'))
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))

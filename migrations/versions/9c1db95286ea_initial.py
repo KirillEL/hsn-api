@@ -84,7 +84,7 @@ def upgrade() -> None:
     sa.Column('login', sa.String(length=255), nullable=False),
     sa.Column('password', sa.String(length=255), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True, server_default=sa.text('true')),
-    sa.Column('role', postgresql.ENUM('ADMIN', 'DOCTOR', name='role'), nullable=False),
+    sa.Column('role', postgresql.ENUM('ADMIN', 'DOCTOR', name='role'), nullable=False, server_default=sa.text("'DOCTOR'")),
     sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('login'),

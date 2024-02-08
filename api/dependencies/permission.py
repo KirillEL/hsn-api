@@ -38,5 +38,5 @@ class PermissionDependency(SecurityBase):
     async def __call__(self, request: Request):
         for perm in self.permissions:
             cls = perm()
-            if not await cls.has_permission(request):
+            if not await cls.has_permission(request=request):
                 raise cls.exception

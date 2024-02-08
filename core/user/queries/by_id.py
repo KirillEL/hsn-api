@@ -8,7 +8,7 @@ from shared.db.models import UserDBModel
 
 @SessionContext()
 async def user_query_by_id(user_id: int) -> Optional[User]:
-    query = select(UserDBModel).where(UserDBModel.id == user_id, UserDBModel.is_active == True)
+    query = select(UserDBModel).where(UserDBModel.id == user_id)
     cursor = await db_session.execute(query)
 
     result = cursor.first()

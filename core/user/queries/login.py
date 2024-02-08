@@ -17,7 +17,7 @@ async def user_query_login(username: str, password: str) -> Optional[User]:
     if res is None:
         return None
 
-    user_db = res[UserDBModel]
+    user_db = res[0]
 
     hash_first = hashlib.sha1()
     password_raw = bytes(password.strip(), encoding="utf-8")
