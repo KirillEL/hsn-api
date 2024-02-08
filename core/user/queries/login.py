@@ -9,7 +9,7 @@ from shared.db.models.user import UserDBModel
 
 @SessionContext()
 async def user_query_login(username: str, password: str) -> Optional[User]:
-    query = select(UserDBModel).where(UserDBModel.is_active.is_(True))
+    query = select(UserDBModel)
     query = query.where(func.lower(UserDBModel.login) == func.lower(username))
 
     cursor = await db_session.execute(query)
@@ -25,4 +25,3 @@ async def user_query_login(username: str, password: str) -> Optional[User]:
 
     password = hash_first.hexdigest()
     return None if user_db.password != password else User.model_validate(user_db)
-

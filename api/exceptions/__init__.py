@@ -1,6 +1,9 @@
-from .base import ExceptionResponseSchema
-
+from .base import ExceptionResponseSchema, UserNotFoundException, NotFoundException, CustomException, UnauthorizedException
 
 __all__ = [
-    'ExceptionResponseSchema'
+    'ExceptionResponseSchema',
+    'UserNotFoundException',
+    'NotFoundException',
+    'CustomException',
+    'UnauthorizedException'
 ]

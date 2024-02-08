@@ -4,6 +4,8 @@ from api.exceptions import ExceptionResponseSchema
 from pydantic import BaseModel, Field
 from core.user.queries import user_query_login
 from utils import jwt_encode
+from api.exceptions import UserNotFoundException
+
 
 
 class AuthRequest(BaseModel):
@@ -19,6 +21,6 @@ class AuthRequest(BaseModel):
 async def login_user(req: AuthRequest):
     user = await user_query_login(req.login, req.password)
     if user is None:
-        raise Exception("user not found")
+        raise UserNotFoundException
     token = jwt_encode(payload={"user_id": user.id})
     return {"token": token}
