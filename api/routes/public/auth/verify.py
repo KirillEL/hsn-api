@@ -11,6 +11,6 @@ class AuthVerifyTokenRequest(BaseModel):
 @auth_router.post(
     '/verify',
 )
-async def verify_user(req: AuthVerifyTokenRequest):
-    jwt_decode(req.token)
+async def verify_user(body: AuthVerifyTokenRequest):
+    jwt_decode(body.token)
     return Response(status_code=200)

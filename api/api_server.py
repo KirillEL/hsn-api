@@ -27,6 +27,7 @@ def on_auth_error(request: Request, exc: Exception):
         content={"error_code": error_code, "message": message}
     )
 
+
 def init_middlewares() -> List[Middleware]:
     middlewares: List[Middleware] = [
         Middleware(

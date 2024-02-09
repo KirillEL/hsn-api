@@ -2,7 +2,8 @@ import typing
 
 from starlette.requests import HTTPConnection
 
-from core.user import User
+from core.user import UserFlat
+from core.user.model import User
 from core.user.queries.by_id import user_query_by_id
 from infra import config
 import jwt
@@ -24,7 +25,7 @@ class AuthBackend(AuthenticationBackend):
 
         try:
             scheme, creds = authorization.split(" ")
-            if scheme.lower() == "bearer":
+            if scheme.lower() != "bearer":
                 return False, curr_user
         except ValueError:
             return False, curr_user
@@ -42,7 +43,7 @@ class AuthBackend(AuthenticationBackend):
         except jwt.exceptions.PyJWTError:
             return False, curr_user
 
-        curr_user = user_query_by_id(user_id)
+        curr_user = await user_query_by_id(user_id)
         return True, curr_user
 
 

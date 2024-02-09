@@ -20,7 +20,7 @@ class CabinetCreateRequest(BaseModel):
     response_model=CabinetCreateResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def api_hsn_cabinet_create(request: Request, payload: CabinetCreateRequest):
-    params = HsnCabinetCreateContext(name=payload.name, med_id=payload.med_id)
+async def api_hsn_cabinet_create(request: Request, body: CabinetCreateRequest):
+    params = HsnCabinetCreateContext(user_id=request.user.id, name=body.name, med_id=body.med_id)
     return await hsn_cabinet_create(params)
 

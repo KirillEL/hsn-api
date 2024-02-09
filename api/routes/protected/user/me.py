@@ -12,7 +12,6 @@ from .schemas import UserResponse
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def get_current_user(req: Request):
-    print(req.user)
     user = await user_query_by_id(req.user.id)
     if user is None:
         raise NotFoundException

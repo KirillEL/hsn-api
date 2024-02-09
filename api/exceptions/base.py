@@ -32,3 +32,10 @@ class UnauthorizedException(CustomException):
     code = HTTPStatus.UNAUTHORIZED
     error_code = HTTPStatus.UNAUTHORIZED
     message = HTTPStatus.UNAUTHORIZED.description
+    
+    
+
+class UnauthorizedAdminException(CustomException):
+    code = HTTPStatus.UNAUTHORIZED
+    error_code = HTTPStatus.UNAUTHORIZED
+    message = "you are not admin!"

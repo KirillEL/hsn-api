@@ -5,12 +5,13 @@ from pydantic import BaseModel, Field
 from core.user.queries import user_query_login
 from utils import jwt_encode
 from api.exceptions import UserNotFoundException
-
+from fastapi import Response
 
 
 class AuthRequest(BaseModel):
     login: str = Field(..., description="login")
     password: str = Field(..., description="password")
+
 
 
 @auth_router.post(
@@ -22,5 +23,8 @@ async def login_user(req: AuthRequest):
     user = await user_query_login(req.login, req.password)
     if user is None:
         raise UserNotFoundException
-    token = jwt_encode(payload={"user_id": user.id})
-    return {"token": token}
+    
+    token = AuthLoginResponse(
+        token=jwt_encode(payload={"user_id": user.id}),
+    )
+    return {"token": token.token}
