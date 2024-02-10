@@ -16,7 +16,6 @@ class MedicinesCatalogDBModel(BaseDBModel):
     group_id = Column(BigInteger, ForeignKey('public.medicines_group.id'), nullable=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
-    #group = relationship('MedicinesGroupDBModel', back_populates='medicines_catalog')
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)

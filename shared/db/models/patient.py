@@ -5,7 +5,6 @@ from . import UserDBModel
 from .BASE import BaseDBModel
 
 
-
 class PatientDBModel(BaseDBModel):
     __tablename__ = 'patients'
     __table_args__ = {'schema': 'public'}
@@ -17,10 +16,8 @@ class PatientDBModel(BaseDBModel):
     gender = Column(String(1), nullable=False)
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
-    #cabinet = relationship('CabinetDBModel', back_populates="patients")
 
     contragent_id = Column(BigInteger, ForeignKey('public.contragents.id'), nullable=False, unique=True)
-    #contragent = relationship('ContragentDBModel', back_populates="patients")
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
@@ -45,7 +42,3 @@ class PatientDBModel(BaseDBModel):
                               primaryjoin=deleter_id == foreign(UserDBModel.id),
                               uselist=False,
                               lazy='selectin')
-
-
-
-

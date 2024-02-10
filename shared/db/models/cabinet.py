@@ -16,9 +16,6 @@ class CabinetDBModel(BaseDBModel):
 
     med_id = Column(BigInteger, ForeignKey('public.med_organizations.id'))
 
-    #med_organization = relationship('MedOrganizationDBModel', back_populates="cabinets")
-    #doctor = relationship("DoctorDBModel", back_populates="cabinet")
-
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)
     deleted_at = Column(DateTime)

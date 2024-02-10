@@ -18,3 +18,12 @@ class MedOrganization(BaseModel):
 
     deleted_at: Optional[datetime] = None
     deleted_by: Optional[str] = None
+
+
+class MedOrganizationFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+
+    is_deleted: bool
