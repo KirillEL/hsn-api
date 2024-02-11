@@ -9,7 +9,7 @@ class Cabinet(BaseModel):
 
     id: int
     name: str
-    med_id: int
+    med_id: Optional[int] = None # TODO: поговорить насчет Optional или нет
 
     is_deleted: bool
     created_at: datetime
@@ -20,3 +20,12 @@ class Cabinet(BaseModel):
 
     deleted_at: Optional[datetime] = None
     deleted_by: Optional[UserAuthor] = None
+
+
+class CabinetFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    med_id: int
+    is_deleted: bool
