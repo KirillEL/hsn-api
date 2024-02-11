@@ -9,6 +9,7 @@ from core.user import UserAuthor
 
 
 class MedOrganizationCreateResponse(BaseModel):
+    id: int
     name: str
     created_by: UserAuthor
 
