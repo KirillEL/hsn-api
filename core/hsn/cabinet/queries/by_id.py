@@ -4,6 +4,7 @@ from shared.db.models.cabinet import CabinetDBModel
 from sqlalchemy import select
 from core.hsn.cabinet.model import CabinetFlat, Cabinet
 from typing import Optional
+from api.exceptions import NotFoundException
 
 
 @SessionContext()
@@ -18,7 +19,9 @@ async def hsn_query_cabinet_by_id(cabinet_id: int) -> Optional[Cabinet]:
 
     cursor = await db_session.execute(query)
     cabinet = cursor.first()
-    return cabinet
+    if cabinet is None:
+        raise NotFoundException(message="кабинет не найден!")
+    return Cabinet.model_validate(cabinet[0])
 
 
 

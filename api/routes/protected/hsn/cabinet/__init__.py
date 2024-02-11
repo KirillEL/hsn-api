@@ -1,5 +1,8 @@
-from .create import hsn_cabinet_create
-from .get_by_id import hsn_query_cabinet_by_id
+from .create import *
+from .get_by_id import *
+from .delete import *
+from .get_list import *
+from .update import *
 from .router import cabinet_router
 
 __all__ = [

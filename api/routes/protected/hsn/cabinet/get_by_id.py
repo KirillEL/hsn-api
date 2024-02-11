@@ -8,7 +8,7 @@ from api.exceptions import NotFoundException
 
 @cabinet_router.get(
     "/{cabinet_id}",
-    response_model=Cabinet | None,
+    response_model=Cabinet,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def api_cabinet_get_by_id(cabinet_id: int):
