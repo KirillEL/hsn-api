@@ -19,6 +19,8 @@ class ContragentDBModel(BaseDBModel):
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
+    patient = relationship("shared.db.models.PatientDBModel", back_populates="contragent", uselist=False)
+
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)
     deleted_at = Column(DateTime)
