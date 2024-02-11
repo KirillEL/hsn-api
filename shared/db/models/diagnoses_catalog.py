@@ -12,8 +12,6 @@ class DiagnosesCatalogDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     name = Column(String(200), nullable=False)
 
-    # add some
-
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
