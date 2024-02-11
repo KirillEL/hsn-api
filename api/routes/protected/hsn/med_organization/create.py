@@ -5,10 +5,13 @@ from core.hsn.med_organization import MedOrganization
 from pydantic import BaseModel, Field
 from shared.db.models.med_organization import MedOrganizationDBModel
 from core.hsn.med_organization import hsn_med_organization_create, CreateMedOrganizationContext
+from core.user import UserAuthor
 
 
 class MedOrganizationCreateResponse(BaseModel):
+    id: int
     name: str
+    created_by: UserAuthor
 
 
 class MedOrganizationCreateRequest(BaseModel):

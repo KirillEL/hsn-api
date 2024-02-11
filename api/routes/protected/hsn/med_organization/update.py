@@ -16,10 +16,10 @@ class MedOrganizationUpdateRequest(BaseModel):
 
 @med_org_router.put(
     "/{med_id}",
-    response_model=MedOrganizationUpdateResponse,
+    response_model=MedOrganization,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def api_med_organization_update(med_id: int, request: Request, req_body: MedOrganizationUpdateRequest):
-    context = UpdateMedOrganizationContext(user_id=request.user.id, med_id=med_id, name=req_body.name)
+    context = UpdateMedOrganizationContext(user_id=request.user.id, id=med_id, name=req_body.name)
     return await hsn_med_organization_update(context)
 

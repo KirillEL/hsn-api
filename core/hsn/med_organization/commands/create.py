@@ -13,5 +13,5 @@ class CreateMedOrganizationContext(BaseModel):
 @SessionContext()
 async def hsn_med_organization_create(context: CreateMedOrganizationContext) -> MedOrganization:
     payload = context.model_dump(exclude={'user_id'})
-    entity_db = await db_base_entity_create(db_model=MedOrganizationDBModel, user_id=context.user_id, **payload)
+    entity_db = await db_base_entity_create(db_model=MedOrganizationDBModel, user_id=context.user_id, params=payload)
     return MedOrganization.model_validate(entity_db)
