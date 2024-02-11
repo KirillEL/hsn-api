@@ -14,8 +14,6 @@ class MedOrganizationDBModel(BaseDBModel):
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
-    #cabinets = relationship("CabinetDBModel", back_populates="med_organization")
-
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)
     deleted_at = Column(DateTime)

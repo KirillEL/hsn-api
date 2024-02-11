@@ -15,13 +15,12 @@ class DoctorDBModel(BaseDBModel):
     patronymic = Column(String(100), nullable=False)
 
     user_id = Column(BigInteger, ForeignKey('public.users.id'), nullable=False, unique=True)
+
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
 
     is_glav = Column(Boolean, nullable=False, server_default='f')
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
-    # cabinet = relationship("CabinetDBModel", back_populates="doctor")
-    # user = relationship("UserDBModel", back_populates="doctor")
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)
