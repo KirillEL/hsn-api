@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, DateTime, Date, BigInteger, text, Boolean, Integer
+from sqlalchemy import Column, ForeignKey, DateTime, Date, Text, BigInteger, text, Boolean, Integer
 from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
@@ -10,12 +10,12 @@ class SuppliedDiagnosesDBModel(BaseDBModel):
     __table_args__ = {'schema': 'public'}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
+
     patient_appointment_id = Column(BigInteger, ForeignKey('public.patient_appointments.id'), nullable=False)
+    diagnose_catalog_id = Column(BigInteger, ForeignKey('public.diagnoses_catalog.id'), nullable=False)
+    medicine_prescription_id = Column(BigInteger, ForeignKey('public.medicines_prescription.id'), nullable=False)
 
-    diagnose_id = Column(BigInteger, ForeignKey('public.diagnoses_catalog.id'), nullable=False)
-
-    date_start = Column(Date, nullable=False)
-    date_end = Column(Date, nullable=False)
+    note = Column(Text)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

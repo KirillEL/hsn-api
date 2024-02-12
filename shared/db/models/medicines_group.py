@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, String, Boolean, text, DateTime, Integer
+from sqlalchemy import Column, BigInteger, String, Boolean, text, DateTime, Integer, Text, ForeignKey
 from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
@@ -12,6 +12,8 @@ class MedicinesGroupDBModel(BaseDBModel):
     id = Column(BigInteger, autoincrement=True, primary_key=True)
     code = Column(String(50), nullable=False, unique=True)
     name = Column(String(255), nullable=False)
+    note = Column(Text, nullable=True)
+    patient_hospitalization_id = Column(BigInteger, ForeignKey('public.patient_hospitalizations.id'), nullable=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

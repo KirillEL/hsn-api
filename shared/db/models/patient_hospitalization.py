@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Boolean, text, Integer
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Boolean, text, Integer, Text
 from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
@@ -12,9 +12,10 @@ class PatientHospitalizationsDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     patient_id = Column(BigInteger, ForeignKey('public.patients.id'))
-
     date_start = Column(DateTime, nullable=False)
     date_end = Column(DateTime, nullable=False)
+
+    anamnes = Column(Text)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
