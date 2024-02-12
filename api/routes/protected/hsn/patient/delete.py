@@ -9,6 +9,6 @@ from api.exceptions import ExceptionResponseSchema
     response_model=bool,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def delete_patient(patient_id: int, req: Request) -> bool:
+async def api_patient_delete(patient_id: int, request: Request) -> bool:
     #
     return True

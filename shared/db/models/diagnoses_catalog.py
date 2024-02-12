@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, Integer, String, Boolean, text, DateTime
+from sqlalchemy import Column, BigInteger, Integer, String, Boolean, text, DateTime, Text
 from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
@@ -11,8 +11,7 @@ class DiagnosesCatalogDBModel(BaseDBModel):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     name = Column(String(200), nullable=False)
-
-    # add some
+    note = Column(Text)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, String, BigInteger, Text, Boolean, text, DateTime
+from sqlalchemy import Column, Integer, String, BigInteger, Text, Boolean, text, DateTime,Date
 from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
@@ -14,10 +14,17 @@ class ContragentDBModel(BaseDBModel):
 
     phone_number = Column(BigInteger, unique=True, nullable=False)
     snils = Column(String(16), unique=True, nullable=False)
-
     address = Column(Text, nullable=False)
+    mis_number = Column(BigInteger, nullable=False)
+    date_birth = Column(Date, nullable=False)
+    relative_phone_number = Column(BigInteger, nullable=False)
+    parent = Column(Text)
+    date_dead = Column(Date,)
+
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
+
+    patient = relationship("shared.db.models.PatientDBModel", back_populates="contragent", uselist=False)
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)

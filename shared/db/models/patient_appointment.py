@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, String, DateTime, Float, ForeignKey, text, Integer, Boolean
+from sqlalchemy import Column, BigInteger, String, DateTime, Float, ForeignKey, Text,text, Integer, Boolean
 from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
@@ -13,15 +13,24 @@ class PatientAppointmentsDBModel(BaseDBModel):
     patient_id = Column(BigInteger, ForeignKey('public.patients.id'))
     doctor_id = Column(BigInteger, ForeignKey('public.doctors.id'))
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'))
-
-    #patient = relationship('PatientDBModel', back_populates="patient_appointments")
-    #doctor = relationship('DoctorDBModel', back_populates="patient_appointments")
-    #cabinet = relationship('CabinetDBModel', back_populates="patient_appointments")
-
     date = Column(DateTime, nullable=False)
-
+    date_next = Column(DateTime, nullable=True) # think about
     weight = Column(Float, nullable=False)
     height = Column(Float, nullable=False)
+    fv_lg = Column(Integer, nullable=False) # think about nullable
+    main_diagnose = Column(Text, nullable=False)
+    sistol_ad = Column(Float, nullable=False)
+    diastal_ad = Column(Float, nullable=False)
+    hss = Column(Integer, nullable=False)
+    mit = Column(Float) # think about counting automatic
+    has_fatigue = Column(Boolean, nullable=False, server_default=text("false"))
+    has_dyspnea = Column(Boolean, nullable=False, server_default=text("false"))
+    has_swelling_legs = Column(Boolean, nullable=False, server_default=text("false"))
+    has_weakness = Column(Boolean, nullable=False, server_default=text("false"))
+    has_orthopnea = Column(Boolean, nullable=False, server_default=text("false"))
+    has_heartbeat = Column(Boolean, nullable=False, server_default=text("true"))
+    note = Column(Text, nullable=True)
+
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

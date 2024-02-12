@@ -8,9 +8,11 @@ from .diagnoses_catalog import DiagnosesCatalogDBModel
 from .patient_hospitalization import PatientHospitalizationsDBModel
 from .supplied_diagnoses import SuppliedDiagnosesDBModel
 from .patient_appointment import PatientAppointmentsDBModel
-from .patient_hospitalization import PatientHospitalizationsDBModel
-from .medicines_catalog import MedicinesCatalogDBModel
+from .medicines_prescription import MedicinesPrescriptionDBModel
 from .medicines_group import MedicinesGroupDBModel
+from .analyses import AnalysesDBModel
+from .researchs import ResearchDBModel
+from .clinical_assesment import ClinicalAssesmentDBModel
 
 
 __all__ = [
@@ -21,9 +23,12 @@ __all__ = [
     'MedOrganizationDBModel',
     'PatientDBModel',
     'PatientHospitalizationsDBModel',
-    'MedicinesCatalogDBModel',
+    'MedicinesPrescriptionDBModel',
     'MedicinesGroupDBModel',
     'SuppliedDiagnosesDBModel',
     'DiagnosesCatalogDBModel',
-    'PatientAppointmentsDBModel'
+    'PatientAppointmentsDBModel',
+    'AnalysesDBModel',
+    'ResearchDBModel',
+    'ClinicalAssesmentDBModel'
 ]

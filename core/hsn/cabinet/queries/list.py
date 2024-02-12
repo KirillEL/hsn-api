@@ -2,11 +2,12 @@ from typing import List
 from shared.db.db_session import SessionContext, db_session
 from shared.db.models.cabinet import CabinetDBModel
 from sqlalchemy import select, desc, func
+from core.hsn.cabinet.model import Cabinet
 
 
 @SessionContext()
 async def hsn_query_cabinet_list(limit: int = None, offset: int = None, pattern: str = None):
-    query = select([CabinetDBModel])
+    query = select(CabinetDBModel)
 
     if hasattr(CabinetDBModel, 'is_deleted'):
         query = query.where(CabinetDBModel.is_deleted.is_(False))
@@ -21,4 +22,5 @@ async def hsn_query_cabinet_list(limit: int = None, offset: int = None, pattern:
         query = query.limit(limit)
 
     cursor = await db_session.execute(query)
-    return [item for item in cursor.all()]
+
+    return [Cabinet.model_validate(item[0]) for item in cursor.all()]
