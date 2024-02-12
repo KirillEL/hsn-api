@@ -13,12 +13,13 @@ class DoctorDBModel(BaseDBModel):
     name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     patronymic = Column(String(100), nullable=False)
+    phone_number = Column(BigInteger, nullable=False, unique=True)
 
     user_id = Column(BigInteger, ForeignKey('public.users.id'), nullable=False, unique=True)
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
 
-    is_glav = Column(Boolean, nullable=False, server_default='f')
+    is_glav = Column(Boolean, nullable=False, server_default=text("false"))
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

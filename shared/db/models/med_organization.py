@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, String, Boolean, text, DateTime, Integer
+from sqlalchemy import Column, BigInteger, String, Boolean, text, DateTime, Integer, Text
 
 from . import UserDBModel
 from .BASE import BaseDBModel
@@ -11,6 +11,9 @@ class MedOrganizationDBModel(BaseDBModel):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     name = Column(String(200), nullable=False)
+    number = Column(Integer, nullable=False, unique=True)
+    address = Column(Text, nullable=False)
+
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
