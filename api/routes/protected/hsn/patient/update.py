@@ -21,5 +21,5 @@ class PatientUpdateRequest(BaseModel):
     response_model=PatientResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_patient(patient_id: int, req: Request, payload: PatientUpdateRequest):
+async def api_patient_update(patient_id: int, req: Request, req_body: PatientUpdateRequest):
     pass

@@ -19,6 +19,10 @@ class PatientDBModel(BaseDBModel):
 
     contragent_id = Column(BigInteger, ForeignKey('public.contragents.id'), nullable=False, unique=True)
 
+    contragent = relationship("shared.db.models.ContragentDBModel", back_populates="patient", uselist=False)
+
+
+
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
