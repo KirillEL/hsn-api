@@ -15,8 +15,8 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     patient_appointment_id = Column(BigInteger, ForeignKey('public.patient_appointments.id'), nullable=False)
     patient_hospitalization_id = Column(BigInteger, ForeignKey('public.patient_hospitalizations.id'), nullable=False)
 
-    mnn = Column()
-    dosa = Column()
+    mnn = Column(String(200))
+    dosa = Column(Integer, nullable=False)
     note = Column(Text)
 
 

@@ -2,7 +2,7 @@ from sqlalchemy import BigInteger, Column, Integer, String, text, Text, ForeignK
 from .BASE import BaseDBModel
 
 
-class Analyses(BaseDBModel):
+class AnalysesDBModel(BaseDBModel):
     __tablename__ = 'analyses'
     __table_args__ = {'schema': 'public'}
 
