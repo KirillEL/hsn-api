@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
-
 from pydantic import BaseModel, ConfigDict
+from core.user import UserAuthor
 
 
 class Doctor(BaseModel):
@@ -15,14 +15,24 @@ class Doctor(BaseModel):
     user_id: int
     is_glav: bool
 
-    cabinet_id: int
+    cabinet_id: Optional[int] = None
 
-    is_deleted: bool
+    is_deleted: Optional[bool] = False
     created_at: datetime
-    created_by: str
+    created_by: UserAuthor
 
     updated_at: Optional[datetime] = None
-    updated_by: Optional[str] = None
+    updated_by: Optional[UserAuthor] = None
 
     deleted_at: Optional[datetime] = None
-    deleted_by: Optional[str] = None
+    deleted_by: Optional[UserAuthor] = None
+
+
+class UserAndDoctor(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    login: str
+    role: str
+    is_deleted: Optional[bool] = False
+    doctor: Doctor

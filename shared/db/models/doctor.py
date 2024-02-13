@@ -17,7 +17,7 @@ class DoctorDBModel(BaseDBModel):
 
     user_id = Column(BigInteger, ForeignKey('public.users.id'), nullable=False, unique=True)
 
-    cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
+    cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=True)
 
     is_glav = Column(Boolean, nullable=False, server_default=text("false"))
 

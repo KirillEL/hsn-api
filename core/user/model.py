@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 
+
 class User(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -20,6 +21,8 @@ class UserFlat(BaseModel):
     is_deleted: bool
 
 
+
+
+
 class UserAuthor(UserFlat):
     pass
-
