@@ -2,6 +2,7 @@ from sqlalchemy import Column, BigInteger, String, Boolean, Enum, text
 from .BASE import BaseDBModel
 from enum import Enum
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
+from sqlalchemy.orm import relationship
 
 
 class RoleEnum(Enum):
@@ -22,3 +23,5 @@ class UserDBModel(BaseDBModel):
     role = Column(PGEnum(RoleEnum, name='role'), nullable=False, server_default=text('doctor'))
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
+
+    doctor = relationship("DoctorDBModel", primaryjoin="DoctorDBModel.user_id==UserDBModel.id", uselist=False)
