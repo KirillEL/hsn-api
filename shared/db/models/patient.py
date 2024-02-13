@@ -1,7 +1,9 @@
 from sqlalchemy import Column, String, BigInteger, Date, Text, ForeignKey, Boolean, text, DateTime, Integer
 from sqlalchemy.orm import relationship, foreign
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
-from . import UserDBModel, ContragentDBModel
+
+
+from . import UserDBModel
 from .BASE import BaseDBModel
 from enum import Enum
 
@@ -60,7 +62,7 @@ class PatientDBModel(BaseDBModel):
 
     contragent_id = Column(BigInteger, ForeignKey('public.contragents.id'), nullable=False, unique=True)
 
-    contragent = relationship(ContragentDBModel, back_populates="patient", uselist=False)
+    contragent = relationship("ContragentDBModel", back_populates="patient", uselist=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

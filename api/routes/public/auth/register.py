@@ -24,5 +24,5 @@ class UserCreateRequest(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def register_user(request: Request, params: UserCreateRequest):
-    context = UserCreateContext(user_id=request.user.id, login=params.login, password=params.password)
+    context = UserCreateContext(login=params.login, password=params.password)
     return await user_command_create(context)
