@@ -4,9 +4,6 @@ from core.user.queries.me import hsn_user_get_me
 from .router import user_router
 from api.exceptions import ExceptionResponseSchema, NotFoundException
 from fastapi import Request
-from core.hsn.doctor import Doctor
-from .schemas import UserResponse
-from core.hsn.doctor.model import UserAndDoctor
 
 
 class DoctorResponse(BaseModel):
@@ -30,5 +27,5 @@ class UserAndDoctorResponse(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def get_current_user(req: Request):
-    doctor = await hsn_user_get_me(req.user.id)
-    return doctor
+    user_and_doctor_info = await hsn_user_get_me(req.user.id)
+    return user_and_doctor_info
