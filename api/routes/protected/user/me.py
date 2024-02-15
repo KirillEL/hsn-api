@@ -4,6 +4,7 @@ from core.user.queries.me import hsn_user_get_me
 from .router import user_router
 from api.exceptions import ExceptionResponseSchema, NotFoundException
 from fastapi import Request
+from typing import Optional
 
 
 class DoctorResponse(BaseModel):
@@ -12,6 +13,7 @@ class DoctorResponse(BaseModel):
     last_name: str
     patronymic: str
     is_glav: bool
+    cabinet_id: Optional[int] = None
 
 
 class UserAndDoctorResponse(BaseModel):

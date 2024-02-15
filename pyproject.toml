@@ -12,6 +12,7 @@ fastapi = "^0.109.0"
 alembic = "^1.13.1"
 asyncpg = "^0.29.0"
 pyjwt = "^2.8.0"
+loguru = "^0.7.2"
 
 [tool.poetry.dev-dependencies]
 SQLAlchemy = "^2.0.25"

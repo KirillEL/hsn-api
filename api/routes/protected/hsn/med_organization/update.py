@@ -12,6 +12,8 @@ class MedOrganizationUpdateResponse(BaseModel):
 
 class MedOrganizationUpdateRequest(BaseModel):
     name: str = Field(..., description="новое имя организации", max_length=100)
+    number: int = Field(...)
+    address: str = Field(None, max_length=1000)
 
 
 @med_org_router.put(
@@ -20,6 +22,9 @@ class MedOrganizationUpdateRequest(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def api_med_organization_update(med_id: int, request: Request, req_body: MedOrganizationUpdateRequest):
-    context = UpdateMedOrganizationContext(user_id=request.user.id, id=med_id, name=req_body.name)
+    context = UpdateMedOrganizationContext(user_id=request.user.id, id=med_id,
+                                           name=req_body.name,
+                                           number=req_body.number,
+                                           address=req_body.address)
     return await hsn_med_organization_update(context)
 
