@@ -72,3 +72,5 @@ def init_application() -> FastAPI:
 
 
 app: FastAPI = init_application()
+
+app.mount("/admin", admin_app)
