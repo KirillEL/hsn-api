@@ -9,6 +9,8 @@ class MedOrganization(BaseModel):
 
     id: int
     name: str
+    number: int
+    address: str
 
     is_deleted: bool
     created_at: datetime
