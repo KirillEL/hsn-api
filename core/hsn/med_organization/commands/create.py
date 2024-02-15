@@ -8,6 +8,8 @@ from shared.db.models.med_organization import MedOrganizationDBModel
 class CreateMedOrganizationContext(BaseModel):
     user_id: int = Field(None, gt=0)
     name: str = Field(None, max_length=100)
+    number: int = Field(None, gt=0)
+    address: str = Field(None, max_length=1000)
 
 
 @SessionContext()
