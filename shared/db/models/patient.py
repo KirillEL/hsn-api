@@ -40,7 +40,6 @@ class PatientDBModel(BaseDBModel):
     height = Column(Integer, nullable=False)
     main_diagnose = Column(Text)
     age = Column(Integer)
-    # TODO: инвалидность
     disability = Column(PGEnum(Disability, name='disability', create_type=True), nullable=False,
                         server_default=text("no"))
 

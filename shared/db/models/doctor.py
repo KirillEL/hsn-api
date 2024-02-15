@@ -17,7 +17,11 @@ class DoctorDBModel(BaseDBModel):
 
     user_id = Column(BigInteger, ForeignKey('public.users.id'), nullable=False, unique=True)
 
+    user = relationship("UserDBModel", back_populates="doctor", uselist=False)
+
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=True)
+
+    cabinet = relationship("CabinetDBModel", primaryjoin="DoctorDBModel.cabinet_id==CabinetDBModel.id", uselist=False)
 
     is_glav = Column(Boolean, nullable=False, server_default=text("false"))
 

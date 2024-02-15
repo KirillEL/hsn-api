@@ -24,4 +24,4 @@ class UserDBModel(BaseDBModel):
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
-    doctor = relationship("DoctorDBModel", primaryjoin="DoctorDBModel.user_id==UserDBModel.id", uselist=False)
+    doctor = relationship("DoctorDBModel", back_populates="user", uselist=False)
