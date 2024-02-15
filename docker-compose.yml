@@ -1,6 +1,21 @@
 version: '3.7'
 
 services:
+  pg_admin:
+    container_name: "pg_admin"
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pg-data:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
+    networks:
+      - backend
+
   hsn_api:
     build:
       context: .
@@ -49,3 +64,5 @@ networks:
 volumes:
   db-data:
     name: db-data
+  pg-data:
+    name: pg-data

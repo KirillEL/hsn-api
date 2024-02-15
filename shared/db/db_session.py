@@ -2,13 +2,14 @@ from contextvars import ContextVar, Token
 from functools import wraps
 from typing import Union
 from uuid import uuid4
+from sqlalchemy import create_engine
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
     async_scoped_session
 )
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker, Session, scoped_session
 
 from infra import config
 
