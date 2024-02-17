@@ -13,9 +13,23 @@ class PatientAppointment(BaseModel):
     cabinet_id: int
 
     date: datetime
+    date_next: datetime
 
-    weight: float
-    height: float
+    weight: Optional[float] = None
+    height: Optional[float] = None
+    fv_lg: int
+    main_diagnose: str
+    sistol_ad: float
+    diastal_ad: float
+    hss: int
+    mit: Optional[float] = None
+    has_fatigue: bool
+    has_dyspnea: bool
+    has_swelling_legs: bool
+    has_weakness: bool
+    has_orthopnea: bool
+    has_heartbeat: bool = True
+    note: str
 
     is_deleted: bool
     created_at: datetime

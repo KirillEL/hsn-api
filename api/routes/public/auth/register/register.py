@@ -1,13 +1,11 @@
 from typing import Optional
 
-from .router import auth_router
+from .router import auth_register_router
 from pydantic import BaseModel, Field
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request
 from core.user import user_command_create
-from fastapi.exceptions import HTTPException
 from core.user import UserDoctorCreateContext
-from shared.db.commands import db_base_entity_create
 from core.hsn.doctor import Doctor
 
 
@@ -29,9 +27,8 @@ class UserCreateRequest(BaseModel):
     cabinet_id: Optional[int] = Field(None, gt=0)
 
 
-
-@auth_router.post(
-    "/register",
+@auth_register_router.post(
+    "/",
     response_model=UserDoctorCreateResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )

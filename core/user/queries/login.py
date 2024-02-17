@@ -5,6 +5,7 @@ from sqlalchemy import select, func
 from shared.db.db_session import SessionContext, db_session
 from ..model import User
 from shared.db.models.user import UserDBModel
+from utils import cipher
 
 
 @SessionContext()
@@ -19,9 +20,6 @@ async def user_query_login(username: str, password: str) -> Optional[User]:
 
     user_db = res[0]
 
-    hash_first = hashlib.sha1()
-    password_raw = bytes(password.strip(), encoding="utf-8")
-    hash_first.update(password_raw)
+    hashed_password = cipher.encrypt(password)
 
-    password = hash_first.hexdigest()
-    return None if user_db.password != password else User.model_validate(user_db)
+    return None if user_db.password != hashed_password else User.model_validate(user_db)
