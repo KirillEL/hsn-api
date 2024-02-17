@@ -4,6 +4,7 @@ from typing import Dict, Optional
 import os
 from pathlib import Path
 
+
 class Config(BaseSettings):
     model_config = ConfigDict(extra='ignore')
 
@@ -11,6 +12,8 @@ class Config(BaseSettings):
     DEBUG: Optional[bool] = True
     APP_HOST: Optional[str] = "0.0.0.0"
     APP_PORT: Optional[int] = 9999
+
+    AES_KEY: bytes = os.urandom(32)
 
     DB_SERVER: str
     DB_USER: str
@@ -23,14 +26,12 @@ class Config(BaseSettings):
     JWT_ALGORITHM: Optional[str] = "HS256"
 
 
-
 class LocalConfig(Config):
     pass
 
 
 class ProductionConfig(Config):
     DEBUG: Optional[bool] = False
-
 
 
 def get_config(env_file):

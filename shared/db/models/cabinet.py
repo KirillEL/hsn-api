@@ -20,6 +20,9 @@ class CabinetDBModel(BaseDBModel):
     updated_at = Column(DateTime)
     deleted_at = Column(DateTime)
 
+    patients = relationship("PatientDBModel", back_populates="cabinet")
+    doctors = relationship("DoctorDBModel", back_populates="cabinet")
+
     author_id = Column('created_by', Integer, nullable=False)
     created_by = relationship(UserDBModel,
                               primaryjoin=author_id == foreign(UserDBModel.id),

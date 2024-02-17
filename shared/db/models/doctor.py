@@ -21,7 +21,7 @@ class DoctorDBModel(BaseDBModel):
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=True)
 
-    cabinet = relationship("CabinetDBModel", primaryjoin="DoctorDBModel.cabinet_id==CabinetDBModel.id", uselist=False)
+    cabinet = relationship("CabinetDBModel", back_populates="doctors", uselist=False)
 
     is_glav = Column(Boolean, nullable=False, server_default=text("false"))
 

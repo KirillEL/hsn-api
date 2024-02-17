@@ -8,6 +8,7 @@ from core.hsn.patient import Patient
 from datetime import date
 from core.user.queries.me import hsn_user_get_me
 from loguru import logger
+from utils import cipher
 
 
 class HsnPatientCreateContext(BaseModel):
@@ -33,8 +34,7 @@ class HsnPatientCreateContext(BaseModel):
     has_stenocardia: bool = False
     has_arteria_hypertension: bool = False
     arteria_hypertension_age: int
-    #cabinet_id: int
-
+    # cabinet_id: int
 
     phone_number: int
     snils: str
@@ -46,30 +46,33 @@ class HsnPatientCreateContext(BaseModel):
     date_dead: Optional[date] = None
 
 
-
 @SessionContext()
 async def hsn_patient_create(context: HsnPatientCreateContext):
     # 1
     user = await hsn_user_get_me(context.user_id)
 
-    patient_payload = context.model_dump(exclude={'phone_number', 'snils', 'address', 'mis_number', 'date_birth', 'relative_phone_number', 'parent', 'date_dead', 'user_id'})
+    patient_payload = context.model_dump(
+        exclude={'phone_number', 'snils', 'address', 'mis_number', 'date_birth', 'relative_phone_number', 'parent',
+                 'date_dead', 'user_id'})
+
     query_contragent = (
         insert(ContragentDBModel)
         .values(
-            phone_number=context.phone_number,
-            snils=context.snils,
-            address=context.address,
-            mis_number=context.mis_number,
-            date_birth=context.date_birth,
-            relative_phone_number=context.relative_phone_number,
-            parent=context.parent,
-            date_dead=context.date_dead,
+            phone_number=cipher.encrypt(str(context.phone_number)).decode('utf-8'),
+            snils=cipher.encrypt(context.snils).decode('utf-8'),
+            address=cipher.encrypt(context.address).decode('utf-8'),
+            mis_number=cipher.encrypt(str(context.mis_number)).decode('utf-8'),
+            date_birth=cipher.encrypt(str(context.date_birth)).decode('utf-8'),
+            relative_phone_number=cipher.encrypt(str(context.relative_phone_number)).decode('utf-8'),
+            parent=cipher.encrypt(context.parent).decode('utf-8'),
+            date_dead=cipher.encrypt(str(context.date_dead)).decode('utf-8'),
             author_id=user.id
         )
         .returning(ContragentDBModel.id)
     )
     logger.debug(f"query_contragent={query_contragent}")
     cursor = await db_session.execute(query_contragent)
+    await db_session.commit()
     contragent_id = cursor.scalars().first()
     logger.debug(f"contragent_id={contragent_id}")
 
@@ -80,12 +83,13 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
             **patient_payload,
             contragent_id=contragent_id,
             author_id=user.id,
-            cabinet_id=user.doctor.id
+            cabinet_id=user.doctor.cabinet_id
         )
         .returning(PatientDBModel)
     )
     logger.debug(f"query_patient={query_patient}")
     cursor_2 = await db_session.execute(query_patient)
-    new_patient = cursor_2.first()[0]
+    await db_session.commit()
+    new_patient = cursor_2.scalars().first()
     logger.debug(f"new_patient={new_patient}")
     return Patient.model_validate(new_patient)

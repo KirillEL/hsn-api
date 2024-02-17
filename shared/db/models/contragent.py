@@ -10,14 +10,14 @@ class ContragentDBModel(BaseDBModel):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    phone_number = Column(BigInteger, unique=True, nullable=False)
-    snils = Column(String(16), unique=True, nullable=False)
+    phone_number = Column(Text, unique=True, nullable=False)
+    snils = Column(Text, unique=True, nullable=False)
     address = Column(Text, nullable=False)
-    mis_number = Column(BigInteger, nullable=False)
-    date_birth = Column(Date, nullable=False)
-    relative_phone_number = Column(BigInteger, nullable=False)
+    mis_number = Column(Text, nullable=False)
+    date_birth = Column(Text, nullable=False)
+    relative_phone_number = Column(Text, nullable=False)
     parent = Column(Text)
-    date_dead = Column(Date)
+    date_dead = Column(Text)
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
     patient = relationship("PatientDBModel", back_populates="contragent", uselist=False)

@@ -22,5 +22,6 @@ async def hsn_patient_list(limit: int = None, offset: int = None, pattern: str =
         query = query.where(PatientDBModel.name.contains(pattern))
 
     cursor = await db_session.execute(query)
+    await db_session.commit()
 
     return [Patient.model_validate(item[0]) for item in cursor.all()]

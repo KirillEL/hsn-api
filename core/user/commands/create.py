@@ -6,8 +6,7 @@ from core.hsn.doctor.model import UserAndDoctor
 from sqlalchemy import insert, select
 from shared.db.models.user import UserDBModel
 from shared.db.models.doctor import DoctorDBModel
-from utils import HashHelper
-
+from utils import cipher
 
 class UserDoctorCreateContext(BaseModel):
     login: str = Field(None, max_length=25)
@@ -23,19 +22,12 @@ class UserDoctorCreateContext(BaseModel):
 
 @SessionContext()
 async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor:
-    # payload = context
-    # payload.password = HashHelper.hash_password(context.password)
-    # model = UserDBModel(**payload.dict())
-    # db_session.add(model)
-    # await db_session.commit()
-    # await db_session.refresh(model)
-    # return model
     doctor_payload = context.model_dump(exclude={'login', 'password', 'user_id'})
     query = (
         insert(UserDBModel)
         .values(
             login=context.login,
-            password=HashHelper.hash_password(context.password)
+            password=cipher.encrypt(context.password)
         )
         .returning(UserDBModel)
     )
@@ -53,9 +45,7 @@ async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor
     )
     cursor_2 = await db_session.execute(query_doctor)
     new_doctor = cursor_2.first()[0]
-    print("================")
-    print(new_doctor.name)
-    print("================")
+
     model = UserAndDoctor(
         id=new_user.id,
         login=new_user.login,
