@@ -15,6 +15,7 @@ pyjwt = "^2.8.0"
 loguru = "^0.7.2"
 gunicorn = "^21.2.0"
 fastapi-admin = "^1.0.4"
+cryptography = "^42.0.3"
 
 [tool.poetry.dev-dependencies]
 SQLAlchemy = "^2.0.25"
