@@ -23,8 +23,8 @@ class NotFoundException(CustomException):
 
 
 class UserNotFoundException(CustomException):
-    code = 404
-    error_code = "USER__NOT__FOUND"
+    code = HTTPStatus.NOT_FOUND
+    error_code = HTTPStatus.NOT_FOUND
     message = "user not found!"
 
 
@@ -32,10 +32,15 @@ class UnauthorizedException(CustomException):
     code = HTTPStatus.UNAUTHORIZED
     error_code = HTTPStatus.UNAUTHORIZED
     message = HTTPStatus.UNAUTHORIZED.description
-    
-    
+
 
 class UnauthorizedAdminException(CustomException):
     code = HTTPStatus.UNAUTHORIZED
     error_code = HTTPStatus.UNAUTHORIZED
     message = "you are not admin!"
+
+
+class BadRequestException(CustomException):
+    code = HTTPStatus.BAD_REQUEST
+    error_code = HTTPStatus.BAD_REQUEST
+    message = HTTPStatus.BAD_REQUEST.description

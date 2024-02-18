@@ -1,8 +1,10 @@
 from .jwt_helper import jwt_decode, jwt_encode
-from .hash_helper import cipher
+from .password_helper import PasswordHasher
+from .hash_helper import contragent_hasher
 
 __all__ = [
     'jwt_encode',
     'jwt_decode',
-    'cipher'
+    'PasswordHasher',
+    'contragent_hasher'
 ]

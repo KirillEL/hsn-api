@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 from core.user.queries import user_query_login
 from utils import jwt_encode
 from api.exceptions import UserNotFoundException
-from fastapi import Response
 
 
 class AuthRequest(BaseModel):
@@ -16,7 +15,8 @@ class AuthRequest(BaseModel):
 @auth_login_router.post(
     "/",
     response_model=AuthLoginResponse,
-    responses={"404": {"model": ExceptionResponseSchema}}
+    responses={"404": {"model": ExceptionResponseSchema}},
+    summary="Вход в аккаунт"
 )
 async def login_user(req: AuthRequest):
     user = await user_query_login(req.login, req.password)

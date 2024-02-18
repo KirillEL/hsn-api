@@ -8,14 +8,16 @@ from datetime import date
 class Contragent(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    phone_number: int
+    phone_number: str  # int
     snils: str
     address: str
-    mis_number: int
-    date_birth: date
-    relative_phone_number: int
+    mis_number: str  # int
+    date_birth: str  # date
+    relative_phone_number: str  # int
     parent: Optional[str] = None
-    date_dead: Optional[date] = None
+    date_dead: Optional[str] = None  # date
+
+
 
 
 class Patient(BaseModel):

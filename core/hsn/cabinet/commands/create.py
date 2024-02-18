@@ -5,40 +5,39 @@ from sqlalchemy import insert, select
 from shared.db.models.cabinet import CabinetDBModel
 from shared.db.models.med_organization import MedOrganizationDBModel
 from shared.db.commands import db_base_entity_create
-from api.exceptions import NotFoundException
+from api.exceptions import NotFoundException, BadRequestException
 from loguru import logger
 
 
 class HsnCabinetCreateContext(BaseModel):
     user_id: int = Field(..., gt=0)
-    name: str = Field(..., max_length=150)
-    # add med_id
+    name: str = Field(..., max_length=200)
     med_id: int = Field(gt=0)
+
+
+async def check_med_organization_exists(med_id: int):
+    query = (
+        select(MedOrganizationDBModel)
+        .where(MedOrganizationDBModel.id == med_id)
+    )
+    result = await db_session.execute(query)
+    med_organization = result.scalars().first()
+    if med_organization is None:
+        raise NotFoundException(message="Мед учреждение не найдено!")
 
 
 @SessionContext()
 async def hsn_cabinet_create(context: HsnCabinetCreateContext) -> Cabinet:
+    await check_med_organization_exists(context.med_id)
     payload = context.model_dump(exclude={'user_id'})
 
-    query_check_med_id = (
-        select(MedOrganizationDBModel)
-        .where(MedOrganizationDBModel.id == context.med_id)
-    )
-    cursor_check = await db_session.execute(query_check_med_id)
-    med = cursor_check.scalars().first()
-    if med is None:
-        raise NotFoundException(message="мед учреждение не найдено!")
-
-    query = (
-        insert(CabinetDBModel)
-        .values(**payload, author_id=context.user_id)
-        .returning(CabinetDBModel)
-    )
-    cursor = await db_session.execute(query)
-    new_cabinet = cursor.scalars().first()
-    logger.debug(f"new_cabinet:{new_cabinet.__dict__}")
-    await db_session.commit()
-    return Cabinet.model_validate(new_cabinet)
-
-
-
+    new_cabinet = CabinetDBModel(**payload, author_id=context.user_id)
+    db_session.add(new_cabinet)
+    try:
+        await db_session.commit()
+        logger.debug(f"New Cabinet created: {new_cabinet.id}")
+        return Cabinet.from_orm(new_cabinet)
+    except Exception as e:
+        logger.error(f"Error creating cabinet: {e}")
+        await db_session.rollback()
+        raise BadRequestException(message=str(e))
