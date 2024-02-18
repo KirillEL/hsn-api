@@ -6,7 +6,9 @@ from core.hsn.doctor.model import UserAndDoctor
 from sqlalchemy import insert, select
 from shared.db.models.user import UserDBModel
 from shared.db.models.doctor import DoctorDBModel
-from utils import cipher
+from utils import PasswordHasher
+from api.exceptions import BadRequestException
+
 
 class UserDoctorCreateContext(BaseModel):
     login: str = Field(None, max_length=25)
@@ -20,39 +22,44 @@ class UserDoctorCreateContext(BaseModel):
     user_id: int = Field(None, gt=0)
 
 
-@SessionContext()
-async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor:
-    doctor_payload = context.model_dump(exclude={'login', 'password', 'user_id'})
+async def create_user(context: UserDoctorCreateContext):
+    hashed_password = PasswordHasher.hash_password(context.password)
     query = (
         insert(UserDBModel)
         .values(
             login=context.login,
-            password=cipher.encrypt(context.password)
+            password=hashed_password
         )
         .returning(UserDBModel)
     )
-    cursor = await db_session.execute(query)
-    new_user = cursor.first()[0]
+    result = await db_session.execute(query)
+    await db_session.commit()
+    return result.scalars().first()
 
-    query_doctor = (
+
+async def create_doctor(context: UserDoctorCreateContext, user_id: int):
+    doctor_payload = context.model_dump(exclude={'login', 'password', 'user_id'})
+    query = (
         insert(DoctorDBModel)
         .values(
-            user_id=new_user.id,
-            author_id=new_user.id,
-            **doctor_payload
+            **doctor_payload,
+            user_id=user_id,
+            author_id=user_id
         )
         .returning(DoctorDBModel)
     )
-    cursor_2 = await db_session.execute(query_doctor)
-    new_doctor = cursor_2.first()[0]
-
-    model = UserAndDoctor(
-        id=new_user.id,
-        login=new_user.login,
-        role=new_user.role,
-        doctor=new_doctor
-    )
-
+    result = await db_session.execute(query)
     await db_session.commit()
+    return result.scalars().first()
 
-    return UserAndDoctor.model_validate(model)
+
+@SessionContext()
+async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor:
+    try:
+        new_user = await create_user(context)
+        new_doctor = await create_doctor(context, new_user.id)
+        return UserAndDoctor.model_validate(
+            dict(id=new_user.id, login=new_user.login, role=new_user.role, doctor=new_doctor))
+    except Exception as e:
+        await db_session.rollback()
+        raise BadRequestException(message=str(e))

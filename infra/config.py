@@ -1,3 +1,4 @@
+
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 from typing import Dict, Optional
@@ -13,7 +14,7 @@ class Config(BaseSettings):
     APP_HOST: Optional[str] = "0.0.0.0"
     APP_PORT: Optional[int] = 9999
 
-    AES_KEY: bytes = os.urandom(32)
+    KEY: str
 
     DB_SERVER: str
     DB_USER: str

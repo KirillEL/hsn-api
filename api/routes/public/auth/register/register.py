@@ -30,9 +30,10 @@ class UserCreateRequest(BaseModel):
 @auth_register_router.post(
     "/",
     response_model=UserDoctorCreateResponse,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
+    summary="Регистрация пользователя"
 )
-async def register_user(request: Request, req_body: UserCreateRequest):
+async def register_user(req_body: UserCreateRequest):
     context = UserDoctorCreateContext(
         login=req_body.login,
         password=req_body.password,
