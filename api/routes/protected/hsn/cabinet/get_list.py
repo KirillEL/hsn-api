@@ -8,7 +8,7 @@ from core.hsn.cabinet import hsn_query_cabinet_list
 
 
 @cabinet_router.get(
-    "/",
+    "/all",
     response_model=List[Cabinet],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
