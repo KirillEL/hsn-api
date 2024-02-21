@@ -31,12 +31,21 @@ async def hsn_cabinet_create(context: HsnCabinetCreateContext) -> Cabinet:
     await check_med_organization_exists(context.med_id)
     payload = context.model_dump(exclude={'user_id'})
 
-    new_cabinet = CabinetDBModel(**payload, author_id=context.user_id)
-    db_session.add(new_cabinet)
+    query = (
+        insert(CabinetDBModel)
+        .values(
+            **payload,
+            author_id=context.user_id
+        )
+        .returning(CabinetDBModel)
+    )
+    cursor = await db_session.execute(query)
+    new_cabinet = cursor.scalars().first()
+    
     try:
         await db_session.commit()
         logger.debug(f"New Cabinet created: {new_cabinet.id}")
-        return Cabinet.from_orm(new_cabinet)
+        return Cabinet.model_validate(new_cabinet)
     except Exception as e:
         logger.error(f"Error creating cabinet: {e}")
         await db_session.rollback()

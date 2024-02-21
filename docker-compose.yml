@@ -35,6 +35,23 @@ services:
     volumes:
       - '.:/app'
 
+  hsn_admin:
+    build:
+      context: hsn_admin/
+      dockerfile: ../.docker/admin/Dockerfile
+    container_name: hsn_admin
+    hostname: hsn_admin
+    ports:
+      - "5173:5173"
+    networks:
+      - backend
+    depends_on:
+      - hsn_api
+    restart: always
+    volumes:
+      - "./hsn_admin:/admin"
+      - "/admin/node_modules"
+
   database:
     image: postgres
     container_name: database
@@ -51,7 +68,7 @@ services:
     healthcheck:
       test: pg_isready -U postgres
       interval: 2s
-      timeout:  3s
+      timeout: 3s
       retries: 40
     networks:
       - backend

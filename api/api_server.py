@@ -32,9 +32,9 @@ def init_middlewares() -> List[Middleware]:
     middlewares: List[Middleware] = [
         Middleware(
             CORSMiddleware,
-            allow_origins=["*"],
+            allow_origins=["http://localhost:5173"],
             allow_credentials=True,
-            allow_methods=["*"],
+            allow_methods=["PUT", "POST", "GET", "DELETE", "OPTIONS", "PATCH"],
             allow_headers=["*"]
         ),
         Middleware(
@@ -72,4 +72,3 @@ def init_application() -> FastAPI:
 
 
 app: FastAPI = init_application()
-

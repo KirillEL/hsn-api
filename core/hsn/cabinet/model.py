@@ -9,10 +9,11 @@ class Cabinet(BaseModel):
 
     id: int
     name: str
-    med_id: Optional[int] = None # TODO: поговорить насчет Optional или нет
+    med_id: Optional[int] = None 
 
     is_deleted: bool
     created_at: datetime
+    
     created_by: UserAuthor
 
     updated_at: Optional[datetime] = None
