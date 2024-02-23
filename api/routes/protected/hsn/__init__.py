@@ -4,3 +4,4 @@ from .clinical_assesment import clinical_assesment_router
 from .patient_appointment import patient_appointment_router
 from .patient_hospitalization import patient_hospitalization_router
 from .analyses import analyses_router
+

@@ -10,7 +10,7 @@ class MedOrganizationDBModel(BaseDBModel):
     __table_args__ = {'schema': 'public'}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    name = Column(String(200), nullable=False)
+    name = Column(String(255), nullable=False)
     number = Column(Integer, nullable=False, unique=True)
     address = Column(Text, nullable=False)
 

@@ -1,4 +1,6 @@
 from fastapi import Request, Response
+
+from api.decorators import admin_required
 from .router import med_org_router
 from core.hsn.med_organization import MedOrganizationFlat, MedOrganization
 from api.exceptions import ExceptionResponseSchema
@@ -21,6 +23,7 @@ class MedOrganizationUpdateRequest(BaseModel):
     response_model=MedOrganization,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
+@admin_required
 async def api_med_organization_update(med_id: int, request: Request, req_body: MedOrganizationUpdateRequest):
     context = UpdateMedOrganizationContext(user_id=request.user.id, id=med_id,
                                            name=req_body.name,

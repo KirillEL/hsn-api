@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, String, Boolean, Enum, text
+from sqlalchemy import Column, BigInteger, String, Boolean, Enum, text, Text
 from .BASE import BaseDBModel
 from enum import Enum
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
@@ -16,7 +16,7 @@ class UserDBModel(BaseDBModel):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     login = Column(String(255), nullable=False, unique=True)
-    password = Column(String(255), nullable=False)
+    password = Column(Text, nullable=False)
 
     is_active = Column(Boolean, server_default=text("true"))
 

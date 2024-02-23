@@ -10,7 +10,7 @@ class CabinetDBModel(BaseDBModel):
     __table_args__ = {'schema': 'public'}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    name = Column(String(200), nullable=False)
+    number = Column(String(255), nullable=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

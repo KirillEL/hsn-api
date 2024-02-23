@@ -6,7 +6,7 @@ from core.hsn.cabinet import hsn_cabinet_own
 from core.user import hsn_user_get_me
 
 @cabinet_router.get(
-    "/own",
+    "/get/own",
     response_model=Cabinet,
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Получить свой кабинет"

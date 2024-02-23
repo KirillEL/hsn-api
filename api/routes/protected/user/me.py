@@ -26,7 +26,8 @@ class UserAndDoctorResponse(BaseModel):
 @user_router.get(
     "/me",
     response_model=UserAndDoctorResponse,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
+    summary="Получить данные о текущем пользователе"
 )
 async def get_current_user(request: Request):
     return await hsn_user_get_me(request.user.id)

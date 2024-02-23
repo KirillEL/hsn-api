@@ -1,5 +1,5 @@
 from .create import *
-#from .get_by_id import *
+from .get_by_id import *
 from .delete import *
 from .get_list import *
 from .update import *

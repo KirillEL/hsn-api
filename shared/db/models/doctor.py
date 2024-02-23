@@ -15,7 +15,7 @@ class DoctorDBModel(BaseDBModel):
     patronymic = Column(String(100), nullable=False)
     phone_number = Column(BigInteger, nullable=False, unique=True)
 
-    user_id = Column(BigInteger, ForeignKey('public.users.id'), nullable=False, unique=True)
+    user_id = Column(Integer, ForeignKey('public.users.id'), nullable=False, unique=True)
 
     user = relationship("UserDBModel", back_populates="doctor", uselist=False)
 

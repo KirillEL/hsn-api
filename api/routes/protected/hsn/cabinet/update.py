@@ -1,3 +1,4 @@
+from api.decorators import admin_required
 from .router import cabinet_router
 from fastapi import Request, Response
 from core.hsn.cabinet.model import Cabinet
@@ -17,6 +18,7 @@ class CabinetUpdateRequest(BaseModel):
     response_model=Cabinet,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
+@admin_required
 async def api_cabinet_update(cabinet_id: int, request: Request, req_body: CabinetUpdateRequest):
     context = HsnCabinetUpdateContext(id=cabinet_id, med_id=req_body.med_id, name=req_body.name,
                                       user_id=request.user.id)

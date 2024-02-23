@@ -4,7 +4,9 @@ from sqlalchemy.orm import relationship, foreign
 from .BASE import BaseDBModel
 from . import UserDBModel
 
+
 class ContragentDBModel(BaseDBModel):
+
     __tablename__ = 'contragents'
     __table_args__ = {'schema': 'public'}
 
