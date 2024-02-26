@@ -51,6 +51,8 @@ class ClinicalAssesmentDBModel(BaseDBModel):
     patient_hospitalization_id = Column(BigInteger, ForeignKey("public.patient_hospitalizations.id"), nullable=False)
     patient_id = Column(BigInteger, ForeignKey("public.patients.id"), nullable=False)
 
+    is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
+
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)
     deleted_at = Column(DateTime)

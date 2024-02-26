@@ -53,8 +53,33 @@ def upgrade() -> None:
         $$;
             ''')
 
+    op.execute('''
+    CREATE TYPE gender_type AS ENUM ('male', 'female');
+    ''')
+
+    op.execute('''
+    CREATE TYPE disability_type AS ENUM ('no', 'first', 'second', 'third');
+    ''')
+
+    op.execute('''
+    CREATE TYPE lgota_drugs_type AS ENUM ('no', 'yes', 'money');
+    ''')
+
+    op.execute('''
+    CREATE TYPE classification_func_classes_type AS ENUM ('fk1', 'fk2', 'fk3', 'fk4');
+    ''')
+
+    op.execute('''
+    CREATE TYPE distance_walking_type AS ENUM ('<200', '200-350', '350-500', '>500');
+    ''')
+
+
 
 def downgrade() -> None:
     op.execute('drop function base.set_updated_at();')
     op.execute('drop function base.set_deleted_at();')
     op.execute('drop schema base;')
+    op.execute('drop type classification_func_classes_type;')
+    op.execute('drop type lgota_drugs_type;')
+    op.execute('drop type disability_type;')
+    op.execute('drop type gender_type;')

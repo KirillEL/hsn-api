@@ -6,10 +6,11 @@ from .BASE import BaseDBModel
 
 
 class AnalysesDBModel(BaseDBModel):
-    __tablename__ = 'analyses'
+    __tablename__ = 'analises'
     __table_args__ = {'schema': 'public'}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False)
     count_index = Column(Integer, nullable=False)
     patient_hospitalization_id = Column(BigInteger, ForeignKey('public.patient_hospitalizations.id'), nullable=False)
 
