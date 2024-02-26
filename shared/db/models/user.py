@@ -5,11 +5,6 @@ from sqlalchemy.dialects.postgresql import ENUM as PGEnum
 from sqlalchemy.orm import relationship
 
 
-class RoleEnum(Enum):
-    ADMIN = 'admin'
-    DOCTOR = 'doctor'
-
-
 class UserDBModel(BaseDBModel):
     __tablename__ = 'users'
     __table_args__ = {'schema': 'public'}
@@ -20,8 +15,8 @@ class UserDBModel(BaseDBModel):
 
     is_active = Column(Boolean, server_default=text("true"))
 
-    role = Column(PGEnum(RoleEnum, name='role'), nullable=False, server_default=text("'DOCTOR'"))
-
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
     doctor = relationship("DoctorDBModel", back_populates="user", uselist=False)
+
+    roles = relationship('RoleDBModel' ,secondary='public.user_roles', back_populates='users')

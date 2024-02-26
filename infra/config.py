@@ -23,6 +23,8 @@ class Config(BaseSettings):
     DB_NAME: str
     DB_URI: str
 
+    ADMIN_PASS: str
+
     JWT_SECRET: Optional[str] = "frtrtt"
     JWT_ALGORITHM: Optional[str] = "HS256"
 

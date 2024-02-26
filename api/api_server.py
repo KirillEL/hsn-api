@@ -9,6 +9,7 @@ from starlette.responses import JSONResponse
 from api.routes import main_router
 from api.exceptions import CustomException
 from .middlewares import AuthMiddleware, AuthBackend
+from core.on_startup import hsn_create_admin
 
 
 def init_routers(application: FastAPI) -> None:
@@ -72,3 +73,8 @@ def init_application() -> FastAPI:
 
 
 app: FastAPI = init_application()
+
+
+@app.on_event("startup")
+async def startup() -> None:
+    await hsn_create_admin()
