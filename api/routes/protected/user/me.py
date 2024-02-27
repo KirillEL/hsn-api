@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+from core.hsn.doctor.model import Role
 from core.user.queries.me import hsn_user_get_me
 from .router import user_router
 from api.exceptions import ExceptionResponseSchema, NotFoundException
@@ -19,8 +20,8 @@ class DoctorResponse(BaseModel):
 class UserAndDoctorResponse(BaseModel):
     id: int
     login: str
-    role: str
-    doctor: DoctorResponse
+    roles: list[Role]
+    doctor: DoctorResponse | None
 
 
 @user_router.get(

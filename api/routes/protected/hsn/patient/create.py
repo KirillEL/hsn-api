@@ -19,10 +19,7 @@ class CreatePatientRequest(BaseModel):
     disability: str = Field(Disability.NO_DISABILITY.name)
     date_setup_diagnose: date = Field(...)
     school_hsn_date: date = Field(...)
-    have_hospitalization: bool = Field(False)
-    count_hospitalizations: int = Field(0, ge=0)
     lgota_drugs: str = Field(LgotaDrugs.NO_LGOTA.name)
-    last_hospitalization_id: Optional[int] = Field(..., ge=0)
     note: str = Field(None, max_length=5000)
     has_chronic_heart: bool = Field(False)
     classification_func_classes: str = Field(ClassificationFuncClasses.FK1.name)
@@ -31,7 +28,6 @@ class CreatePatientRequest(BaseModel):
     arteria_hypertension_age: int = Field(..., ge=0)
     # cabinet_id: int = Field(None, gt=0) # кабинет не нужен по идее так как кабинет берется от врача
     # врач создает пациента
-
 
     phone_number: int = Field(None, gt=0)
     snils: str = Field(None, max_length=16)

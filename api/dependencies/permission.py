@@ -4,6 +4,7 @@ from typing import List, Type
 from fastapi import Request
 from fastapi.openapi.models import APIKey, APIKeyIn
 from fastapi.security.base import SecurityBase
+from loguru import logger
 
 from api.exceptions import CustomException, UnauthorizedException, UnauthorizedAdminException
 
@@ -27,7 +28,14 @@ class IsAuthenticatedAdministrator(BasePermission):
     exception = UnauthorizedAdminException
     
     async def has_permission(self, request: Request) -> bool:
-        return request.user.role == 'admin'
+        if request.user is None:
+            return False
+        user_roles = request.user.roles
+        for role in user_roles:
+            if role.name == 'admin':
+                return True
+
+        return False
     
 
 

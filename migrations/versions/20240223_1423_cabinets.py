@@ -25,6 +25,8 @@ def upgrade() -> None:
     number varchar(255) NOT NULL,
     med_id integer not null constraint cabinets_med_fk references public.med_organizations,
     
+    is_deleted boolean not null default false,
+    
     created_at   timestamp with time zone default now() not null,
     created_by   integer not null,
 

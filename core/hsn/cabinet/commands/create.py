@@ -11,7 +11,7 @@ from loguru import logger
 
 class HsnCabinetCreateContext(BaseModel):
     user_id: int = Field(..., gt=0)
-    name: str = Field(..., max_length=200)
+    number: str = Field(..., max_length=200)
     med_id: int = Field(gt=0)
 
 

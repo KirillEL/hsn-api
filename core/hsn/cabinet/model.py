@@ -8,7 +8,7 @@ class Cabinet(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    name: str
+    number: str
     med_id: Optional[int] = None 
 
     is_deleted: bool

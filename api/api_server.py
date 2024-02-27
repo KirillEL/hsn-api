@@ -56,6 +56,12 @@ def init_listeners(app: FastAPI) -> None:
         )
 
 
+def init_tasks_on_startup(app_: FastAPI) -> None:
+    @app_.on_event("startup")
+    async def init_startup():
+        await hsn_create_admin()
+
+
 def init_application() -> FastAPI:
     application = FastAPI(
         title="HSN",
@@ -68,13 +74,9 @@ def init_application() -> FastAPI:
 
     init_routers(application)
     init_listeners(application)
+    init_tasks_on_startup(app_=application)
 
     return application
 
 
 app: FastAPI = init_application()
-
-
-@app.on_event("startup")
-async def startup() -> None:
-    await hsn_create_admin()

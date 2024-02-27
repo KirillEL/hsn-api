@@ -9,7 +9,7 @@ from core.hsn.cabinet import HsnCabinetUpdateContext, hsn_cabinet_update
 
 
 class CabinetUpdateRequest(BaseModel):
-    name: str = Field(..., description="The name of the cabinet", max_length=100)
+    number: str = Field(..., description="The name of the cabinet", max_length=100)
     med_id: Optional[int] = Field(None, gt=0)
 
 
@@ -20,6 +20,6 @@ class CabinetUpdateRequest(BaseModel):
 )
 @admin_required
 async def api_cabinet_update(cabinet_id: int, request: Request, req_body: CabinetUpdateRequest):
-    context = HsnCabinetUpdateContext(id=cabinet_id, med_id=req_body.med_id, name=req_body.name,
+    context = HsnCabinetUpdateContext(id=cabinet_id, med_id=req_body.med_id, number=req_body.number,
                                       user_id=request.user.id)
     return await hsn_cabinet_update(context)

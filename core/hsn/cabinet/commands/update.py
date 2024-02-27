@@ -9,7 +9,7 @@ from core.hsn.cabinet.model import Cabinet
 class HsnCabinetUpdateContext(BaseModel):
     user_id: int = Field(None, gt=0)
     id: int = Field(None, gt=0)
-    name: str
+    number: str
     med_id: Optional[int] = Field(None, gt=0)
 
 

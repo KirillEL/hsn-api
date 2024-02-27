@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from shared.db.models.user import UserDBModel
 from core.hsn.doctor.model import UserAndDoctor
+from loguru import logger
 
 
 @SessionContext()
@@ -10,16 +11,20 @@ async def hsn_user_get_me(user_id: int):
     query = (
         select(UserDBModel)
         .options(joinedload(UserDBModel.doctor))
+        .options(joinedload(UserDBModel.roles))
         .where(UserDBModel.id == user_id)
     )
     cursor = await db_session.execute(query)
 
     user = cursor.unique().scalars().first()
 
+    logger.debug(f'user: {user.__dict__}')
+    logger.debug(f'user_roles: {user.roles[0].name}')
+
     model = UserAndDoctor(
         id=user.id,
         login=user.login,
-        role=user.role,
+        roles=user.roles,
         doctor=user.doctor
     )
     return model

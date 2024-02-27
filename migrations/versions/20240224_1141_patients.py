@@ -24,7 +24,7 @@ def upgrade() -> None:
     id serial constraint patients_pk primary key,
     contragent_id integer not null unique constraint patients_contragent_fk
         references public.contragents,
-    cobinet_id integer constraint patients_cabinet_fk
+    cabinet_id integer constraint patients_cabinet_fk
         references public.cabinets,
     name varchar(255) not null,
     last_name varchar(255) not null,

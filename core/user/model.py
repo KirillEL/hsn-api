@@ -1,7 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
 
-
 class User(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -9,20 +8,24 @@ class User(BaseModel):
     is_active: bool
     login: str = None
     password: str
-    role: str
     is_deleted: bool
+
+
+class Role(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    name: str
 
 
 class UserFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     login: str
-    role: str
+    roles: list[Role]
     is_deleted: bool
 
 
-
-
-
-class UserAuthor(UserFlat):
-    pass
+class UserAuthor(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    login: str
+    is_deleted: bool

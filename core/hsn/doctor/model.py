@@ -28,11 +28,16 @@ class Doctor(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
+class Role(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    name: str
+
+
 class UserAndDoctor(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     login: str
-    role: str
     is_deleted: Optional[bool] = False
-    doctor: Doctor
+    roles: list[Role]
+    doctor: Doctor | None

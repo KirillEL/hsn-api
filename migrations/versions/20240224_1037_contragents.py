@@ -23,6 +23,7 @@ def upgrade() -> None:
     create table public.contragents (
     id serial constraint contragents_pk primary key,
     phone_number text not null unique,
+    address text not null,
     snils text not null unique,
     mis_number text not null,
     date_birth text not null,

@@ -51,12 +51,9 @@ class PatientDBModel(BaseDBModel):
     date_setup_diagnose = Column(DateTime)
     school_hsn_date = Column(DateTime)
 
-    #have_hospitalization = Column(Boolean, nullable=False, server_default=text("false"))
-    #count_hospitalizations = Column(Integer, nullable=False)
 
     lgota_drugs = Column(PGEnum(LgotaDrugs, name='lgota_drugs_type'), nullable=False,
                          server_default=text("'NO_LGOTA'"))
-    last_hospitalization_id = Column(BigInteger)  # подумать
     note = Column(Text, nullable=True)
     has_chronic_heart = Column(Boolean, nullable=False, server_default=text("false"))
     classification_func_classes = Column(PGEnum(ClassificationFuncClasses, name='classification_func_classes_type'), server_default=text("'FK1'"))

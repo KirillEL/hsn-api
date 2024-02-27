@@ -34,10 +34,7 @@ class Patient(BaseModel):
     disability: str
     date_setup_diagnose: Optional[datetime] = None
     school_hsn_date: Optional[datetime] = None
-    have_hospitalization: bool
-    count_hospitalizations: int
     lgota_drugs: str
-    last_hospitalization_id: Optional[int] = None
     note: str
     has_chronic_heart: bool
     classification_func_classes: str

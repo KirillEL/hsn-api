@@ -40,7 +40,6 @@ async def hsn_patient_by_id(patient_id: int):
     cursor = await db_session.execute(query)
     await db_session.commit()
     patient = cursor.scalars().first()
-    logger.debug(f'patient: {patient.__dict__}')
     if patient is None:
         raise NotFoundException(message="Пациент не найден!")
     patient.contragent = await decode_contragent(patient.contragent)

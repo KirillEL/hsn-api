@@ -19,4 +19,4 @@ class UserDBModel(BaseDBModel):
 
     doctor = relationship("DoctorDBModel", back_populates="user", uselist=False)
 
-    roles = relationship('RoleDBModel' ,secondary='public.user_roles', back_populates='users')
+    roles = relationship('RoleDBModel', secondary='public.user_roles', back_populates='users')
