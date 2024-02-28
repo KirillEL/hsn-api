@@ -3,15 +3,18 @@ from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
 
-class SuppliedMedications(BaseModel):
+class MedicinePrescription(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    medicine_group_id: int
     patient_appointment_id: int
-    medicine_catalog_id: int
 
-    date_start: datetime
-    date_end: datetime
+    name: str
+    mnn: Optional[str] = None
+    dosa: int
+
+    note: Optional[str] = None
 
     is_deleted: bool
     created_at: datetime

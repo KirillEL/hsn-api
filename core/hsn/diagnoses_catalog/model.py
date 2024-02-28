@@ -7,8 +7,8 @@ class DiagnosesCatalog(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    code: float
     name: str
+    note: Optional[str] = None
 
     is_deleted: bool
 

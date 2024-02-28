@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, Integer, String, text, Text, ForeignKey, DateTime
+from sqlalchemy import BigInteger, Column, Integer, String, text, Text, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
@@ -13,6 +13,8 @@ class AnalysesDBModel(BaseDBModel):
     name = Column(String(255), nullable=False)
     count_index = Column(Integer, nullable=False)
     patient_hospitalization_id = Column(BigInteger, ForeignKey('public.patient_hospitalizations.id'), nullable=False)
+
+    is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)

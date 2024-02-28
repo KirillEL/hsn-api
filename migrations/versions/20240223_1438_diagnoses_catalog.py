@@ -25,6 +25,8 @@ def upgrade() -> None:
     name varchar(255) not null,
     note text,
     
+    is_deleted boolean not null default false,
+    
     created_at   timestamp with time zone default now() not null,
     created_by   integer not null,
 

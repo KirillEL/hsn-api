@@ -9,6 +9,7 @@ class MedicinesGroup(BaseModel):
     id: int
     code: float
     name: str
+    note: Optional[str] = None
 
     is_deleted: bool
     created_at: datetime
