@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '006f92681953'
-down_revision: Union[str, None] = '462667f47011'
+down_revision: Union[str, None] = 'f3f9d47b1f01'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -29,6 +29,7 @@ def upgrade() -> None:
     patient_hospitalization_id integer not null constraint research_patient_hospitalization_fk
         references public.patient_hospitalizations,
         
+    date timestamp with time zone not null, 
     is_deleted boolean not null default false,
     
     created_at   timestamp with time zone default now() not null,

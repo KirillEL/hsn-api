@@ -6,7 +6,7 @@ from .BASE import BaseDBModel
 
 
 class MedicinesPrescriptionDBModel(BaseDBModel):
-    __tablename__ = 'medicines_prescription'
+    __tablename__ = 'medicine_prescriptions'
     __table_args__ = {'schema': 'public'}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)

@@ -12,7 +12,6 @@ class AnalysesDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     count_index = Column(Integer, nullable=False)
-    patient_hospitalization_id = Column(BigInteger, ForeignKey('public.patient_hospitalizations.id'), nullable=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

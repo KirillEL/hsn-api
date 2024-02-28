@@ -25,6 +25,9 @@ class Config(BaseSettings):
 
     ADMIN_PASS: str
 
+    DOCS_USERNAME: str
+    DOCS_PASSWORD: str
+
     JWT_SECRET: Optional[str] = "frtrtt"
     JWT_ALGORITHM: Optional[str] = "HS256"
 

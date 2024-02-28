@@ -41,7 +41,7 @@ def upgrade() -> None:
     hss integer not null,
     mit float,
     has_fatigue boolean not null default false,
-    has_duspnea boolean not null default false,
+    has_dyspnea boolean not null default false,
     has_swelling_legs boolean not null default false,
     has_weakness boolean not null default false,
     has_orthopnea boolean not null default false,

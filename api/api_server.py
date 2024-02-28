@@ -1,10 +1,13 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
 from typing import List
-
+from infra.config import config
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from starlette.responses import JSONResponse
+from starlette.status import HTTP_401_UNAUTHORIZED
 
 from api.routes import main_router
 from api.exceptions import CustomException
@@ -62,19 +65,36 @@ def init_tasks_on_startup(app_: FastAPI) -> None:
         await hsn_create_admin()
 
 
+def init_secure_on_swagger(app_: FastAPI) -> None:
+    security = HTTPBasic()
+
+    @app_.get('/api/docs', include_in_schema=False, dependencies=[Depends(security)])
+    async def get_documentation(credentials: HTTPBasicCredentials = Depends(security)):
+        if credentials.username != config.DOCS_USERNAME or credentials.password != config.DOCS_PASSWORD:
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Basic"},
+            )
+        else:
+            return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
+
+
 def init_application() -> FastAPI:
     application = FastAPI(
         title="HSN",
         description="HSN_API",
         version="1.0.0",
-        docs_url="/api/docs",
-        openapi_url="/api/openapi.json",
+        #docs_url="/api/docs",
+        #openapi_url="/api/openapi.json",
         middleware=init_middlewares()
     )
 
+    init_secure_on_swagger(application)
     init_routers(application)
     init_listeners(application)
     init_tasks_on_startup(app_=application)
+
 
     return application
 
