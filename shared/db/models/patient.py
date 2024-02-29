@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, BigInteger, Date, Text, ForeignKey, Boolean, text, DateTime, Integer
+from sqlalchemy import Column, String, BigInteger, Date, Text, ForeignKey, Boolean, Enum, text, DateTime, Integer
 from sqlalchemy.orm import relationship, foreign
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
 
@@ -9,16 +9,16 @@ from enum import Enum
 
 
 class Disability(Enum):
-    NO_DISABILITY = "no"
-    FIRST_DISABILITY = "1"
-    SECOND_DISABILITY = "2"
-    THIRD_DISABILITY = "3"
+    NO = "no"
+    FIRST = "first"
+    SECOND = "second"
+    THIRD = "third"
 
 
 class LgotaDrugs(Enum):
-    NO_LGOTA = "no"
-    LGOTA = "yes"
-    LGOTA_MONEY = "money"
+    no = "no"
+    yes = "yes"
+    money = "money"
 
 
 class ClassificationFuncClasses(Enum):
@@ -28,9 +28,10 @@ class ClassificationFuncClasses(Enum):
     FK4 = "fk4"
 
 
-class Gender(Enum):
-    MALE = "male"
-    FEMALE = "female"
+genders = ('male', 'female')
+disabilities = ('no', 'first', 'second', 'third')
+lgotadrugs = ('no', 'yes', 'money')
+classifications = ('fk1', 'fk2', 'fk3', 'fk4')
 
 
 class PatientDBModel(BaseDBModel):
@@ -41,22 +42,20 @@ class PatientDBModel(BaseDBModel):
     name = Column(String(255), nullable=False)
     last_name = Column(String(255), nullable=False)
     patronymic = Column(String(255))
-    gender = Column(PGEnum(Gender, name='gender_type'))
+    gender = Column(PGEnum(*genders, name="gender_type", create_type=False), nullable=False)
     height = Column(Integer, nullable=False)
     main_diagnose = Column(Text)
     age = Column(Integer)
-    disability = Column(PGEnum(Disability, name='disability_type'), nullable=False,
-                        server_default=text("'NO_DISABILITY'"))
+    disability = Column(PGEnum(*disabilities, name="disability_type", create_type=False), nullable=False)
 
     date_setup_diagnose = Column(DateTime)
     school_hsn_date = Column(DateTime)
 
+    lgota_drugs = Column(PGEnum(*lgotadrugs, name="lgota_drugs_type"), nullable=False)
 
-    lgota_drugs = Column(PGEnum(LgotaDrugs, name='lgota_drugs_type'), nullable=False,
-                         server_default=text("'NO_LGOTA'"))
     note = Column(Text, nullable=True)
     has_chronic_heart = Column(Boolean, nullable=False, server_default=text("false"))
-    classification_func_classes = Column(PGEnum(ClassificationFuncClasses, name='classification_func_classes_type'), server_default=text("'FK1'"))
+    classification_func_classes = Column(PGEnum(*classifications, name="classification_func_classes_type", create_type=False), nullable=False)
     has_stenocardia = Column(Boolean, nullable=False, server_default=text("false"))
     has_arteria_hypertension = Column(Boolean, nullable=False, server_default=text("false"))
     arteria_hypertension_age = Column(Integer, nullable=True)

@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from shared.db.db_session import db_session, SessionContext
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, NotFoundException
 from shared.db.models.diagnoses_catalog import DiagnosesCatalogDBModel
 from .router import admin_diagnose_catalog_router
 from core.hsn.diagnoses_catalog import DiagnosesCatalog
@@ -20,5 +20,6 @@ async def admin_diagnose_catalog_by_id(diagnose_catalog_id: int):
 
     cursor = await db_session.execute(query)
     diagnose_catalog = cursor.scalars().first()
-
+    if diagnose_catalog is None:
+        raise NotFoundException(message="не найден!")
     return DiagnosesCatalog.model_validate(diagnose_catalog)

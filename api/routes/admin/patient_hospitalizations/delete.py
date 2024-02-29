@@ -25,4 +25,5 @@ async def admin_patient_hospitalization_delete(patient_hospitalization_id: int, 
         .where(PatientHospitalizationsDBModel.id == patient_hospitalization_id)
     )
     await db_session.execute(query)
+    await db_session.commit()
     return True

@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, NotFoundException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.analyses import AnalysesDBModel
 from .router import admin_analises_router
@@ -19,5 +19,6 @@ async def admin_analise_by_id(analise_id: int):
     )
     cursor = await db_session.execute(query)
     analise = cursor.scalars().first()
-
+    if analise is None:
+        raise NotFoundException(message="анализ не найден!")
     return Analise.model_validate(analise)

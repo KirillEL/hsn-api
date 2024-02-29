@@ -30,13 +30,13 @@ async def admin_doctor_create(request: Request, dto: CreateDoctorDto):
     query = (
         insert(DoctorDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(DoctorDBModel)
     )
     cursor = await db_session.execute(query)
     await db_session.commit()
-    new_doctor = cursor.scalars().first()
+    new_doctor = cursor.unique().scalars().first()
 
     return Doctor.model_validate(new_doctor)

@@ -83,3 +83,4 @@ def downgrade() -> None:
     op.execute('drop type lgota_drugs_type;')
     op.execute('drop type disability_type;')
     op.execute('drop type gender_type;')
+

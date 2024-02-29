@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from shared.db.db_session import db_session, SessionContext
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, NotFoundException
 from .router import admin_cabinet_router
 from core.hsn.cabinet import Cabinet
 from shared.db.models.cabinet import CabinetDBModel
@@ -19,5 +19,6 @@ async def admin_cabinet_by_id(cabinet_id: int):
     )
     cursor = await db_session.execute(query)
     cabinet = cursor.scalars().first()
-
+    if cabinet is None:
+        raise NotFoundException(message="кабинет не найден!")
     return Cabinet.model_validate(cabinet)

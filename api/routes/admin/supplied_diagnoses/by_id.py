@@ -3,7 +3,7 @@ from sqlalchemy import select
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.supplied_diagnoses import SuppliedDiagnosesDBModel
 from core.hsn.supplied_diagnoses.model import SuppliedDiagnoses
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, NotFoundException
 
 
 @admin_supplied_diagnose_router.get(
@@ -19,5 +19,6 @@ async def admin_supplied_diagnose_by_id(supplied_diagnose_id: int):
     )
     cursor = await db_session.execute(query)
     supplied_diagnose = cursor.scalars().first()
-
+    if supplied_diagnose is None:
+        raise NotFoundException(message="поставленный диагноз не найден!")
     return SuppliedDiagnoses.model_validate(supplied_diagnose)

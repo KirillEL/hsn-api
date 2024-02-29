@@ -29,11 +29,12 @@ async def admin_patient_hospitalization_create(request: Request, dto: PatientHos
     query = (
         insert(PatientHospitalizationsDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(PatientHospitalizationsDBModel)
     )
+
     cursor = await db_session.execute(query)
     await db_session.commit()
     new_patient_hospitalization = cursor.scalars().first()

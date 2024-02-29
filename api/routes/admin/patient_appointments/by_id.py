@@ -4,7 +4,7 @@ from .router import admin_patient_appointment_router
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.patient_appointment import PatientAppointmentsDBModel
 from core.hsn.patient_appointment import PatientAppointment
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, NotFoundException
 
 
 @admin_patient_appointment_router.get(
@@ -20,5 +20,7 @@ async def admin_patient_appointment_by_id(patient_appointment_id: int):
     )
     cursor = await db_session.execute(query)
     patient_appointment = cursor.scalars().first()
+    if patient_appointment is None:
+        raise NotFoundException(message="Прием не найден!")
     return PatientAppointment.model_validate(patient_appointment)
 

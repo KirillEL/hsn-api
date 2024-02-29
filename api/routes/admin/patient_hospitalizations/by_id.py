@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from shared.db.db_session import SessionContext, db_session
 from shared.db.models.patient_hospitalization import PatientHospitalizationsDBModel
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, NotFoundException
 from .router import admin_patient_hospitalization_router
 from core.hsn.patient_hospitalization import PatientHospitalization
 
@@ -21,5 +21,6 @@ async def admin_patient_hospitalizations_by_id(patient_hospitalization_id: int):
 
     cursor = await db_session.execute(query)
     patient_hospitalization = cursor.scalars().first()
-
+    if patient_hospitalization is None:
+        raise NotFoundException(message="Госпитализация не найдена!")
     return PatientHospitalization.model_validate(patient_hospitalization)

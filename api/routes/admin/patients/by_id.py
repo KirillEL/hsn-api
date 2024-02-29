@@ -4,6 +4,8 @@ from .router import admin_patient_router
 from core.hsn.patient import Patient
 from api.exceptions import ExceptionResponseSchema
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
+from api.exceptions import NotFoundException
 
 
 @admin_patient_router.get(
@@ -15,9 +17,11 @@ from sqlalchemy import select
 async def admin_patient_by_id(patient_id: int):
     query = (
         select(PatientDBModel)
+        .options(joinedload(PatientDBModel.contragent))
         .where(PatientDBModel.id == patient_id, PatientDBModel.is_deleted.is_(False))
     )
     cursor = await db_session.execute(query)
-    patients = cursor.scalars().all()
-
-    return [Patient.model_validate(p) for p in patients]
+    patient = cursor.scalars().first()
+    if patient is None:
+        raise NotFoundException(message="Пациент не найден!")
+    return Patient.model_validate(patient)

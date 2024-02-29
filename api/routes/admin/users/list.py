@@ -1,3 +1,5 @@
+from sqlalchemy.orm import joinedload
+
 from .router import admin_users_router
 from api.exceptions import ExceptionResponseSchema
 from shared.db.models.user import UserDBModel
@@ -8,13 +10,14 @@ from core.user import User, UserFlat
 
 @admin_users_router.get(
     "/users",
-    response_model=list[User],
+    response_model=list[UserFlat],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()
 async def admin_users_list(limit: int = None, offset: int = None, pattern: str = None):
     query = (
         select(UserDBModel)
+        .options(joinedload(UserDBModel.roles))
         .where(UserDBModel.is_deleted.is_(False))
     )
 
@@ -29,5 +32,5 @@ async def admin_users_list(limit: int = None, offset: int = None, pattern: str =
         query = query.where(UserDBModel.login.contains(pattern))
 
     cursor = await db_session.execute(query)
-    users = cursor.scalars().all()
-    return [User.model_validate(user) for user in users]
+    users = cursor.unique().scalars().all()
+    return [UserFlat.model_validate(user) for user in users]

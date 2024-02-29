@@ -12,8 +12,8 @@ class PatientHospitalizationsDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     patient_id = Column(BigInteger, ForeignKey('public.patients.id'))
-    date_start = Column(DateTime, nullable=False)
-    date_end = Column(DateTime, nullable=False)
+    date_start = Column(DateTime(timezone=True), nullable=False)
+    date_end = Column(DateTime(timezone=True), nullable=False)
 
     anamnes = Column(Text)
 

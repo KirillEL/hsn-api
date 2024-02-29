@@ -44,12 +44,14 @@ async def admin_patient_appointment_create(request: Request, dto: CreatePatientA
     query = (
         insert(PatientAppointmentsDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(PatientAppointmentsDBModel)
     )
     cursor = await db_session.execute(query)
+    await db_session.commit()
     new_patient_appointment = cursor.scalars().first()
+
 
     return PatientAppointment.model_validate(new_patient_appointment)

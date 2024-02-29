@@ -13,11 +13,11 @@ class PatientAppointmentsDBModel(BaseDBModel):
     patient_id = Column(BigInteger, ForeignKey('public.patients.id'))
     doctor_id = Column(BigInteger, ForeignKey('public.doctors.id'))
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'))
-    date = Column(DateTime, nullable=False)
-    date_next = Column(DateTime, nullable=True) # think about
+    date = Column(DateTime(timezone=True), nullable=False)
+    date_next = Column(DateTime(timezone=True), nullable=True)
     weight = Column(Float, nullable=False)
     height = Column(Float, nullable=False)
-    fv_lg = Column(Integer, nullable=False) # think about nullable
+    fv_lg = Column(Integer, nullable=False)
     main_diagnose = Column(Text, nullable=False)
     sistol_ad = Column(Float, nullable=False)
     diastal_ad = Column(Float, nullable=False)

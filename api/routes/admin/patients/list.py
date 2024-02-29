@@ -4,6 +4,7 @@ from .router import admin_patient_router
 from core.hsn.patient import Patient
 from api.exceptions import ExceptionResponseSchema
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
 
 @admin_patient_router.get(
@@ -15,6 +16,7 @@ from sqlalchemy import select
 async def admin_patients_list(limit: int = None, offset: int = None, pattern:str = None):
     query = (
         select(PatientDBModel)
+        .options(joinedload(PatientDBModel.contragent))
         .where(PatientDBModel.is_deleted.is_(False))
     )
 

@@ -23,12 +23,13 @@ async def admin_cabinet_create(request: Request, dto: CreateCabinetDto):
     query = (
         insert(CabinetDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(CabinetDBModel)
     )
     cursor = await db_session.execute(query)
+    await db_session.commit()
     new_cabinet = cursor.scalars().first()
 
     return Cabinet.model_validate(new_cabinet)

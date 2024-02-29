@@ -24,13 +24,14 @@ async def admin_med_organization_create(request: Request, dto: CreateMedOrganiza
     query = (
         insert(MedOrganizationDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(MedOrganizationDBModel)
     )
 
     cursor = await db_session.execute(query)
+    await db_session.commit()
     new_med_org = cursor.scalars().first()
 
     return MedOrganization.model_validate(new_med_org)

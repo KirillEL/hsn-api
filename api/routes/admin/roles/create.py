@@ -20,9 +20,10 @@ class CreateRoleDto(BaseModel):
 async def admin_role_create(dto: CreateRoleDto):
     query = (
         insert(RoleDBModel)
-        .values(**dto)
+        .values(**dto.dict())
         .returning(RoleDBModel)
     )
     cursor = await db_session.execute(query)
+    await db_session.commit()
     new_role = cursor.scalars().first()
     return Role.model_validate(new_role)
