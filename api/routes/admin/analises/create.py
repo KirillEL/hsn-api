@@ -24,7 +24,7 @@ async def admin_analise_create(request: Request, dto: CreateAnaliseDto):
     query = (
         insert(AnalysesDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(AnalysesDBModel)

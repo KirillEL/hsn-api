@@ -11,7 +11,7 @@ class ResearchDBModel(BaseDBModel):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     analise_id = Column(BigInteger, ForeignKey('public.analyses.id'), nullable=False)
-    date = Column(DateTime, nullable=False)
+    date = Column(DateTime(timezone=True), nullable=False)
     patient_appointment_id = Column(BigInteger, ForeignKey('public.patient_appointments.id'), nullable=False)
     patient_hospitalization_id = Column(BigInteger, ForeignKey('public.patient_hospitalizations.id'), nullable=False)
 

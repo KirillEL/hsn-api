@@ -13,10 +13,10 @@ class Analise(BaseModel):
     count_index: int
     patient_hospitalization_id: int
 
+    is_deleted: bool
+
     created_at: datetime
     created_by: UserAuthor
-
-    is_deleted: bool
 
     updated_at: Optional[datetime] = None
     updated_by: Optional[UserAuthor] = None

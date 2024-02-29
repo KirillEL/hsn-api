@@ -1,5 +1,9 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
+
+from core.user import UserAuthor
 
 
 class ClinicalAssesment(BaseModel):
@@ -35,3 +39,12 @@ class ClinicalAssesment(BaseModel):
     patient_appointment_id: int
     patient_hospitalization_id: int
     patient_id: int
+
+    created_at: datetime
+    created_by: UserAuthor
+
+    updated_at: Optional[datetime] = None
+    updated_by: Optional[UserAuthor] = None
+
+    deleted_at: Optional[datetime] = None
+    deleted_by: Optional[UserAuthor] = None

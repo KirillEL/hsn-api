@@ -22,7 +22,7 @@ async def admin_medicine_prescription_create(request: Request, dto: CreateMedici
     query = (
         insert(MedicinesPrescriptionDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(MedicinesPrescriptionDBModel)

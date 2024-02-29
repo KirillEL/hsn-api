@@ -50,7 +50,7 @@ async def admin_clinical_assesment_create(request: Request, dto: CreateClinicalA
     query = (
         insert(ClinicalAssesmentDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(ClinicalAssesmentDBModel)

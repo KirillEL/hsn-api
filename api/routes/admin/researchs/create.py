@@ -27,7 +27,7 @@ async def admin_research_create(request: Request, dto: ResearchCreateDto):
     query = (
         insert(ResearchDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(ResearchDBModel)

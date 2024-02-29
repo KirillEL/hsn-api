@@ -26,7 +26,7 @@ async def admin_medicine_group_create(request: Request, dto: MedicinesGroupCreat
     query = (
         insert(MedicinesGroupDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(MedicinesGroupDBModel)

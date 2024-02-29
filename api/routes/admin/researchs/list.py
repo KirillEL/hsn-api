@@ -8,7 +8,7 @@ from core.hsn.research import Research
 
 @admin_researchs_router.get(
     "/researchs",
-    response_model=Research,
+    response_model=list[Research],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()
@@ -25,6 +25,6 @@ async def admin_researchs_list(limit: int = None, offset: int = None, pattern: s
         query = query.offset(offset)
 
     cursor = await db_session.execute(query)
-    researchs = cursor.scalars().all()
+    researchs = cursor.unique().scalars().all()
 
     return [Research.model_validate(r) for r in researchs]

@@ -25,7 +25,7 @@ async def admin_diagnose_catalog_create(request: Request, dto: DiagnoseCatalogCr
     query = (
         insert(DiagnosesCatalogDBModel)
         .values(
-            **dto,
+            **dto.dict(),
             author_id=request.user.id
         )
         .returning(DiagnosesCatalogDBModel)
