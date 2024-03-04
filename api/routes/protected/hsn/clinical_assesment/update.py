@@ -1,6 +1,5 @@
 from typing import Optional
 from fastapi import Request
-from shared.db.models.clinical_assesment import DistanceWalking
 from .router import clinical_assesment_router
 from api.exceptions import ExceptionResponseSchema
 from core.hsn.clinical_assesment import ClinicalAssesment, HsnClinicalAssesmentUpdateContext, HsnClinicalAssesmentCreateContext
@@ -10,7 +9,7 @@ from pydantic import BaseModel, Field
 
 class UpdateClinicalAssesmentRequest(BaseModel):
     has_dyspnea: Optional[bool] = Field(False, description="")
-    distance_walking_6_minutes: str = Field(DistanceWalking.LOW.name, description="")
+    distance_walking_6_minutes: str = Field("", description="")
     has_orthopnea: Optional[bool] = Field(False, description="")
     has_night_dyspnea: Optional[bool] = Field(False, description="")
     has_decreased_exercise_tolerance: Optional[bool] = Field(False, description="")

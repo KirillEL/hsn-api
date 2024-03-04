@@ -40,9 +40,9 @@ services:
       context: hsn_admin/
       dockerfile: ../.docker/admin/Dockerfile
     container_name: hsn_admin
-    hostname: hsn_admin
+    hostname: hsn_api
     ports:
-      - "5173:5173"
+      - "5174:5173"
     networks:
       - backend
     depends_on:

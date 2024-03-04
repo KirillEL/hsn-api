@@ -3,15 +3,9 @@ from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
 from .BASE import BaseDBModel
-from enum import Enum
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
 
-
-class DistanceWalking(Enum):
-    LOW = "<200"
-    LOW_MEDIUM = "200-350"
-    MEDIUM = "350-500"
-    HIGH = ">500"
+distance_walkings = ('<200', '200-350', '350-500', '>500')
 
 
 class ClinicalAssesmentDBModel(BaseDBModel):
@@ -21,7 +15,7 @@ class ClinicalAssesmentDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     has_dyspnea = Column(Boolean, nullable=False, server_default=text("false"))
-    distance_walking_6_minutes = Column(PGEnum(DistanceWalking, name='distance_walking_type', create_type=True),
+    distance_walking_6_minutes = Column(PGEnum(*distance_walkings, name='distance_walking_type', create_type=True),
                                         nullable=False)
     has_orthopnea = Column(Boolean, nullable=False, server_default=text("false"))
     has_night_dyspnea = Column(Boolean, nullable=False, server_default=text("false"))

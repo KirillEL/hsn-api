@@ -5,13 +5,11 @@ from typing import Optional
 from core.hsn.clinical_assesment import ClinicalAssesment, hsn_clinical_assesment_create, \
     HsnClinicalAssesmentCreateContext
 from api.exceptions import ExceptionResponseSchema
-from shared.db.models.clinical_assesment import DistanceWalking
-from enum import Enum
 
 
 class CreateClinicalAssesmentRequest(BaseModel):
     has_dyspnea: Optional[bool] = Field(False, description="")
-    distance_walking_6_minutes: str = Field(DistanceWalking.LOW.name, description="")
+    distance_walking_6_minutes: str = Field("", description="")
     has_orthopnea: Optional[bool] = Field(False, description="")
     has_night_dyspnea: Optional[bool] = Field(False, description="")
     has_decreased_exercise_tolerance: Optional[bool] = Field(False, description="")
@@ -35,6 +33,7 @@ class CreateClinicalAssesmentRequest(BaseModel):
     has_hepatomegaly: Optional[bool] = Field(False, description="")
     has_ascites: Optional[bool] = Field(False, description="")
     has_cachexia: Optional[bool] = Field(False, description="")
+
 
     patient_appointment_id: int = Field(None, gt=0)
     patient_hospitalization_id: int = Field(None, gt=0)

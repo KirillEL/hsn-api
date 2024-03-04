@@ -11,7 +11,7 @@ class ClinicalAssesment(BaseModel):
 
     id: int
     has_dyspnea: Optional[bool] = False
-    distance_walking_6_minutes: Optional[bool] = False
+    distance_walking_6_minutes: Optional[str] = False
     has_orthopnea: Optional[bool] = False
     has_night_dyspnea: Optional[bool] = False
     has_decreased_exercise_tolerance: Optional[bool] = False
