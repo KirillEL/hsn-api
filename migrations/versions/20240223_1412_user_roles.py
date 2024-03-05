@@ -24,9 +24,9 @@ def upgrade() -> None:
     user_id INT NOT NULL,
     role_id INT NOT NULL,
     constraint user_fk FOREIGN KEY (user_id)
-    REFERENCES public.users(id),
+    REFERENCES public.users(id) ON DELETE CASCADE,
     constraint role_fk FOREIGN KEY (role_id)
-    REFERENCES public.roles(id),
+    REFERENCES public.roles(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
     );
     ''')

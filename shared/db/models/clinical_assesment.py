@@ -41,9 +41,9 @@ class ClinicalAssesmentDBModel(BaseDBModel):
     has_ascites = Column(Boolean, nullable=False, server_default=text("false"))
     has_cachexia = Column(Boolean, nullable=False, server_default=text("false"))
 
-    patient_appointment_id = Column(BigInteger, ForeignKey("public.patient_appointments.id"), nullable=False)
-    patient_hospitalization_id = Column(BigInteger, ForeignKey("public.patient_hospitalizations.id"), nullable=False)
-    patient_id = Column(BigInteger, ForeignKey("public.patients.id"), nullable=False)
+    patient_appointment_id = Column(BigInteger, ForeignKey("public.patient_appointments.id", ondelete="CASCADE"), nullable=False)
+    patient_hospitalization_id = Column(BigInteger, ForeignKey("public.patient_hospitalizations.id", ondelete="CASCADE"), nullable=False)
+    patient_id = Column(BigInteger, ForeignKey("public.patients.id", ondelete="CASCADE"), nullable=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

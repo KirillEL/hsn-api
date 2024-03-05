@@ -23,11 +23,11 @@ def upgrade() -> None:
     create table public.researchs (
     id serial constraint research_pk primary key,
     analise_id integer not null constraint research_analise_fk
-        references public.analises,
+        references public.analises ON DELETE CASCADE,
     patient_appointment_id integer not null constraint research_patient_appointment_fk
-        references public.patient_appointments,
+        references public.patient_appointments ON DELETE CASCADE,
     patient_hospitalization_id integer not null constraint research_patient_hospitalization_fk
-        references public.patient_hospitalizations,
+        references public.patient_hospitalizations ON DELETE CASCADE,
         
     date timestamp with time zone not null, 
     is_deleted boolean not null default false,

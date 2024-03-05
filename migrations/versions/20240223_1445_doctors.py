@@ -28,8 +28,8 @@ def upgrade() -> None:
     phone_number BIGINT not null unique,
     user_id integer not null unique constraint doctors_user_fk
         references public.users,
-    cabinet_id integer not null constraint doctors_cabinet_fk
-        references public.cabinets,
+    cabinet_id integer constraint doctors_cabinet_fk
+        references public.cabinets ON DELETE SET NULL,
     is_glav boolean default false not null,
     
     is_deleted boolean not null default false,

@@ -23,7 +23,7 @@ def upgrade() -> None:
     create table public.cabinets (
     id serial constraint cabinets_pk primary key,
     number varchar(255) NOT NULL,
-    med_id integer not null constraint cabinets_med_fk references public.med_organizations,
+    med_id integer constraint cabinets_med_fk references public.med_organizations ON DELETE SET NULL,
     
     is_deleted boolean not null default false,
     

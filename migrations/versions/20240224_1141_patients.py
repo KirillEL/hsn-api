@@ -25,7 +25,7 @@ def upgrade() -> None:
     contragent_id integer not null unique constraint patients_contragent_fk
         references public.contragents,
     cabinet_id integer constraint patients_cabinet_fk
-        references public.cabinets,
+        references public.cabinets ON DELETE SET NULL,
     name varchar(255) not null,
     last_name varchar(255) not null,
     patronymic varchar(255),
