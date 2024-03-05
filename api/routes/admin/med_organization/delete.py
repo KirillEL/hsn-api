@@ -7,7 +7,7 @@ from sqlalchemy import update
 
 
 @admin_med_org_router.delete(
-    "/admin/med_organizations/{med_org_id}",
+    "/med_organizations/{med_org_id}",
     response_model=bool,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
