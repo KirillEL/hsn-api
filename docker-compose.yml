@@ -1,18 +1,28 @@
 version: '3.7'
 
 services:
-  pg_admin:
-    container_name: "pg_admin"
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pg-data:/var/lib/pgadmin
+#  pg_admin:
+#    container_name: "pg_admin"
+#    image: dpage/pgadmin4
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+#      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+#      PGADMIN_CONFIG_SERVER_MODE: 'False'
+#    volumes:
+#      - pg-data:/var/lib/pgadmin
+#    ports:
+#      - "${PGADMIN_PORT:-5050}:80"
+#    restart: unless-stopped
+#    networks:
+#      - backend
+  hsn_nginx:
+    build:
+      context: .nginx/
+      dockerfile: Dockerfile
+    container_name: hsn_nginx
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    restart: unless-stopped
+      - "1111:1111"
+    restart: on-failure
     networks:
       - backend
 
@@ -23,8 +33,6 @@ services:
     container_name: hsn_api
     hostname: hsn_api
     command: uvicorn api.api_server:app --host 0.0.0.0 --port 9999 --reload
-    ports:
-      - '9999:9999'
     tty: true
     restart: always
     environment:
@@ -42,8 +50,6 @@ services:
       dockerfile: ../.docker/admin/Dockerfile
     container_name: hsn_admin
     hostname: hsn_api
-    ports:
-      - "5174:5173"
     networks:
       - backend
     depends_on:
