@@ -32,22 +32,13 @@ def upgrade() -> None:
     gender gender_type,
     height integer not null,
     age integer not null,
-    main_diagnose text,
-    disability disability_type not null default 'no',
     
     date_setup_diagnose timestamp with time zone not null,
-    school_hsn_date timestamp with time zone,
-    
     lgota_drugs lgota_drugs_type not null default 'no',
-    classification_func_classes classification_func_classes_type not null default 'fk1',
     
     note text,
     
-    has_chronic_heart boolean not null default false,
-    has_stenocardia boolean not null default false,
-    has_arteria_hypertension boolean not null default false,
     
-    arteria_hypertension_age integer,
     
     is_deleted boolean not null default false,
     

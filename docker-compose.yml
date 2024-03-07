@@ -1,20 +1,6 @@
 version: '3.7'
 
 services:
-#  pg_admin:
-#    container_name: "pg_admin"
-#    image: dpage/pgadmin4
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-#      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-#      PGADMIN_CONFIG_SERVER_MODE: 'False'
-#    volumes:
-#      - pg-data:/var/lib/pgadmin
-#    ports:
-#      - "${PGADMIN_PORT:-5050}:80"
-#    restart: unless-stopped
-#    networks:
-#      - backend
   hsn_nginx:
     build:
       context: .nginx/
@@ -24,7 +10,7 @@ services:
       - "1111:1111"
     restart: on-failure
     networks:
-      - backend
+      - hsn_network
 
   hsn_api:
     build:
@@ -35,10 +21,12 @@ services:
     command: uvicorn api.api_server:app --host 0.0.0.0 --port 9999 --reload
     tty: true
     restart: always
+    ports:
+      - "9999:9999"
     environment:
       DEBUG: '${DEBUG}'
     networks:
-      - backend
+      - hsn_network
     depends_on:
       - database
     volumes:
@@ -51,7 +39,7 @@ services:
     container_name: hsn_admin
     hostname: hsn_api
     networks:
-      - backend
+      - hsn_network
     depends_on:
       - hsn_api
     restart: always
@@ -78,11 +66,11 @@ services:
       timeout: 3s
       retries: 40
     networks:
-      - backend
+      - hsn_network
 
 
 networks:
-  backend:
+  hsn_network:
     driver: 'bridge'
 
 volumes:

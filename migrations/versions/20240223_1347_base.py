@@ -70,7 +70,15 @@ def upgrade() -> None:
     ''')
 
     op.execute('''
+    CREATE TYPE classification_adjacent_release_type AS ENUM ('<40', '40-49', '>50');
+    ''')
+
+    op.execute('''
     CREATE TYPE distance_walking_type AS ENUM ('<200', '200-350', '350-500', '>500');
+    ''')
+
+    op.execute('''
+    CREATE TYPE classification_nc_stage_type AS ENUM ('IA', 'IB', 'IIA', 'IIB', 'IIIA', 'IIIB');
     ''')
 
 

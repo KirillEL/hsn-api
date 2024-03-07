@@ -44,21 +44,13 @@ class PatientDBModel(BaseDBModel):
     patronymic = Column(String(255))
     gender = Column(PGEnum(*genders, name="gender_type", create_type=False), nullable=False)
     height = Column(Integer, nullable=False)
-    main_diagnose = Column(Text)
     age = Column(Integer)
-    disability = Column(PGEnum(*disabilities, name="disability_type", create_type=False), nullable=False)
 
-    date_setup_diagnose = Column(DateTime)
-    school_hsn_date = Column(DateTime)
-
-    lgota_drugs = Column(PGEnum(*lgotadrugs, name="lgota_drugs_type"), nullable=False)
+    date_setup_diagnose = Column(DateTime(timezone=True), nullable=False)
+    lgota_drugs = Column(PGEnum(*lgotadrugs, name="lgota_drugs_type", create_type=False), nullable=False)
+    last_hospitalization_id = Column(Integer, ForeignKey('public.patient_hospitalizations.id'))
 
     note = Column(Text, nullable=True)
-    has_chronic_heart = Column(Boolean, nullable=False, server_default=text("false"))
-    classification_func_classes = Column(PGEnum(*classifications, name="classification_func_classes_type", create_type=False), nullable=False)
-    has_stenocardia = Column(Boolean, nullable=False, server_default=text("false"))
-    has_arteria_hypertension = Column(Boolean, nullable=False, server_default=text("false"))
-    arteria_hypertension_age = Column(Integer, nullable=True)
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
 
