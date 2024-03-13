@@ -11,6 +11,7 @@ class Doctor(BaseModel):
     name: str
     last_name: str
     patronymic: Optional[str] = None
+    phone_number: int
 
     user_id: int
     is_glav: bool
@@ -40,4 +41,6 @@ class UserAndDoctor(BaseModel):
     login: str
     is_deleted: Optional[bool] = False
     roles: list[Role]
-    doctor: Doctor | None
+    doctor: Doctor
+    
+    

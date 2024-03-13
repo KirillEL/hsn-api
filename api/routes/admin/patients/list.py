@@ -5,6 +5,7 @@ from core.hsn.patient import Patient
 from api.exceptions import ExceptionResponseSchema
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
+from utils.hash_helper import contragent_hasher
 
 
 @admin_patient_router.get(
@@ -31,6 +32,15 @@ async def admin_patients_list(limit: int = None, offset: int = None, pattern:str
 
     cursor = await db_session.execute(query)
     patients = cursor.scalars().all()
+    for patient in patients:
+        patient.contragent.phone_number = contragent_hasher.decrypt(patient.contragent.phone_number)
+        patient.contragent.snils = contragent_hasher.decrypt(patient.contragent.snils)
+        patient.contragent.address = contragent_hasher.decrypt(patient.contragent.address)
+        patient.contragent.mis_number = contragent_hasher.decrypt(patient.contragent.mis_number)
+        patient.contragent.date_birth = contragent_hasher.decrypt(patient.contragent.date_birth)
+        patient.contragent.relative_phone_number = contragent_hasher.decrypt(patient.contragent.relative_phone_number)
+        patient.contragent.parent = contragent_hasher.decrypt(patient.contragent.parent)
+        patient.contragent.date_dead = contragent_hasher.decrypt(patient.contragent.date_dead)
 
     return [Patient.model_validate(patient) for patient in patients]
 

@@ -71,16 +71,22 @@ class CreatePatientAppointmentDto(BaseModel):
 )
 @SessionContext()
 async def admin_patient_appointment_create(request: Request, dto: CreatePatientAppointmentDto):
-    query = (
-        insert(PatientAppointmentsDBModel)
-        .values(
-            **dto.dict(),
-            author_id=request.user.id
+    try:
+        query = (
+            insert(PatientAppointmentsDBModel)
+            .values(
+                **dto.dict(),
+                author_id=request.user.id
+            )
+            .returning(PatientAppointmentsDBModel)
         )
-        .returning(PatientAppointmentsDBModel)
-    )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
-    new_patient_appointment = cursor.scalars().first()
+        cursor = await db_session.execute(query)
 
-    return PatientAppointment.model_validate(new_patient_appointment)
+        new_patient_appointment = cursor.scalars().first()
+
+        validated_patient_appointment = PatientAppointment.model_validate(new_patient_appointment)
+        await db_session.commit()
+        return validated_patient_appointment
+    except Exception as e:
+        await db_session.rollback()
+        raise e

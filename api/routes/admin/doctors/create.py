@@ -4,9 +4,9 @@ from sqlalchemy import select, insert
 from .router import admin_doctor_router
 from shared.db.models.doctor import DoctorDBModel
 from core.hsn.doctor import Doctor
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, ValidationException
 from shared.db.db_session import db_session, SessionContext
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from fastapi import Request
 
 class CreateDoctorDto(BaseModel):
@@ -27,16 +27,23 @@ class CreateDoctorDto(BaseModel):
 )
 @SessionContext()
 async def admin_doctor_create(request: Request, dto: CreateDoctorDto):
-    query = (
-        insert(DoctorDBModel)
-        .values(
-            **dto.dict(),
-            author_id=request.user.id
+    try:
+        query = (
+            insert(DoctorDBModel)
+            .values(
+                **dto.dict(),
+                author_id=request.user.id
+            )
+            .returning(DoctorDBModel)
         )
-        .returning(DoctorDBModel)
-    )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
-    new_doctor = cursor.unique().scalars().first()
+        cursor = await db_session.execute(query)
+        new_doctor = cursor.unique().scalars().first()
 
-    return Doctor.model_validate(new_doctor)
+        validated_doctor = Doctor.model_validate(new_doctor)
+        await db_session.commit()
+        return validated_doctor
+    except ValidationError as ve:
+        raise ValidationException(message=str(ve))
+    except Exception as e:
+        await db_session.rollback()
+        raise e

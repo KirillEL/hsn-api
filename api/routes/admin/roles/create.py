@@ -3,8 +3,8 @@ from sqlalchemy import insert
 from shared.db.models.role import RoleDBModel
 from core.user.model import Role
 from shared.db.db_session import db_session, SessionContext
-from api.exceptions import ExceptionResponseSchema
-from pydantic import BaseModel, Field
+from api.exceptions import ExceptionResponseSchema, ValidationException, InternalServerException
+from pydantic import BaseModel, Field, ValidationError
 
 
 class CreateRoleDto(BaseModel):
@@ -28,6 +28,9 @@ async def admin_role_create(dto: CreateRoleDto):
         await db_session.commit()
         new_role = cursor.scalars().first()
         return Role.model_validate(new_role)
+    except ValidationError as ve:
+        raise ValidationException(message=str(ve))
     except Exception as e:
         await db_session.rollback()
-        raise e
+        raise InternalServerException(message=str(e))
+

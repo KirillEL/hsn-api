@@ -5,9 +5,9 @@ from utils import PasswordHasher
 from .router import admin_users_router
 from shared.db.db_session import SessionContext, db_session
 from core.user import User, UserFlat
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, ValidationException, InternalServerException
 from fastapi import Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy import insert, select
 from sqlalchemy.orm import joinedload
 from api.exceptions import NotFoundException
@@ -65,13 +65,17 @@ async def admin_user_create(dto: CreateUserDto):
         query_get_new_user = (
             select(UserDBModel)
             .options(joinedload(UserDBModel.roles))
-            .where(UserDBModel.id ==new_user_id)
+            .where(UserDBModel.id == new_user_id)
         )
         cursor = await db_session.execute(query_get_new_user)
-        await db_session.commit()
         new_user = cursor.scalars().first()
 
-        return UserFlat.model_validate(new_user)
+        validated_user = UserFlat.model_validate(new_user)
+        await db_session.commit()
+        return validated_user
+
+    except ValidationError as ve:
+        raise ValidationException(message=str(ve))
     except Exception as e:
         await db_session.rollback()
-        raise e
+        raise InternalServerException

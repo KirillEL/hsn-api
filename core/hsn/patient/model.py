@@ -8,12 +8,12 @@ from datetime import date
 class Contragent(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    phone_number: str  # int
+    phone_number: str | int # int
     snils: str
     address: str
-    mis_number: str  # int
+    mis_number: str | int  # int
     date_birth: str  # date
-    relative_phone_number: str  # int
+    relative_phone_number: str | int  # int
     parent: Optional[str] = None
     date_dead: Optional[str] = None  # date
 
