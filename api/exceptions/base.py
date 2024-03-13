@@ -44,3 +44,13 @@ class BadRequestException(CustomException):
     code = HTTPStatus.BAD_REQUEST
     error_code = HTTPStatus.BAD_REQUEST
     message = HTTPStatus.BAD_REQUEST.description
+
+class ValidationException(CustomException):
+    code = HTTPStatus.UNPROCESSABLE_ENTITY
+    error_code = HTTPStatus.UNPROCESSABLE_ENTITY
+    message = HTTPStatus.UNPROCESSABLE_ENTITY.description
+
+class InternalServerException(CustomException):
+    code = HTTPStatus.INTERNAL_SERVER_ERROR
+    error_code = HTTPStatus.INTERNAL_SERVER_ERROR
+    message = HTTPStatus.INTERNAL_SERVER_ERROR.description

@@ -1,5 +1,6 @@
 from .base import ExceptionResponseSchema, UserNotFoundException, NotFoundException, CustomException, UnauthorizedException
 from .base import UnauthorizedAdminException, BadRequestException
+from .base import InternalServerException, ValidationException
 
 __all__ = [
     'ExceptionResponseSchema',
@@ -8,5 +9,7 @@ __all__ = [
     'CustomException',
     'UnauthorizedException',
     'UnauthorizedAdminException',
-    'BadRequestException'
+    'BadRequestException',
+    'InternalServerException',
+    'ValidationException'
 ]

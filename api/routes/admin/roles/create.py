@@ -18,12 +18,16 @@ class CreateRoleDto(BaseModel):
 )
 @SessionContext()
 async def admin_role_create(dto: CreateRoleDto):
-    query = (
-        insert(RoleDBModel)
-        .values(**dto.dict())
-        .returning(RoleDBModel)
-    )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
-    new_role = cursor.scalars().first()
-    return Role.model_validate(new_role)
+    try:
+        query = (
+            insert(RoleDBModel)
+            .values(**dto.dict())
+            .returning(RoleDBModel)
+        )
+        cursor = await db_session.execute(query)
+        await db_session.commit()
+        new_role = cursor.scalars().first()
+        return Role.model_validate(new_role)
+    except Exception as e:
+        await db_session.rollback()
+        raise e

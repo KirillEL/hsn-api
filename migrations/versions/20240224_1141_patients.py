@@ -33,12 +33,10 @@ def upgrade() -> None:
     height integer not null,
     age integer not null,
     
-    date_setup_diagnose timestamp with time zone not null,
+    date_setup_diagnose timestamp without time zone not null,
     lgota_drugs lgota_drugs_type not null default 'no',
     
     note text,
-    
-    
     
     is_deleted boolean not null default false,
     

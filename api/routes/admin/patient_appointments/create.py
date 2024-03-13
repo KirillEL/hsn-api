@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import date as tdate
 from typing import Optional
 
 from sqlalchemy import select, insert
@@ -14,13 +15,29 @@ from pydantic import BaseModel, Field
 class CreatePatientAppointmentDto(BaseModel):
     patient_id: int = Field(..., gt=0)
     doctor_id: int = Field(..., gt=0)
-    cabinet_id: int = Field(..., gt=0)
-    date: datetime
-    date_next: Optional[datetime] = Field(None)
+    cabinet_id: Optional[int] = Field(..., gt=0)
+    date: datetime = Field(None)
+    date_next: Optional[tdate]
+
+    imt: float = Field(None)
+
     weight: float = Field(..., gt=0)
     height: float = Field(..., gt=0)
+
+    disability: str = Field(None)
+    school_hsn_date: Optional[tdate]
+    classification_func_classes: Optional[str] = Field(None)
+    classification_adjacent_release: Optional[str] = Field(None)
+    classification_nc_stage: Optional[str] = Field(None)
+
+    has_stenocardia_napryzenya: bool = Field(False)
+    has_myocardial_infraction: bool = Field(False)
+    has_arteria_hypertension: bool = Field(False)
+
+    arteria_hypertension_age: Optional[int] = Field(None, gt=0)
+
     fv_lg: int = Field(..., gt=0)
-    main_diagnose: str
+    main_diagnose: str = Field(None)
     sistol_ad: float = Field(..., gt=0)
     diastal_ad: float = Field(..., gt=0)
     hss: int = Field(..., gt=0)
@@ -31,7 +48,20 @@ class CreatePatientAppointmentDto(BaseModel):
     has_weakness: bool = Field(False)
     has_orthopnea: bool = Field(False)
     has_heartbeat: bool = Field(True)
-    note: Optional[str] = Field(None)
+
+    note_complaints: Optional[str] = Field(None, max_length=1000)
+    note_clinical: Optional[str] = Field(None, max_length=1000)
+    note_ekg: Optional[str] = Field(None, max_length=1000)
+
+    date_ekg: Optional[tdate]
+    date_echo_ekg: Optional[tdate]
+    fraction_out: float = Field(None, gt=0)
+    sdla: float = Field(None, gt=0)
+
+    nt_pro_bnp: float = Field(None)
+    date_nt_pro_bnp: Optional[tdate]
+    microalbumuria: float = Field(None, gt=0)
+    date_microalbumuria: Optional[tdate] = Field(None)
 
 
 @admin_patient_appointment_router.post(
@@ -52,6 +82,5 @@ async def admin_patient_appointment_create(request: Request, dto: CreatePatientA
     cursor = await db_session.execute(query)
     await db_session.commit()
     new_patient_appointment = cursor.scalars().first()
-
 
     return PatientAppointment.model_validate(new_patient_appointment)

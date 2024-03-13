@@ -5,7 +5,6 @@ from datetime import date
 from fastapi import Request, Response
 from core.hsn.patient import Patient, HsnPatientCreateContext, hsn_patient_create
 from api.exceptions import ExceptionResponseSchema
-from shared.db.models.patient import LgotaDrugs, ClassificationFuncClasses, Disability
 
 
 class CreatePatientRequest(BaseModel):

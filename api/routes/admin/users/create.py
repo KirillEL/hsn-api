@@ -19,7 +19,7 @@ class CreateUserDto(BaseModel):
     role: str = Field(None)
 
 
-async def check_role_exists(role: str) -> None:
+async def check_role_exists(role: str) -> None | int:
     query = (
         select(RoleDBModel)
         .where(RoleDBModel.name == role)
@@ -39,37 +39,39 @@ async def check_role_exists(role: str) -> None:
 )
 @SessionContext()
 async def admin_user_create(dto: CreateUserDto):
-    role_id = await check_role_exists(dto.role)
-    query = (
-        insert(UserDBModel)
-        .values(
-            login=dto.login,
-            password=PasswordHasher.hash_password(dto.password)
+    try:
+        role_id = await check_role_exists(dto.role)
+        query = (
+            insert(UserDBModel)
+            .values(
+                login=dto.login,
+                password=PasswordHasher.hash_password(dto.password)
+            )
+            .returning(UserDBModel.id)
         )
-        .returning(UserDBModel.id)
-    )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
-    new_user_id = cursor.scalar()
+        cursor = await db_session.execute(query)
+        new_user_id = cursor.scalar()
 
-    query_add_user_role = (
-        insert(UserRoleDBModel)
-        .values(
-            user_id=new_user_id,
-            role_id=role_id
+        query_add_user_role = (
+            insert(UserRoleDBModel)
+            .values(
+                user_id=new_user_id,
+                role_id=role_id
+            )
+            .returning(None)
         )
-        .returning(None)
-    )
-    await db_session.execute(query_add_user_role)
-    await db_session.commit()
+        await db_session.execute(query_add_user_role)
 
-    query_get_new_user = (
-        select(UserDBModel)
-        .options(joinedload(UserDBModel.roles))
-        .where(UserDBModel.id ==new_user_id)
-    )
-    cursor = await db_session.execute(query_get_new_user)
-    await db_session.commit()
-    new_user = cursor.scalars().first()
+        query_get_new_user = (
+            select(UserDBModel)
+            .options(joinedload(UserDBModel.roles))
+            .where(UserDBModel.id ==new_user_id)
+        )
+        cursor = await db_session.execute(query_get_new_user)
+        await db_session.commit()
+        new_user = cursor.scalars().first()
 
-    return UserFlat.model_validate(new_user)
+        return UserFlat.model_validate(new_user)
+    except Exception as e:
+        await db_session.rollback()
+        raise e

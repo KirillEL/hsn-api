@@ -27,20 +27,13 @@ class Patient(BaseModel):
     name: str
     last_name: str
     patronymic: Optional[str] = None
+    cabinet_id: Optional[int] = None
     age: int
     gender: str
     height: int
-    main_diagnose: Optional[str] = None
-    disability: str
     date_setup_diagnose: Optional[datetime] = None
-    school_hsn_date: Optional[datetime] = None
     lgota_drugs: str
-    note: str
-    has_chronic_heart: bool
-    classification_func_classes: str
-    has_stenocardia: bool
-    has_arteria_hypertension: bool
-    arteria_hypertension_age: int
+    note: Optional[str] = None
 
     contragent: Contragent
 

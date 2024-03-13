@@ -1,37 +1,11 @@
 from sqlalchemy import Column, String, BigInteger, Date, Text, ForeignKey, Boolean, Enum, text, DateTime, Integer
 from sqlalchemy.orm import relationship, foreign
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
-
-
 from . import UserDBModel
 from .BASE import BaseDBModel
-from enum import Enum
-
-
-class Disability(Enum):
-    NO = "no"
-    FIRST = "first"
-    SECOND = "second"
-    THIRD = "third"
-
-
-class LgotaDrugs(Enum):
-    no = "no"
-    yes = "yes"
-    money = "money"
-
-
-class ClassificationFuncClasses(Enum):
-    FK1 = "fk1"
-    FK2 = "fk2"
-    FK3 = "fk3"
-    FK4 = "fk4"
-
 
 genders = ('male', 'female')
-disabilities = ('no', 'first', 'second', 'third')
 lgotadrugs = ('no', 'yes', 'money')
-classifications = ('fk1', 'fk2', 'fk3', 'fk4')
 
 
 class PatientDBModel(BaseDBModel):
@@ -46,9 +20,8 @@ class PatientDBModel(BaseDBModel):
     height = Column(Integer, nullable=False)
     age = Column(Integer)
 
-    date_setup_diagnose = Column(DateTime(timezone=True), nullable=False)
+    date_setup_diagnose = Column(DateTime, nullable=False)
     lgota_drugs = Column(PGEnum(*lgotadrugs, name="lgota_drugs_type", create_type=False), nullable=False)
-    last_hospitalization_id = Column(Integer, ForeignKey('public.patient_hospitalizations.id'))
 
     note = Column(Text, nullable=True)
 
