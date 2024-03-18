@@ -17,7 +17,6 @@ async def hsn_create_admin():
     )
     result = await db_session.execute(query_check_admin_role)
     admin_count = result.scalar()
-
     if admin_count == 0:
         role = RoleDBModel(name='admin')
         db_session.add(role)
@@ -53,4 +52,4 @@ async def hsn_create_admin():
         await db_session.execute(query_add_user_role)
         await db_session.commit()
 
-    logger.debug("Admin setup complete...")
+        logger.debug("Admin setup complete...")

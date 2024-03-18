@@ -2,7 +2,7 @@ import typing
 
 from starlette.requests import HTTPConnection
 
-from core.user import UserFlat
+from core.user import UserFlat, hsn_user_get_me
 from core.user.model import User
 from core.user.queries.by_id import user_query_by_id
 from infra import config
@@ -43,7 +43,7 @@ class AuthBackend(AuthenticationBackend):
         except jwt.exceptions.PyJWTError:
             return False, curr_user
 
-        curr_user = await user_query_by_id(user_id)
+        curr_user = await hsn_user_get_me(user_id)
         return True, curr_user
 
 

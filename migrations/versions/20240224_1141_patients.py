@@ -29,7 +29,7 @@ def upgrade() -> None:
     name varchar(255) not null,
     last_name varchar(255) not null,
     patronymic varchar(255),
-    gender gender_type,
+    gender gender_type not null,
     height integer not null,
     age integer not null,
     

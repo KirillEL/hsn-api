@@ -30,16 +30,19 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     created_by = relationship(UserDBModel,
                               primaryjoin=author_id == foreign(UserDBModel.id),
                               uselist=False,
+                              viewonly=True,
                               lazy='selectin')
 
     editor_id = Column('updated_by', Integer)
     updated_by = relationship(UserDBModel,
                               primaryjoin=editor_id == foreign(UserDBModel.id),
                               uselist=False,
+                              viewonly=True,
                               lazy='selectin')
 
     deleter_id = Column('deleted_by', Integer)
     deleted_by = relationship(UserDBModel,
                               primaryjoin=deleter_id == foreign(UserDBModel.id),
                               uselist=False,
+                              viewonly=True,
                               lazy='selectin')

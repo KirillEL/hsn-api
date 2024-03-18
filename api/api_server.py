@@ -85,8 +85,6 @@ def init_application() -> FastAPI:
         title="HSN",
         description="HSN_API",
         version="1.0.0",
-        #docs_url="/api/docs",
-        #openapi_url="/api/openapi.json",
         middleware=init_middlewares()
     )
 
