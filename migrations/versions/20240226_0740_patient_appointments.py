@@ -50,26 +50,6 @@ def upgrade() -> None:
     hss integer not null,
     mit float,
     
-    has_fatigue boolean not null default false,
-    has_dyspnea boolean not null default false,
-    has_swelling_legs boolean not null default false,
-    has_weakness boolean not null default false,
-    has_orthopnea boolean not null default false,
-    has_heartbeat boolean not null default true,
-    note_complaints text,
-    note_clinical text,
-    note_ekg text,
-    date_ekg timestamp without time zone,
-    date_echo_ekg timestamp without time zone,
-    fraction_out float not null,
-    sdla float not null,
-    
-    nt_pro_bnp float not null,
-    date_nt_pro_bnp timestamp without time zone,
-    microalbumuria float not null,
-    date_microalbumuria timestamp without time zone,
-    
-
     is_deleted boolean not null default false,
     
     created_at   timestamp with time zone default now() not null,

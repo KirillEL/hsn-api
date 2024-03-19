@@ -3,6 +3,13 @@ from sqlalchemy.orm import relationship, foreign
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
 from . import UserDBModel
 from .BASE import BaseDBModel
+from shared.db.models.appointment_complaint import AppointmentComplaintDBModel
+from shared.db.models.appointment_laboratory_test import AppointmentLaboratoryTestDBModel
+from shared.db.models.general_blood_analyse import GeneralBloodAnalyseDBModel
+from shared.db.models.general_urine_analyse import GeneralUrineAnalyseDBModel
+from shared.db.models.hormonal_blood_analyse import HormonalBloodAnalyseDBModel
+from shared.db.models.blood_chemistry import BloodChemistryDBModel
+
 
 disabilities = ('no', 'first', 'second', 'third')
 classifications = ('fk1', 'fk2', 'fk3', 'fk4')
@@ -37,26 +44,24 @@ class PatientAppointmentsDBModel(BaseDBModel):
     diastal_ad = Column(Float, nullable=False)
     hss = Column(Integer, nullable=False)
     mit = Column(Float)
-    has_fatigue = Column(Boolean, nullable=False, server_default=text("false"))
-    has_dyspnea = Column(Boolean, nullable=False, server_default=text("false"))
-    has_swelling_legs = Column(Boolean, nullable=False, server_default=text("false"))
-    has_weakness = Column(Boolean, nullable=False, server_default=text("false"))
-    has_orthopnea = Column(Boolean, nullable=False, server_default=text("false"))
-    has_heartbeat = Column(Boolean, nullable=False, server_default=text("true"))
-    note_сomplaints = Column(Text)
-    note_clinical = Column(Text)
-    note_ekg = Column(Text)
 
-    date_ekg = Column(DateTime)
-    date_echo_ekg = Column(DateTime)
-    fraction_out = Column(Float, nullable=False)
-    sdla = Column(Float, nullable=False)
+    appointment_complaint_id = Column(Integer, ForeignKey('public.appointment_complaints.id'), unique=True)
+    appointment_complaint = relationship(AppointmentComplaintDBModel, uselist=False)
 
-    nt_pro_bnp = Column(Float, nullable=False)
-    date_nt_pro_bnp = Column(DateTime)
-    microalbumuria = Column(Float, nullable=False)
-    date_microalbumuria = Column(DateTime)
+    appointment_laboratory_test_id = Column(Integer, ForeignKey('public.appointment_laboratory_tests.id'),  unique=True)
+    appointment_laboratory_test = relationship(AppointmentLaboratoryTestDBModel, uselist=False)
 
+    appointment_blood_chemistry_id = Column(Integer, ForeignKey('public.blood_chemistries.id'),  unique=True)
+    appointment_blood_chemistry = relationship(BloodChemistryDBModel, uselist=False)
+
+    general_blood_analyse_id = Column(Integer, ForeignKey('public.general_blood_analyses.id'),  unique=True)
+    general_blood_analyse = relationship(GeneralBloodAnalyseDBModel, uselist=False)
+
+    hormonal_blood_analyse_id = Column(Integer, ForeignKey('public.hormonal_blood_analyses.id'), unique=True)
+    hormonal_blood_analyse = relationship(HormonalBloodAnalyseDBModel, uselist=False)
+
+    general_urine_analyse_id = Column(Integer, ForeignKey('public.general_urine_analyses.id'), unique=True)
+    general_urine_analyse = relationship(GeneralUrineAnalyseDBModel, uselist=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

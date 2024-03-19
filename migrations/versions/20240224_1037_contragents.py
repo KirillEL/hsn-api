@@ -27,7 +27,7 @@ def upgrade() -> None:
     snils text not null unique,
     mis_number text not null,
     date_birth text not null,
-    relative_phone_number text not null,
+    relative_phone_number text,
     parent text,
     date_dead text
     );

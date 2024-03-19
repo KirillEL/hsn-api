@@ -17,7 +17,8 @@ class ContragentDBModel(BaseDBModel):
     address = Column(Text, nullable=False)
     mis_number = Column(Text, nullable=False)
     date_birth = Column(Text, nullable=False)
-    relative_phone_number = Column(Text, nullable=False)
+
+    relative_phone_number = Column(Text)
     parent = Column(Text)
     date_dead = Column(Text)
 
