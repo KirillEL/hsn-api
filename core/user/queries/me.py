@@ -17,10 +17,7 @@ async def hsn_user_get_me(user_id: int):
     cursor = await db_session.execute(query)
 
     user = cursor.unique().scalars().first()
-
-    logger.debug(f'user: {user.__dict__}')
-    logger.debug(f'user_roles: {user.roles[0].name}')
-
+    
     model = UserAndDoctor(
         id=user.id,
         login=user.login,

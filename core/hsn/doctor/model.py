@@ -4,6 +4,22 @@ from pydantic import BaseModel, ConfigDict
 from core.user import UserAuthor
 
 
+class DoctorFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    last_name: str
+    patronymic: Optional[str] = None
+    phone_number: int
+
+    user_id: int
+    is_glav: bool
+
+    cabinet_id: Optional[int] = None
+
+    is_deleted: Optional[bool] = False
+
 class Doctor(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -41,6 +57,6 @@ class UserAndDoctor(BaseModel):
     login: str
     is_deleted: Optional[bool] = False
     roles: list[Role]
-    doctor: Doctor
+    doctor: Optional[DoctorFlat] = None
     
     
