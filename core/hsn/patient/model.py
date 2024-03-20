@@ -1,6 +1,9 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
+
+from core.hsn.cabinet import Cabinet
+from core.hsn.cabinet.model import CabinetFlat
 from core.user import UserAuthor
 from datetime import date
 
@@ -36,6 +39,7 @@ class Patient(BaseModel):
     note: Optional[str] = None
 
     contragent: Contragent
+    cabinet: CabinetFlat
 
     is_deleted: bool
 
@@ -47,3 +51,21 @@ class Patient(BaseModel):
 
     deleted_at: Optional[datetime] = None
     deleted_by: Optional[UserAuthor] = None
+
+
+class PatientFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    last_name: str
+    patronymic: Optional[str] = None
+    age: int
+    gender: str
+    height: int
+    date_setup_diagnose: Optional[datetime] = None
+    lgota_drugs: str
+    note: Optional[str] = None
+
+    contragent: Contragent
+    cabinet: CabinetFlat

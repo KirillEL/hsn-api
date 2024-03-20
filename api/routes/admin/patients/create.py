@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date as tdate
 from typing import Optional
 from sqlalchemy.orm import joinedload
 from shared.db.models import ContragentDBModel
@@ -22,7 +22,7 @@ class PatientCreateDto(BaseModel):
     age: int = Field(None, gt=0)
     gender: str = Field("")
     height: int = Field(None, gt=0)
-    date_setup_diagnose: date = Field(...)
+    date_setup_diagnose: tdate = Field(...)
     lgota_drugs: str = Field("")
     note: str = Field(None, max_length=5000)
     cabinet_id: int = Field(None, gt=0)
@@ -32,9 +32,9 @@ class PatientCreateDto(BaseModel):
     address: str = Field(None, max_length=1000)
     mis_number: str = Field(None)
     date_birth: str = Field(...)
-    relative_phone_number: str = Field(...)
-    parent: str = Field(...)
-    date_dead: Optional[str] = Field(None)
+    relative_phone_number: Optional[str] = Field(...)
+    parent: Optional[str] = Field(...)
+    date_dead: Optional[tdate] = Field(None)
 
 
 async def create_contragent_and_return_id(contragent_dto: dict[str, any]) -> int | None:
@@ -47,9 +47,9 @@ async def create_contragent_and_return_id(contragent_dto: dict[str, any]) -> int
                 address=contragent_hasher.encrypt(value=contragent_dto.get('address')),
                 mis_number=contragent_hasher.encrypt(value=contragent_dto.get('mis_number')),
                 date_birth=contragent_hasher.encrypt(value=contragent_dto.get('date_birth')),
-                relative_phone_number=contragent_hasher.encrypt(value=contragent_dto.get('relative_phone_number')),
-                parent=contragent_hasher.encrypt(value=contragent_dto.get('parent')),
-                date_dead=contragent_hasher.encrypt(value=contragent_dto.get('date_dead'))
+                relative_phone_number=contragent_hasher.encrypt(value=contragent_dto.get('relative_phone_number')) if contragent_dto.get('relative_phone_number') is not None else "",
+                parent=contragent_hasher.encrypt(value=contragent_dto.get('parent')) if contragent_dto.get('parent') is not None else "",
+                date_dead=contragent_hasher.encrypt(value=contragent_dto.get('date_dead') if contragent_dto.get('date_dead') is not None else "")
             )
             .returning(ContragentDBModel.id)
         )
