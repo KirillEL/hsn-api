@@ -1,5 +1,6 @@
 from sqlalchemy.orm import joinedload
 
+from core.user.model import UserWithPasswordFlat
 from .router import admin_users_router
 from api.exceptions import ExceptionResponseSchema
 from shared.db.models.user import UserDBModel
@@ -10,7 +11,7 @@ from core.user import User, UserFlat
 
 @admin_users_router.get(
     "/users",
-    response_model=list[UserFlat],
+    response_model=list[UserWithPasswordFlat],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()
@@ -20,7 +21,6 @@ async def admin_users_list(limit: int = None, offset: int = None, pattern: str =
         .options(joinedload(UserDBModel.roles))
         .where(UserDBModel.is_deleted.is_(False))
     )
-
 
     if limit is not None:
         query = query.limit(limit)
@@ -33,4 +33,5 @@ async def admin_users_list(limit: int = None, offset: int = None, pattern: str =
 
     cursor = await db_session.execute(query)
     users = cursor.unique().scalars().all()
-    return [UserFlat.model_validate(user) for user in users]
+
+    return [UserWithPasswordFlat.model_validate(user) for user in users]

@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
-from core.user import UserAuthor
+
+from core.hsn.cabinet.model import CabinetFlat
+from core.user import UserAuthor, User
 
 
 class DoctorFlat(BaseModel):
@@ -19,6 +21,22 @@ class DoctorFlat(BaseModel):
     cabinet_id: Optional[int] = None
 
     is_deleted: Optional[bool] = False
+
+class DoctorWithUserAndCabinetFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    last_name: str
+    patronymic: Optional[str] = None
+    phone_number: int
+
+    user_id: int
+    user: User
+    is_glav: bool
+
+    cabinet_id: Optional[int] = None
+    cabinet: Optional[CabinetFlat] = None
 
 class Doctor(BaseModel):
     model_config = ConfigDict(from_attributes=True)

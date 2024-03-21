@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import Optional
+
+from core.hsn.med_organization import MedOrganization, MedOrganizationFlat
 from core.user.model import UserAuthor
 from pydantic import BaseModel, ConfigDict
 
@@ -29,4 +31,13 @@ class CabinetFlat(BaseModel):
     id: int
     number: str
     med_id: int
+    is_deleted: bool
+
+class CabinetWithMedOrganizationFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    number: str
+    med_id: int
+    med_org: MedOrganizationFlat
     is_deleted: bool

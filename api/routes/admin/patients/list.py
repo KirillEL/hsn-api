@@ -1,3 +1,4 @@
+from core.hsn.patient.model import PatientFlat
 from shared.db.models.patient import PatientDBModel
 from shared.db.db_session import db_session, SessionContext
 from .router import admin_patient_router
@@ -10,14 +11,14 @@ from utils.hash_helper import contragent_hasher
 
 @admin_patient_router.get(
     "/patients",
-    response_model=list[Patient],
+    response_model=list[PatientFlat],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()
-async def admin_patients_list(limit: int = None, offset: int = None, pattern:str = None):
+async def admin_patients_list(limit: int = None, offset: int = None, pattern: str = None):
     query = (
         select(PatientDBModel)
-        .options(joinedload(PatientDBModel.contragent))
+        .options(joinedload(PatientDBModel.contragent), joinedload(PatientDBModel.cabinet))
         .where(PatientDBModel.is_deleted.is_(False))
     )
 
@@ -42,5 +43,4 @@ async def admin_patients_list(limit: int = None, offset: int = None, pattern:str
         patient.contragent.parent = contragent_hasher.decrypt(patient.contragent.parent)
         patient.contragent.date_dead = contragent_hasher.decrypt(patient.contragent.date_dead)
 
-    return [Patient.model_validate(patient) for patient in patients]
-
+    return [PatientFlat.model_validate(patient) for patient in patients]

@@ -1,3 +1,6 @@
+from sqlalchemy.orm import joinedload
+
+from core.hsn.cabinet.model import CabinetWithMedOrganizationFlat
 from .router import admin_cabinet_router
 from shared.db.db_session import db_session, SessionContext
 from sqlalchemy import select
@@ -8,13 +11,14 @@ from shared.db.models.cabinet import CabinetDBModel
 
 @admin_cabinet_router.get(
     "/cabinets",
-    response_model=list[Cabinet],
+    response_model=list[CabinetWithMedOrganizationFlat],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()
 async def admin_cabinets_list(limit: int = None, offset: int = None, pattern: str = None):
     query = (
         select(CabinetDBModel)
+        .options(joinedload(CabinetDBModel.med_org))
         .where(CabinetDBModel.is_deleted.is_(False))
     )
 
@@ -30,4 +34,4 @@ async def admin_cabinets_list(limit: int = None, offset: int = None, pattern: st
     cursor = await db_session.execute(query)
     cabinets = cursor.scalars().all()
 
-    return [Cabinet.model_validate(cabinet) for cabinet in cabinets]
+    return [CabinetWithMedOrganizationFlat.model_validate(cabinet) for cabinet in cabinets]

@@ -16,7 +16,7 @@ class Contragent(BaseModel):
     address: str
     mis_number: str | int  # int
     date_birth: str  # date
-    relative_phone_number: str | int  # int
+    relative_phone_number: Optional[str | int] = None  # int
     parent: Optional[str] = None
     date_dead: Optional[str] = None  # date
 
@@ -39,7 +39,7 @@ class Patient(BaseModel):
     note: Optional[str] = None
 
     contragent: Contragent
-    cabinet: CabinetFlat
+    cabinet: Optional[CabinetFlat] = None
 
     is_deleted: bool
 
@@ -53,7 +53,7 @@ class Patient(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
-class PatientFlat(BaseModel):
+class   PatientFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -68,4 +68,4 @@ class PatientFlat(BaseModel):
     note: Optional[str] = None
 
     contragent: Contragent
-    cabinet: CabinetFlat
+    cabinet: Optional[CabinetFlat] = None

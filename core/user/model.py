@@ -13,6 +13,7 @@ class User(BaseModel):
 
 class Role(BaseModel):
     model_config = ConfigDict(from_attributes=True)
+    id: int
     name: str
 
 
@@ -22,6 +23,14 @@ class UserFlat(BaseModel):
     login: str
     roles: list[Role]
     is_deleted: bool
+
+
+class UserWithPasswordFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    login: str
+    password: str
+    roles: list[Role]
 
 
 class UserAuthor(BaseModel):
