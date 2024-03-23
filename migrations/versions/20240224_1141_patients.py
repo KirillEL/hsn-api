@@ -29,12 +29,12 @@ def upgrade() -> None:
     name varchar(255) not null,
     last_name varchar(255) not null,
     patronymic varchar(255),
-    gender gender_type not null,
+    gender varchar(10) not null,
     height integer not null,
     age integer not null,
     
     date_setup_diagnose timestamp without time zone not null,
-    lgota_drugs lgota_drugs_type not null default 'no',
+    lgota_drugs varchar(10) not null default 'нет',
     
     note text,
     

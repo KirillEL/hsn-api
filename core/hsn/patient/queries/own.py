@@ -16,8 +16,13 @@ from utils.hash_helper import contragent_hasher
 
 
 class GenderType(str, Enum):
-    MALE = "male"
-    FEMALE = "female"
+    MALE = "муж"
+    FEMALE = "жен"
+
+class LgotaDrugsType(str, Enum):
+    NO = "нет"
+    YES = "да"
+    CCZ = "ссз"
 
 
 @SessionContext()

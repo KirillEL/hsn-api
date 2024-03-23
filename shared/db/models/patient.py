@@ -16,12 +16,12 @@ class PatientDBModel(BaseDBModel):
     name = Column(String(255), nullable=False)
     last_name = Column(String(255), nullable=False)
     patronymic = Column(String(255))
-    gender = Column(PGEnum(*genders, name="gender_type", create_type=False), nullable=False)
+    gender = Column(String(10), nullable=False)
     height = Column(Integer, nullable=False)
-    age = Column(Integer)
+    age = Column(Integer, nullable=False)
 
-    date_setup_diagnose = Column(DateTime, nullable=False)
-    lgota_drugs = Column(PGEnum(*lgotadrugs, name="lgota_drugs_type", create_type=False), nullable=False)
+    date_setup_diagnose = Column(DateTime(timezone=False), nullable=False)
+    lgota_drugs = Column(String(10), nullable=False)
 
     note = Column(Text, nullable=True)
 

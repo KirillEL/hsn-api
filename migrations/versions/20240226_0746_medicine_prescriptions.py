@@ -107,7 +107,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.execute('drop trigger patient_hospitalization_updated_at_trg on public.patient_hospitalizations;')
     op.execute('drop trigger patient_hospitalization_deleted_at_trg on public.patient_hospitalizations;')
-    op.execute('drop table public.patient_hospitalizations;')
+    op.execute('drop table public.patient_hospitalizations CASCADE;')
     op.execute('drop trigger medicine_prescription_updated_at_trg on public.medicine_prescriptions;')
     op.execute('drop trigger medicine_prescription_deleted_at_trg on public.medicine_prescriptions;')
-    op.execute('drop table public.medicine_prescriptions;')
+    op.execute('drop table public.medicine_prescriptions CASCADE;')

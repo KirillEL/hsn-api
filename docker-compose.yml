@@ -69,7 +69,6 @@ services:
     networks:
       - hsn_network
 
-
 networks:
   hsn_network:
     driver: 'bridge'
