@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date as tdate
 from enum import Enum
 from sqlalchemy import desc, asc, func
 from loguru import logger
@@ -19,6 +19,7 @@ class GenderType(str, Enum):
     MALE = "муж"
     FEMALE = "жен"
 
+
 class LgotaDrugsType(str, Enum):
     NO = "нет"
     YES = "да"
@@ -27,7 +28,7 @@ class LgotaDrugsType(str, Enum):
 
 @SessionContext()
 async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, age: int = None,
-                               gender: GenderType = None, dateBirth: date = None):
+                               gender: GenderType = None, dateBirth: tdate = None):
     query = (
         select(DoctorDBModel)
         .options(joinedload(DoctorDBModel.cabinet)

@@ -1,3 +1,4 @@
+from core.hsn.patient_appointment import PatientAppointment
 from shared.db.db_session import db_session, SessionContext
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
@@ -15,8 +16,7 @@ async def hsn_patient_appointment_get_by_doctor_id(doctor_id: int):
         select(PatientAppointmentsDBModel)
         .where(PatientAppointmentsDBModel.doctor_id == doctor_id)
     )
-    logger.debug(f"query: {query}")
     cursor = await db_session.execute(query)
     patient_appointments = cursor.scalars().all()
-    logger.debug(f"p_a:{patient_appointments}")
-    return [item for item in patient_appointments]
+
+    return [PatientAppointment.model_validate(item) for item in patient_appointments]

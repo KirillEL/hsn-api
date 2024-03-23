@@ -1,3 +1,5 @@
+from enum import Enum
+
 from sqlalchemy import Column, BigInteger, String, DateTime, Float, ForeignKey, Text,text, Integer, Boolean
 from sqlalchemy.orm import relationship, foreign
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
@@ -9,6 +11,12 @@ from shared.db.models.general_blood_analyse import GeneralBloodAnalyseDBModel
 from shared.db.models.general_urine_analyse import GeneralUrineAnalyseDBModel
 from shared.db.models.hormonal_blood_analyse import HormonalBloodAnalyseDBModel
 from shared.db.models.blood_chemistry import BloodChemistryDBModel
+
+class DisabilityType(Enum):
+    NO = 'нет'
+    FIRST = 'первая'
+    SECOND = 'вторая'
+    THIRD = 'третья'
 
 
 disabilities = ('no', 'first', 'second', 'third')
@@ -34,7 +42,7 @@ class PatientAppointmentsDBModel(BaseDBModel):
     classification_adjacent_release = Column(PGEnum(*classifications_adjacent_release, name="classification_adjacent_release_type", create_type=False))
     classification_nc_stage = Column(PGEnum(*classification_nc_stage, name="classification_nc_stage_type", create_type=False))
     has_stenocardia_napryzenya = Column(Boolean, nullable=False, server_default=text("false"))
-    has_myocardial_infraction = Column(Boolean, nullable=False, server_default=text("false"))
+    has_myocardial_infarction = Column(Boolean, nullable=False, server_default=text("false"))
     has_arteria_hypertension = Column(Boolean, nullable=False, server_default=text("false"))
     arteria_hypertension_age = Column(Integer)
 

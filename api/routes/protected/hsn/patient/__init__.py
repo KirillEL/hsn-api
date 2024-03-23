@@ -1,4 +1,4 @@
-from .get_own import *
+from .list import *
 from .create import *
 from .router import patient_router
 
