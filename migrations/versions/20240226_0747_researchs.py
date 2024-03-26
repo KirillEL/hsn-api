@@ -24,8 +24,8 @@ def upgrade() -> None:
     id serial constraint research_pk primary key,
     analise_id integer not null constraint research_analise_fk
         references public.analises ON DELETE CASCADE,
-    patient_appointment_id integer not null constraint research_patient_appointment_fk
-        references public.patient_appointments ON DELETE CASCADE,
+    appointment_id integer not null constraint research_appointment_fk
+        references public.appointments ON DELETE CASCADE,
     patient_hospitalization_id integer not null constraint research_patient_hospitalization_fk
         references public.patient_hospitalizations ON DELETE CASCADE,
         

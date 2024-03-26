@@ -32,10 +32,7 @@ def upgrade() -> None:
     gender varchar(10) not null,
     height integer not null,
     age integer not null,
-    
-    date_setup_diagnose timestamp without time zone not null,
-    lgota_drugs varchar(10) not null default 'нет',
-    
+    clinic text,
     note text,
     
     is_deleted boolean not null default false,

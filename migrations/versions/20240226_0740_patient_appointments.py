@@ -20,35 +20,14 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute('''
-    create table public.patient_appointments (
+    create table public.appointments (
     id serial constraint patient_appointments_pk primary key,
-    patient_id integer not null constraint patient_appointment_patient_fk
-        references public.patients ON DELETE CASCADE,
-    doctor_id integer not null constraint patient_appointment_doctor_fk
-        references public.doctors ON DELETE CASCADE,
-    cabinet_id integer not null constraint patient_appointment_cabinet_fk
-        references public.cabinets ON DELETE CASCADE,
-    
-    date timestamp with time zone not null,
-    date_next timestamp with time zone,
-    imt float not null,
-    weight float not null,
-    height float not null,  
-    disability disability_type not null default 'no',
-    school_hsn_date timestamp with time zone,
-    classification_func_classes classification_func_classes_type not null default 'fk1',
-    classification_adjacent_release classification_adjacent_release_type default null,
-    classification_nc_stage classification_nc_stage_type default null,
-    has_stenocardia_napryzenya boolean not null default false,
-    has_myocardial_infarction boolean not null default false,
-    has_arteria_hypertension boolean not null default false,
-    arteria_hypertension_age integer,
-    fv_lg integer not null,
-    main_diagnose text not null,
-    sistol_ad float not null,
-    diastal_ad float not null,
-    hss integer not null,
-    mit float,
+    doctor_id integer not null constraint appointment_doctor_id_fk
+        references public.doctors,
+    patient_id integer not null constraint appointment_patient_id_fk
+        references public.patients,
+    date timestamp without time zone not null default now(),
+    date_next timestamp without time zone,
     
     is_deleted boolean not null default false,
     
@@ -64,25 +43,25 @@ def upgrade() -> None:
     ''')
 
     op.execute('''
-            create trigger patient_appointment_updated_at_trg
+            create trigger appointment_updated_at_trg
             before update
-            on public.patient_appointments
+            on public.appointments
             for each row
             execute procedure base.set_updated_at();
             ''')
 
     op.execute('''
-                create trigger patient_appointment_deleted_at_trg
+                create trigger appointment_deleted_at_trg
                 before update
-                on public.patient_appointments
+                on public.appointments
                 for each row
                 execute procedure base.set_deleted_at();
                 ''')
 
 
 def downgrade() -> None:
-    op.execute('drop trigger patient_appointment_updated_at_trg on public.patient_appointments;')
-    op.execute('drop trigger patient_appointment_deleted_at_trg on public.patient_appointments;')
-    op.execute('drop table patient_appointments;')
+    op.execute('drop trigger appointment_updated_at_trg on public.appointments;')
+    op.execute('drop trigger appointment_deleted_at_trg on public.appointments;')
+    op.execute('drop table appointments;')
 
 

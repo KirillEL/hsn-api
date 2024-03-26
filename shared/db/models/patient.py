@@ -19,9 +19,7 @@ class PatientDBModel(BaseDBModel):
     gender = Column(String(10), nullable=False)
     height = Column(Integer, nullable=False)
     age = Column(Integer, nullable=False)
-
-    date_setup_diagnose = Column(DateTime(timezone=False), nullable=False)
-    lgota_drugs = Column(String(10), nullable=False)
+    clinic = Column(Text)
 
     note = Column(Text, nullable=True)
 

@@ -13,9 +13,11 @@ class ContragentDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     phone_number = Column(Text, unique=True, nullable=False)
-    snils = Column(Text, unique=True, nullable=False)
+    snils = Column(Text, unique=True)
     address = Column(Text, nullable=False)
-    mis_number = Column(Text, nullable=False)
+    mis_number = Column(Text)
+    location = Column(Text, nullable=False) # НСО НОВОСИБИРСК ДРУГОЕ
+    district = Column(Text) # Район
     date_birth = Column(Text, nullable=False)
 
     relative_phone_number = Column(Text)

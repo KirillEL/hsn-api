@@ -23,8 +23,8 @@ def upgrade() -> None:
     create table clinical_assesments (
     id serial constraint clinical_assesment_pk primary key,
     
-    patient_appointment_id integer not null constraint clinical_assesment_patient_appointment_fk
-        references public.patient_appointments ON DELETE CASCADE,
+    appointment_id integer not null constraint clinical_assesment_appointment_fk
+        references public.appointments ON DELETE CASCADE,
     patient_hospitalization_id integer not null constraint clinical_assesment_patient_hospitalization_fk
         references public.patient_hospitalizations ON DELETE CASCADE,
     patient_id integer not null constraint clinical_assesment_patient_fk

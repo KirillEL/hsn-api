@@ -22,8 +22,8 @@ def upgrade() -> None:
     op.execute('''
     create table supplied_diagnoses (
     id serial constraint supplied_diagnose_pk primary key,
-    patient_appointment_id integer not null constraint patient_appointment_supplied_diagnose_fk
-        references public.patient_appointments ON DELETE CASCADE,
+    appointment_id integer not null constraint appointment_supplied_diagnose_fk
+        references public.appointments ON DELETE CASCADE,
     diagnose_catalog_id integer not null constraint supplied_diagnose_diagnose_catalog_fk
         references public.diagnoses_catalog ON DELETE CASCADE,
     medicine_prescription_id integer not null constraint supplied_diagnose_medicine_prescription_fk

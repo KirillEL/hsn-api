@@ -62,8 +62,8 @@ def upgrade() -> None:
     id serial constraint medicine_prescription_pk primary key,
     medicine_group_id integer not null constraint medicine_prescription_medicine_group_fk
         references public.medicines_group,
-    patient_appointment_id integer not null constraint medicine_prescription_patient_appointment_fk
-        references public.patient_appointments,
+    appointment_id integer not null constraint medicine_prescription_appointment_fk
+        references public.appointments,
     patient_hospitalization_id integer not null constraint medicine_prescription_patient_hospitalization_fk
         references public.patient_hospitalizations,
     
