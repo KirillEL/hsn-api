@@ -3,7 +3,7 @@ from sqlalchemy import select
 from .router import admin_patient_appointment_router
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.patient_appointment import PatientAppointmentsDBModel
-from core.hsn.patient_appointment import PatientAppointment
+from core.hsn.appointment import PatientAppointment
 from api.exceptions import ExceptionResponseSchema, NotFoundException
 
 

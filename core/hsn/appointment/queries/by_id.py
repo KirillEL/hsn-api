@@ -3,7 +3,7 @@ from pydantic import ValidationError
 from sqlalchemy import select
 
 from api.exceptions import NotFoundException, ValidationException, BadRequestException
-from core.hsn.patient_appointment.model import PatientAppointmentFlat
+from core.hsn.appointment.model import PatientAppointmentFlat
 from shared.db.models.patient_appointment import PatientAppointmentsDBModel
 from shared.db.db_session import db_session, SessionContext
 

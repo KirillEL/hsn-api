@@ -4,8 +4,8 @@ from loguru import logger
 from sqlalchemy import select
 
 from api.exceptions import NotFoundException, BadRequestException, ValidationException
-from core.hsn.patient_appointment import PatientAppointment
-from core.hsn.patient_appointment.model import PatientAppointmentFlat
+from core.hsn.appointment import PatientAppointment
+from core.hsn.appointment.model import PatientAppointmentFlat
 from shared.db.models.patient_appointment import PatientAppointmentsDBModel
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field, ValidationError

@@ -1,4 +1,4 @@
-from core.hsn.patient_appointment import PatientAppointment, hsn_appointment_by_id
+from core.hsn.appointment import PatientAppointment, hsn_appointment_by_id
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request, status

@@ -1,4 +1,4 @@
-from core.hsn.patient_appointment import PatientAppointment
+from core.hsn.appointment import PatientAppointment
 from shared.db.db_session import db_session, SessionContext
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload

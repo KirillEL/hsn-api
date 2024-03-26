@@ -1,9 +1,9 @@
 from typing import Optional
 
-from core.hsn.patient_appointment.model import PatientAppointmentFlat
+from core.hsn.appointment.model import PatientAppointmentFlat
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema
-from core.hsn.patient_appointment import PatientAppointment, HsnAppointmentListContext, hsn_appointment_list
+from core.hsn.appointment import PatientAppointment, HsnAppointmentListContext, hsn_appointment_list
 from fastapi import Request, Depends
 from pydantic import BaseModel
 
