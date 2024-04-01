@@ -44,7 +44,9 @@ def upgrade():
         mgp INTEGER,
         zslg INTEGER,
         local_hypokines BOOLEAN NOT NULL DEFAULT false,
+        difusal_hypokines BOOLEAN NOT NULL DEFAULT false,
         distol_disfunction BOOLEAN NOT NULL DEFAULT false,
+        valvular_lesions BOOLEAN NOT NULL DEFAULT false,
         anevrizma BOOLEAN NOT NULL DEFAULT false,
         note TEXT
     );

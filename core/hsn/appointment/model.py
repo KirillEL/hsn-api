@@ -2,38 +2,35 @@ from datetime import datetime, date
 
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
+from datetime import date as tdate
 
+from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
+from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
+from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
+from core.hsn.appointment.blocks.drug_therapy import AppointmentDrugTherapyBlock
+from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
+from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
 from core.user import UserAuthor
-from shared.db.models import DisabilityType
 
 
-class PatientAppointment(BaseModel):
+class Appointment(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    patient_id: int
     doctor_id: int
-    cabinet_id: int
+    patient_id: int
+    date: tdate
+    date_next: Optional[tdate] = None
 
-    date: datetime
-    date_next: datetime
+    block_clinic_doctor: AppointmentClinicDoctorBlock
+    block_diagnose: AppointmentDiagnoseBlock
+    block_laboratory_test: AppointmentLaboratoryTestBlock
+    block_ekg: AppointmentEkgBlock
+    block_complaint: AppointmentComplaintBlock
+    block_clinical_condition: AppointmentClinicalConditionBlock
+    block_drug_therapy: AppointmentDrugTherapyBlock
 
-    weight: Optional[float] = None
-    height: Optional[float] = None
-    fv_lg: int
-    main_diagnose: str
-    sistol_ad: float
-    diastal_ad: float
-    hss: int
-    mit: Optional[float] = None
-    has_fatigue: bool
-    has_dyspnea: bool
-    has_swelling_legs: bool
-    has_weakness: bool
-    has_orthopnea: bool
-    has_heartbeat: bool = True
-    has_myocardial_infarction: bool
-    note: str
 
     is_deleted: bool
     created_at: datetime
@@ -47,36 +44,18 @@ class PatientAppointment(BaseModel):
 
 
 class PatientAppointmentFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+
     id: int
-    patient_id: int
     doctor_id: int
-    cabinet_id: int
-    date: date
-    date_next: Optional[datetime] = None
-    imt: float
-    weight: float
-    height: float
-    disability: DisabilityType = DisabilityType.NO
-    school_hsn_date: Optional[datetime] = None
-    classification_func_classes: Optional[str] = None
-    classification_adjacent_release: Optional[str] = None
-    classification_nc_stage: Optional[str] = None
+    patient_id: int
+    date: tdate
+    date_next: Optional[tdate] = None
 
-    has_stenocardia_napryzenya: bool
-    has_myocardial_infarction: bool
-    has_arteria_hypertension: bool
-    arteria_hypertension_age: Optional[int] = None
-    fv_lg: int
-    main_diagnose: str
-    sistol_ad: float
-    diastal_ad: float
-    hss: int
-    mit: float
-
-    appointment_complaint_id: int
-    appointment_laboratory_test_id: int
-    appointment_blood_chemistry_id: int
-    general_blood_analyse_id: int
-    hormonal_blood_analyse_id: int
-    general_urine_analyse_id: int
+    block_clinic_doctor: AppointmentClinicDoctorBlock
+    block_diagnose: AppointmentDiagnoseBlock
+    block_laboratory_test: AppointmentLaboratoryTestBlock
+    block_ekg: AppointmentEkgBlock
+    block_complaint: AppointmentComplaintBlock
+    block_clinical_condition: AppointmentClinicalConditionBlock
+    block_drug_therapy: AppointmentDrugTherapyBlock

@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from api.exceptions import NotFoundException, ValidationException, BadRequestException
 from core.hsn.appointment.model import PatientAppointmentFlat
-from shared.db.models.patient_appointment import PatientAppointmentsDBModel
+from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
 
 
@@ -12,9 +12,9 @@ from shared.db.db_session import db_session, SessionContext
 async def hsn_appointment_by_id(appointment_id: int):
     try:
         query = (
-            select(PatientAppointmentsDBModel)
-            .where(PatientAppointmentsDBModel.is_deleted.is_(False))
-            .where(PatientAppointmentsDBModel.id == appointment_id)
+            select(AppointmentDBModel)
+            .where(AppointmentDBModel.is_deleted.is_(False))
+            .where(AppointmentDBModel.id == appointment_id)
         )
         cursor = await db_session.execute(query)
         patient_appointment = cursor.scalars().first()

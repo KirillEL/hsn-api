@@ -1,6 +1,21 @@
+from enum import Enum
 from typing import Optional
 from datetime import date as tdate
 from pydantic import BaseModel, ConfigDict
+
+
+class DisabilityType(Enum):
+    NO = 'нет'
+    FIRST = '1'
+    SECOND = '2'
+    THIRD = '3'
+    CANCEL = 'отказ'
+
+
+class LgotaDrugsType(Enum):
+    YES = 'да'
+    NO = 'нет'
+    SSZ = 'ссз'
 
 
 class AppointmentClinicDoctorBlock(BaseModel):

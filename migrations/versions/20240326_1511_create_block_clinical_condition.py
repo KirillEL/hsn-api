@@ -51,7 +51,8 @@ def upgrade():
         systolic_bp INTEGER,
         diastolic_bp INTEGER,
         heart_rate INTEGER,
-        six_min_walk_distance INTEGER
+        six_min_walk_distance INTEGER,
+        note text
     );
     """)
 

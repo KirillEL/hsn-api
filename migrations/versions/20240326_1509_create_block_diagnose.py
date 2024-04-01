@@ -40,6 +40,8 @@ def upgrade() -> None:
     ad_note text,
     cd boolean not null default false,
     cd_note text,
+    hobl_ba boolean not null default false,
+    hobl_ba_note text,
     onmk_tia boolean not null default false,
     onmk_tia_note text,
     hbp boolean not null default false,

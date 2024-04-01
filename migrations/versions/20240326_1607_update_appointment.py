@@ -10,7 +10,6 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-
 # revision identifiers, used by Alembic.
 revision: str = 'd5e77ddf7bf4'
 down_revision: Union[str, None] = '8a1dbf4423b2'
@@ -87,24 +86,75 @@ def upgrade():
             REFERENCES public.appointment_block_drug_therapies(id);
         ''')
 
-def downgrade():
-    # Команды для удаления столбцов и внешних ключей с явными именами ограничений
-    op.execute("""
-    ALTER TABLE public.appointment_block_ekgs
-    DROP CONSTRAINT IF EXISTS fk_block_clinic_doctor,
-    DROP CONSTRAINT IF EXISTS fk_block_diagnose,
-    DROP CONSTRAINT IF EXISTS fk_block_laboratory_test,
-    DROP CONSTRAINT IF EXISTS fk_block_ekg,
-    DROP CONSTRAINT IF EXISTS fk_block_complaint,
-    DROP CONSTRAINT IF EXISTS fk_block_clinical_condition,
-    DROP CONSTRAINT IF EXISTS fk_block_drug_therapy;
 
+def downgrade():
+    op.execute('''
     ALTER TABLE public.appointment_block_ekgs
-    DROP COLUMN IF EXISTS block_clinic_doctor_id,
-    DROP COLUMN IF EXISTS block_diagnose_id,
-    DROP COLUMN IF EXISTS block_laboratory_test_id,
-    DROP COLUMN IF EXISTS block_ekg_id,
-    DROP COLUMN IF EXISTS block_complaint_id,
-    DROP COLUMN IF EXISTS block_clinical_condition_id,
+    DROP CONSTRAINT IF EXISTS fk_block_clinic_doctor;
+    ''')
+
+    op.execute('''
+    ALTER TABLE public.appointment_block_ekgs
+    DROP CONSTRAINT IF EXISTS fk_block_diagnose;
+        ''')
+
+    op.execute('''
+        ALTER TABLE public.appointment_block_ekgs
+        DROP CONSTRAINT IF EXISTS fk_block_laboratory_test;
+            ''')
+
+    op.execute('''
+        ALTER TABLE public.appointment_block_ekgs
+        DROP CONSTRAINT IF EXISTS fk_block_ekg;
+            ''')
+
+    op.execute('''
+        ALTER TABLE public.appointment_block_ekgs
+        DROP CONSTRAINT IF EXISTS fk_block_complaint;
+            ''')
+
+    op.execute('''
+        ALTER TABLE public.appointment_block_ekgs
+        DROP CONSTRAINT IF EXISTS fk_block_clinical_condition;
+            ''')
+
+    op.execute('''
+        ALTER TABLE public.appointment_block_ekgs
+        DROP CONSTRAINT IF EXISTS fk_block_drug_therapy;
+            ''')
+
+    op.execute('''
+    ALTER TABLE public.appointment_block_ekgs
+    DROP COLUMN IF EXISTS block_clinic_doctor_id;
+    ''')
+    op.execute('''
+    ALTER TABLE public.appointment_block_ekgs
+    DROP COLUMN IF EXISTS block_diagnose_id;
+        ''')
+
+    op.execute('''
+    ALTER TABLE public.appointment_block_ekgs
+    DROP COLUMN IF EXISTS block_laboratory_test_id;
+        ''')
+
+    op.execute('''
+    ALTER TABLE public.appointment_block_ekgs
+    DROP COLUMN IF EXISTS block_ekg_id;
+        ''')
+
+    op.execute('''
+    ALTER TABLE public.appointment_block_ekgs
+    DROP COLUMN IF EXISTS block_complaint_id;
+        ''')
+
+    op.execute('''
+    ALTER TABLE public.appointment_block_ekgs
+    DROP COLUMN IF EXISTS block_clinical_condition_id;
+        ''')
+
+    op.execute('''
+    ALTER TABLE public.appointment_block_ekgs
     DROP COLUMN IF EXISTS block_drug_therapy_id;
-    """)
+        ''')
+
+

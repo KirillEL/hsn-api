@@ -30,7 +30,9 @@ class AppointmentEkgBlockDBModel(BaseDBModel):
     mgp = Column(Integer)
     zslg = Column(Integer)
     local_hypokines = Column(Boolean, nullable=False, server_default=text("false"))
+    difusal_hypokines = Column(Boolean, nullable=False, server_default=text("false"))
     distol_disfunction = Column(Boolean, nullable=False, server_default=text("false"))
+    valvular_lesions = Column(Boolean, nullable=False, server_default=text("false"))
     anevrizma = Column(Boolean, nullable=False, server_default=text("false"))
     note = Column(Text)
     

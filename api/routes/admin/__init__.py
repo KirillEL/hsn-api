@@ -7,7 +7,6 @@ from .patients import admin_patient_router
 from .roles import admin_role_router
 from .cabinets import admin_cabinet_router
 from .med_organization import admin_med_org_router
-from .patient_appointments import admin_patient_appointment_router
 from .patient_hospitalizations import admin_patient_hospitalization_router
 from .analises import admin_analises_router
 from .researchs import admin_researchs_router
@@ -28,7 +27,6 @@ admin_router.include_router(admin_patient_router)
 admin_router.include_router(admin_role_router)
 admin_router.include_router(admin_cabinet_router)
 admin_router.include_router(admin_med_org_router)
-admin_router.include_router(admin_patient_appointment_router)
 admin_router.include_router(admin_patient_hospitalization_router)
 admin_router.include_router(admin_analises_router)
 admin_router.include_router(admin_researchs_router)
