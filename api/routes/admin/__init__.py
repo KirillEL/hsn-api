@@ -11,7 +11,6 @@ from .patient_hospitalizations import admin_patient_hospitalization_router
 from .analises import admin_analises_router
 from .researchs import admin_researchs_router
 from .diagnose_catalog import admin_diagnose_catalog_router
-from .medicine_group import admin_medicine_group_router
 from .doctors import admin_doctor_router
 from .supplied_diagnoses import admin_supplied_diagnose_router
 from .medicine_prescription import admin_medicine_prescription_router
@@ -31,7 +30,6 @@ admin_router.include_router(admin_patient_hospitalization_router)
 admin_router.include_router(admin_analises_router)
 admin_router.include_router(admin_researchs_router)
 admin_router.include_router(admin_diagnose_catalog_router)
-admin_router.include_router(admin_medicine_group_router)
 admin_router.include_router(admin_doctor_router)
 admin_router.include_router(admin_supplied_diagnose_router)
 admin_router.include_router(admin_medicine_prescription_router)

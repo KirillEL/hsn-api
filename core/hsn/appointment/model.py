@@ -8,7 +8,6 @@ from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlo
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
-from core.hsn.appointment.blocks.drug_therapy import AppointmentDrugTherapyBlock
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
 from core.user import UserAuthor
@@ -29,7 +28,6 @@ class Appointment(BaseModel):
     block_ekg: AppointmentEkgBlock
     block_complaint: AppointmentComplaintBlock
     block_clinical_condition: AppointmentClinicalConditionBlock
-    block_drug_therapy: AppointmentDrugTherapyBlock
 
 
     is_deleted: bool
@@ -58,4 +56,3 @@ class PatientAppointmentFlat(BaseModel):
     block_ekg: AppointmentEkgBlock
     block_complaint: AppointmentComplaintBlock
     block_clinical_condition: AppointmentClinicalConditionBlock
-    block_drug_therapy: AppointmentDrugTherapyBlock

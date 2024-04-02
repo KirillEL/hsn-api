@@ -6,7 +6,7 @@ from shared.db.models.appointment.blocks.block_laboratory_test import Appointmen
 from pydantic import BaseModel
 from typing import Optional
 
-from shared.db.models.appointment_laboratory_test import AppointmentLaboratoryTestDBModel
+from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
 
 
 class HsnAppointmentBlockLaboratoryTestCreateContext(BaseModel):
@@ -54,7 +54,7 @@ class HsnAppointmentBlockLaboratoryTestCreateContext(BaseModel):
 @SessionContext()
 async def hsn_appointment_block_laboratory_test_create(context: HsnAppointmentBlockLaboratoryTestCreateContext):
     query = (
-        insert(AppointmentLaboratoryTestDBModel)
+        insert(AppointmentLaboratoryTestBlockDBModel)
         .values(**context.model_dump())
         .returning(AppointmentLaboratoryTestBlockDBModel.id)
     )

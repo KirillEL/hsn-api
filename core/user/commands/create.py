@@ -51,6 +51,7 @@ async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor
         )
         cursor_get_role_id = await db_session.execute(query_get_role_id)
         role_id = cursor_get_role_id.scalar()
+        logger.debug(f'ROLE ID: {role_id}')
         if role_id is None:
             await db_session.rollback()
             raise NotFoundException(message="Такая роль не найдена!")
@@ -79,7 +80,7 @@ async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor
         )
         await db_session.execute(doctor_insert_query)
         await db_session.commit()
-        
+
         query_get_target_user = (
             select(UserDBModel)
             .options(joinedload(UserDBModel.doctor))
@@ -89,11 +90,14 @@ async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor
         c = await db_session.execute(query_get_target_user)
         user_with_details = c.scalars().first()
         logger.success("Success added user!")
+        logger.debug(f'user_with_details: {user_with_details.__dict__}')
         return UserAndDoctor.model_validate(user_with_details)
     except ValidationError as ve:
         logger.error(f"Validation Error: {ve}")
         raise ValidationException(message=str(ve))
-    except Exception as e:
-        logger.error(f"Error: {e}")
+    except NotFoundException as ne:
         await db_session.rollback()
-        raise InternalServerException(message="Server error")
+        raise ne
+    except Exception as e:
+        await db_session.rollback()
+        raise InternalServerException(message=str(e))

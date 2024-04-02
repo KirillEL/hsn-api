@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, BigInteger, ForeignKey,Text, Boolean, text, DateTime, Integer
+from sqlalchemy import Column, String, BigInteger, ForeignKey, Text, Boolean, text, DateTime, Integer
 from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
@@ -10,15 +10,10 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     __table_args__ = {'schema': 'public'}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    medicine_group_id = Column(BigInteger, ForeignKey('public.medicines_group.id'), nullable=False)
+    medicine_group = Column(String(255), nullable=False)
     name = Column(Text, nullable=False)
-    patient_appointment_id = Column(BigInteger, ForeignKey('public.patient_appointments.id'), nullable=False)
-    patient_hospitalization_id = Column(BigInteger, ForeignKey('public.patient_hospitalizations.id'), nullable=False)
 
-    mnn = Column(String(200))
-    dosa = Column(Integer, nullable=False)
     note = Column(Text)
-
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
