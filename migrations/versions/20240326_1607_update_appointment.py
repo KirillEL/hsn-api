@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'd5e77ddf7bf4'
-down_revision: Union[str, None] = '8a1dbf4423b2'
+down_revision: Union[str, None] = 'bf13a3cfcbc5'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -44,10 +44,7 @@ def upgrade():
         ALTER TABLE public.appointments
         ADD COLUMN block_clinical_condition_id INTEGER NOT NULL;
         ''')
-        op.execute('''
-        ALTER TABLE public.appointments
-        ADD COLUMN block_drug_therapy_id INTEGER NOT NULL;
-        ''')
+
 
         # Добавление ограничений внешнего ключа
         op.execute('''
@@ -118,10 +115,6 @@ def downgrade():
         DROP CONSTRAINT IF EXISTS fk_block_clinical_condition;
             ''')
 
-    op.execute('''
-        ALTER TABLE public.appointment_block_ekgs
-        DROP CONSTRAINT IF EXISTS fk_block_drug_therapy;
-            ''')
 
     op.execute('''
     ALTER TABLE public.appointment_block_ekgs
@@ -152,9 +145,5 @@ def downgrade():
     DROP COLUMN IF EXISTS block_clinical_condition_id;
         ''')
 
-    op.execute('''
-    ALTER TABLE public.appointment_block_ekgs
-    DROP COLUMN IF EXISTS block_drug_therapy_id;
-        ''')
 
 
