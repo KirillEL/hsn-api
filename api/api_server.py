@@ -12,7 +12,7 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 from api.routes import main_router
 from api.exceptions import CustomException
 from .middlewares import AuthMiddleware, AuthBackend
-from core.on_startup import hsn_create_admin
+from core.on_startup import hsn_create_admin, hsn_create_role_doctor
 
 
 def init_routers(application: FastAPI) -> None:
@@ -63,6 +63,7 @@ def init_tasks_on_startup(app_: FastAPI) -> None:
     @app_.on_event("startup")
     async def init_startup():
         await hsn_create_admin()
+        await hsn_create_role_doctor()
 
 
 def init_secure_on_swagger(app_: FastAPI) -> None:

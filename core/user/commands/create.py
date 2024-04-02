@@ -9,6 +9,8 @@ from shared.db.db_session import SessionContext, db_session
 from pydantic import BaseModel, Field, ValidationError
 from core.hsn.doctor.model import UserAndDoctor
 from sqlalchemy import insert, select
+
+from shared.db.models import CabinetDBModel
 from shared.db.models.role import RoleDBModel
 from shared.db.models.user import UserDBModel
 from shared.db.models.doctor import DoctorDBModel
@@ -32,6 +34,16 @@ class UserDoctorCreateContext(BaseModel):
 @SessionContext()
 async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor:
     try:
+        query_check_cabinet = (
+            select(CabinetDBModel)
+            .where(CabinetDBModel.id == context.cabinet_id)
+        )
+        cursor = await db_session.execute(query_check_cabinet)
+        cab_exists = cursor.scalars().first()
+        if cab_exists is None:
+            await db_session.rollback()
+            raise NotFoundException(message="Кабинет не найден!")
+
         hashed_password: str = PasswordHasher.hash_password(context.password)
         query_insert_user = (
             insert(UserDBModel)
