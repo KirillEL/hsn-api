@@ -12,7 +12,6 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     medicine_group = Column(String(255), nullable=False)
     name = Column(Text, nullable=False)
-    dosa = Column(String(100), nullable=False)
     note = Column(Text)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))

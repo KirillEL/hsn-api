@@ -7,8 +7,8 @@ from pydantic import BaseModel
 from datetime import date as tdate
 
 class HsnAppointmentBlockClinicDoctorCreateContext(BaseModel):
-    reffering_doctor: Optional[str] = None
-    reffering_clinic_organization: Optional[str] = None
+    referring_doctor: Optional[str] = None
+    referring_clinic_organization: Optional[str] = None
     disability: str
     lgota_drugs: str
     has_hospitalization: Optional[bool] = False

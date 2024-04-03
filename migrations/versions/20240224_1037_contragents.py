@@ -22,16 +22,11 @@ def upgrade() -> None:
     op.execute('''
     create table public.contragents (
     id serial constraint contragents_pk primary key,
-    phone_number text not null unique,
-    address text not null,
-    snils text unique,
-    mis_number text,
-    location text not null,
-    district text,
-    date_birth text not null,
-    relative_phone_number text,
-    parent text,
-    date_dead text
+    name varchar(255) not null,
+    last_name varchar(255) not null,
+    patronymic varchar(255),
+    birth_date varchar(255) not null,
+    dod varchar(255)
     );
     ''')
 

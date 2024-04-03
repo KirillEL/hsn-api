@@ -2,8 +2,9 @@ from datetime import date as tdate, datetime
 from typing import Optional
 from fastapi import Request, status
 
-from core.hsn.patient.model import PatientFlat
-from core.hsn.patient.queries.own import GenderType, LgotaDrugsType
+from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
+from core.hsn.patient.model import PatientFlat, PatientResponse
+from core.hsn.patient.queries.own import GenderType, LgotaDrugsType, LocationType
 from shared.db.models.patient import PatientDBModel
 from sqlalchemy import insert
 from shared.db.db_session import db_session
@@ -14,32 +15,28 @@ from pydantic import BaseModel, Field
 
 
 class CreatePatientRequestBody(BaseModel):
-    name: str = Field(..., max_length=255)
-    last_name: str = Field(..., max_length=255)
-    patronymic: Optional[str] = Field(None, max_length=255)
+    name: str = Field(max_length=255)
+    last_name: str = Field(max_length=255)
+    patronymic: Optional[str] = Field(max_length=255)
     gender: GenderType = Field(GenderType.MALE)
-    height: float = Field(..., gt=0)
-    age: int = Field(..., gt=0, le=100)
-    date_setup_diagnose: tdate = Field(...)
-    lgota_drugs: LgotaDrugsType = Field(LgotaDrugsType.NO)
+    birth_date: tdate = Field(default=tdate.today())
+    dod: Optional[tdate] = Field(default=None)
+    location: LocationType = Field(default=LocationType.NSK.value)
+    district: str = Field(max_length=255)
+    address: str = Field(max_length=255)
+    phone: int = Field(gt=0)
+    clinic: str
+    patient_note: Optional[str] = Field(max_length=1000)
+    referring_doctor: Optional[str] = Field(max_length=255)
+    referring_clinic_organization: Optional[str] = Field(max_length=255)
+    disability: Optional[DisabilityType] = Field(DisabilityType.NO.value)
+    lgota_drugs: Optional[LgotaDrugsType] = Field(LgotaDrugsType.NO.value)
+    has_hospitalization: bool
+    count_hospitalization: Optional[int] = Field(0)
+    last_hospitalization_date: Optional[tdate] = Field(None)
 
-    phone_number: int = Field(gt=0)
-    snils: str = Field(...)
-    address: str = Field(...)
-    mis_number: int = Field(gt=0)
-    date_birth: tdate = Field()
-    relative_phone_number: Optional[int] = Field(None, gt=0)
-    parent: Optional[str] = Field(None, max_length=500)
-    date_dead: Optional[tdate] = Field(None)
-
-    note: Optional[str] = Field(None, max_length=1000)
 
 
-class PatientResponse(BaseModel):
-    id: int
-    name: str
-    last_name: str
-    patronymic: Optional[str] = None
 
 
 @patient_router.post(

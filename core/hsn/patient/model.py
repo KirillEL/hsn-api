@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
-
+from datetime import date as tdate
 from core.hsn.cabinet import Cabinet
 from core.hsn.cabinet.model import CabinetFlat
 from core.user import UserAuthor
@@ -33,10 +33,21 @@ class Patient(BaseModel):
     cabinet_id: Optional[int] = None
     age: int
     gender: str
-    height: int
-    date_setup_diagnose: Optional[datetime] = None
+    birth_date: tdate
+    dod: Optional[tdate] = None
+    location: str
+    district: str
+    address: str
+    phone: int
+    clinic: str
+    patient_note: Optional[str] = None
+    referring_doctor: Optional[str] = None
+    referring_clinic_organization: Optional[str] = None
+    disability: str
     lgota_drugs: str
-    note: Optional[str] = None
+    has_hospitalization: bool
+    count_hospitalization: Optional[int] = None
+    last_hospitalization_date: Optional[tdate] = None
 
     contragent: Contragent
     cabinet: Optional[CabinetFlat] = None
@@ -62,10 +73,46 @@ class   PatientFlat(BaseModel):
     patronymic: Optional[str] = None
     age: int
     gender: str
-    height: int
-    date_setup_diagnose: Optional[datetime] = None
+    birth_date: tdate
+    dod: Optional[tdate] = None
+    location: str
+    district: str
+    address: str
+    phone: int
+    clinic: str
+    patient_note: Optional[str] = None
+    referring_doctor: Optional[str] = None
+    referring_clinic_organization: Optional[str] = None
+    disability: str
     lgota_drugs: str
-    note: Optional[str] = None
+    has_hospitalization: bool
+    count_hospitalization: Optional[int] = None
+    last_hospitalization_date: Optional[tdate] = None
+
 
     contragent: Contragent
     cabinet: Optional[CabinetFlat] = None
+
+
+class PatientResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    full_name: str
+    gender: str
+    age: int
+    birth_date: tdate
+    dod: Optional[tdate] = None
+    location: str
+    district: str
+    address: str
+    phone: int
+    clinic: str
+    patient_note: Optional[str] = None
+    referring_doctor: Optional[str] = None
+    referring_clinic_organization: Optional[str] = None
+    disability: str
+    lgota_drugs: str
+    has_hospitalization: bool
+    count_hospitalization: Optional[int] = None
+    last_hospitalization_date: Optional[tdate] = None

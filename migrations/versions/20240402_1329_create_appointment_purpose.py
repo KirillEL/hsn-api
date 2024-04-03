@@ -26,6 +26,7 @@ def upgrade() -> None:
         references public.appointments,
     medicine_prescription_id integer constraint medicine_prescription_id_fk
         references public.medicine_prescriptions,
+    dosa varchar(100) not null,
     note text
     );
     ''')

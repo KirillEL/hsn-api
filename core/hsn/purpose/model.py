@@ -1,19 +1,21 @@
 from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict
-from typing import List, Optional
 
 from core.user import UserAuthor
 
 
-class MedicinePrescription(BaseModel):
+class AppointmentPurpose(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-
-
+    appointment_id: int
+    medicine_prescription_id: int
     note: Optional[str] = None
 
     is_deleted: bool
+
     created_at: datetime
     created_by: UserAuthor
 
@@ -22,3 +24,12 @@ class MedicinePrescription(BaseModel):
 
     deleted_at: Optional[datetime] = None
     deleted_by: Optional[UserAuthor] = None
+
+
+class AppointmentPurposeFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    appointment_id: int
+    medicine_prescription_id: int
+    note: Optional[str] = None

@@ -3,7 +3,8 @@ from enum import Enum
 from sqlalchemy import desc, asc, func
 from loguru import logger
 from api.exceptions.base import NotFoundException
-from core.hsn.patient.model import Patient
+from core.hsn.patient.commands.create import convert_to_patient_response
+from core.hsn.patient.model import Patient, PatientResponse
 from shared.db.models import ContragentDBModel
 from shared.db.models.cabinet import CabinetDBModel
 from shared.db.models.patient import PatientDBModel
@@ -16,14 +17,19 @@ from utils.hash_helper import contragent_hasher
 
 
 class GenderType(str, Enum):
-    MALE = "муж"
-    FEMALE = "жен"
+    MALE = "М"
+    FEMALE = "Ж"
 
 
 class LgotaDrugsType(str, Enum):
     NO = "нет"
     YES = "да"
     CCZ = "ссз"
+
+class LocationType(Enum):
+    NSO = "НСО"
+    NSK = "Новосибирск"
+    ANOTHER = "другое"
 
 
 @SessionContext()
@@ -33,10 +39,7 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         select(DoctorDBModel)
         .options(joinedload(DoctorDBModel.cabinet)
                  .joinedload(CabinetDBModel.patients)
-                 .joinedload(PatientDBModel.contragent),
-                 joinedload(DoctorDBModel.cabinet)
-                 .joinedload(CabinetDBModel.patients)
-                 .joinedload(PatientDBModel.cabinet)
+                 .joinedload(PatientDBModel.contragent)
                  )
         .where(DoctorDBModel.user_id == current_user_id)
     )
@@ -73,18 +76,12 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
     if doctor is None:
         raise NotFoundException(message="Пациенты не найдены!")
     doctor_patients = doctor.cabinet.patients
+    patient_responses = []
     for patient in doctor_patients:
-        patient.contragent.phone_number = contragent_hasher.decrypt(patient.contragent.phone_number)
-        patient.contragent.snils = contragent_hasher.decrypt(patient.contragent.snils)
-        patient.contragent.address = contragent_hasher.decrypt(patient.contragent.address)
-        patient.contragent.mis_number = contragent_hasher.decrypt(patient.contragent.mis_number)
-        patient.contragent.date_birth = contragent_hasher.decrypt(patient.contragent.date_birth)
-        patient.contragent.relative_phone_number = contragent_hasher.decrypt(patient.contragent.relative_phone_number)
-        patient.contragent.parent = contragent_hasher.decrypt(patient.contragent.parent)
-        patient.contragent.date_dead = contragent_hasher.decrypt(patient.contragent.date_dead)
+        patient_response = await convert_to_patient_response(patient)
+        patient_responses.append(patient_response.dict())
 
-    data = [Patient.model_validate(d_p) for d_p in doctor_patients]
     return {
-        "data": data,
+        "data": patient_responses,
         "total": total_count
     }

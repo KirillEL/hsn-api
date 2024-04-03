@@ -8,7 +8,6 @@ from datetime import date as tdate
 
 
 class AppointmentCreateRequestBody(BaseModel):
-    doctor_id: int = Field(gt=0)
     patient_id: int = Field(gt=0)
     date: tdate = Field(tdate.today())
     date_next: Optional[tdate] = Field(None)
@@ -31,6 +30,7 @@ class AppointmentCreateRequestBody(BaseModel):
 async def appointment_create(request: Request, body: AppointmentCreateRequestBody):
     context = HsnCreatePatientAppontmentContext(
         user_id=request.user.id,
+        doctor_id=request.user.doctor.id
         **body.model_dump()
     )
     return await hsn_patient_appontment_create(context)

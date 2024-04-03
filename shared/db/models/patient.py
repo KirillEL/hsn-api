@@ -12,16 +12,23 @@ class PatientDBModel(BaseDBModel):
     __tablename__ = 'patients'
     __table_args__ = {'schema': 'public'}
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    name = Column(String(255), nullable=False)
-    last_name = Column(String(255), nullable=False)
-    patronymic = Column(String(255))
-    gender = Column(String(10), nullable=False)
-    height = Column(Integer, nullable=False)
-    age = Column(Integer, nullable=False)
-    clinic = Column(Text)
+    id = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
 
-    note = Column(Text, nullable=True)
+    gender = Column(String(1), nullable=False)
+    location = Column(String(255), nullable=False)
+    district = Column(String(255), nullable=False)
+    address = Column(String(255), nullable=False)
+    phone = Column(Integer, nullable=False)
+    clinic = Column(String(255), nullable=False)
+    referring_doctor = Column(String(255))
+    referring_clinic_organization = Column(String(255))
+    disability = Column(String(100), nullable=False)
+    lgota_drugs = Column(String(100), nullable=False)
+    has_hospitalization = Column(Boolean, nullable=False, server_default=text("false"))
+    count_hospitalization = Column(Integer)
+    last_hospitalization_date = Column(DateTime(timezone=False))
+
+    patient_note = Column(Text, nullable=True)
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
 

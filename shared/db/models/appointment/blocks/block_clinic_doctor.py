@@ -8,8 +8,8 @@ class AppointmentBlockClinicDoctorDBModel(BaseDBModel):
     __table_args__ = {'schema': 'public'}
 
     id = Column(Integer, primary_key=True, nullable=False)
-    reffering_doctor = Column(Text)
-    reffering_clinic_organization = Column(Text)
+    referring_doctor = Column(Text)
+    referring_clinic_organization = Column(Text)
     disability = Column(String(50), nullable=False, server_default=text("нет::character varying"))
     lgota_drugs = Column(String(50), nullable=False, server_default=text("нет::character varying"))
     has_hospitalization = Column(Boolean, nullable=False, server_default=text("false"))

@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import Request, Depends
 from pydantic import BaseModel
 
-from core.hsn.patient.model import Patient, PatientFlat
+from core.hsn.patient.model import Patient, PatientFlat, PatientResponse
 from core.hsn.patient.queries.own import hsn_get_own_patients, GenderType
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema
@@ -19,7 +19,7 @@ class GetOwnPatientsQueryParams(BaseModel):
     dateBirth: Optional[tdate] = datetime.date.today()
 
 class GetOwnPatientResponse(BaseModel):
-    data: list[PatientFlat]
+    data: list[PatientResponse]
     total: int
 
 

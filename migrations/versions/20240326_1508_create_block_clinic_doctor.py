@@ -21,7 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.execute('''
     create table public.appointment_block_clinic_doctors (
-    id integer constraint appointment_block_clinic_doctor_id_pk primary key,
+    id serial constraint appointment_block_clinic_doctor_id_pk primary key,
     referring_doctor text,
     referring_clinic_organization text,
     disability varchar(50) not null default 'нет',
