@@ -62,6 +62,7 @@ def upgrade() -> None:
     id serial constraint medicine_prescription_pk primary key,
     medicine_group varchar(255) not null,
     name text not null,
+    dosa varchar(100) not null,
     note text,
     
     is_deleted boolean not null default false,
