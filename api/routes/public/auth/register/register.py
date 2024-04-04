@@ -10,14 +10,12 @@ from core.user import user_command_create
 from core.user import UserDoctorCreateContext
 
 
-
-
 class UserCreateRequest(BaseModel):
-    login: str = Field(..., max_length=25)
-    password: str = Field(..., min_length=6)
-    name: str = Field(..., max_length=100)
-    last_name: str = Field(..., max_length=100)
-    patronymic: Optional[str] = Field(..., max_length=100)
+    login: str = Field(max_length=25)
+    password: str = Field(min_length=6)
+    name: str = Field(max_length=100)
+    last_name: str = Field(max_length=100)
+    patronymic: Optional[str] = Field(None, max_length=100)
     phone_number: str = Field(max_length=20)
     is_glav: bool = Field(False)
     role: str = Field(None)
@@ -29,6 +27,7 @@ class UserCreateRequest(BaseModel):
         if v and not re.search(regex, v, re.I):
             raise ValidationException(message="Phone number is not valid")
         return v
+
 
 @auth_register_router.post(
     "/",

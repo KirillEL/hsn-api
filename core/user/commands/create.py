@@ -23,7 +23,7 @@ class UserDoctorCreateContext(BaseModel):
     password: str = Field(None, min_length=6)
     name: str = Field(..., max_length=100)
     last_name: str = Field(..., max_length=100)
-    patronymic: Optional[str] = Field(..., max_length=100)
+    patronymic: Optional[str] = Field(None, max_length=100)
     phone_number: str
     is_glav: bool = Field(False)
     role: str = Field(None)
