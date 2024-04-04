@@ -116,3 +116,4 @@ class PatientResponse(BaseModel):
     has_hospitalization: bool
     count_hospitalization: Optional[int] = None
     last_hospitalization_date: Optional[str] = None
+

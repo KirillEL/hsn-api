@@ -20,7 +20,7 @@ class CreatePatientRequestBody(BaseModel):
     last_name: str = Field(max_length=255)
     patronymic: Optional[str] = Field(None, max_length=255)
     gender: GenderType = Field(GenderType.MALE)
-    birth_date: str = Field(default=datetime.today().strftime("%d-%m-%Y"))
+    birth_date: str = Field(default=datetime.today().strftime("%d.%m.%Y"))
     dod: Optional[str] = Field(None)
     location: LocationType = Field(default=LocationType.NSK.value)
     district: str = Field(max_length=255)
@@ -40,9 +40,9 @@ class CreatePatientRequestBody(BaseModel):
     def date_format_validation(cls, v):
         if v is not None:
             try:
-                parsed_date = datetime.strptime(v, "%d-%m-%Y")
+                parsed_date = datetime.strptime(v, "%d.%m.%Y")
             except ValueError:
-                raise ValidationException(message="Date must be in DD-MM-YYYY format")
+                raise ValidationException(message="Date must be in DD.MM.YYYY format")
             if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
                 raise ValidationException(message="Last hospitalization must not be later than the current day")
         return v

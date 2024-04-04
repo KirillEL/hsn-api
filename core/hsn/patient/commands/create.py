@@ -43,29 +43,33 @@ async def convert_to_patient_response(patient) -> PatientResponse:
     decrypted_name = contragent_hasher.decrypt(patient.contragent.name)
     decrypted_last_name = contragent_hasher.decrypt(patient.contragent.last_name)
     decrypted_patronymic = contragent_hasher.decrypt(patient.contragent.patronymic)
-    decrypted_birth_date = datetime.strptime(contragent_hasher.decrypt(patient.contragent.birth_date), "%d-%m-%Y").date()
+
+    # Decrypt and directly format the birth date
+    decrypted_birth_date_str = contragent_hasher.decrypt(patient.contragent.birth_date)
+    decrypted_birth_date = datetime.strptime(decrypted_birth_date_str, "%d.%m.%Y").strftime("%d.%m.%Y")
+
+    # Handle decryption and formatting for the date of death (dod)
     decrypted_dod = None
-    if patient.contragent.dod is not None:
-        if patient.contragent.dod == "":
-            decrypted_dod = None
-        else:
-            decrypted_dod = datetime.strptime(contragent_hasher.decrypt(patient.contragent.dod), "%d-%m-%Y").date()
+    if patient.contragent.dod:
+        decrypted_dod_str = contragent_hasher.decrypt(patient.contragent.dod)
+        if decrypted_dod_str:  # Ensure the string is not empty
+            decrypted_dod = datetime.strptime(decrypted_dod_str, "%d.%m.%Y").strftime("%d.%m.%Y")
 
     full_name = f"{decrypted_last_name} {decrypted_name}"
     if decrypted_patronymic:
         full_name += f" {decrypted_patronymic}"
 
+    birth_date_obj = datetime.strptime(decrypted_birth_date, "%d.%m.%Y").date()
     today = tdate.today()
-    age = today.year - decrypted_birth_date.year - (
-                (today.month, today.day) < (decrypted_birth_date.month, decrypted_birth_date.day))
+    age = today.year - birth_date_obj.year - ((today.month, today.day) < (birth_date_obj.month, birth_date_obj.day))
 
     patient_response = PatientResponse(
         id=patient.id,
         full_name=full_name,
         gender=patient.gender,
         age=age,
-        birth_date=str(decrypted_birth_date),
-        dod=decrypted_dod,
+        birth_date=decrypted_birth_date,  # Already formatted
+        dod=decrypted_dod,  # Already formatted, if exists
         location=patient.location,
         district=patient.district,
         address=patient.address,
@@ -78,9 +82,10 @@ async def convert_to_patient_response(patient) -> PatientResponse:
         lgota_drugs=patient.lgota_drugs,
         has_hospitalization=patient.has_hospitalization,
         count_hospitalization=patient.count_hospitalization,
-        last_hospitalization_date=patient.last_hospitalization_date
+        last_hospitalization_date=patient.last_hospitalization_date  # Assuming this is correctly formatted or null
     )
     return patient_response
+
 
 async def create_contragent(contragent_payload: dict[str, any]) -> int:
     hashed_payload = {
@@ -100,10 +105,12 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
     new_contragent_id = cursor.scalar()
     return new_contragent_id
 
+
 @SessionContext()
 async def hsn_patient_create(context: HsnPatientCreateContext):
     logger.info(f'Начало создания пациента')
-    patient_payload = context.model_dump(exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'user_id'})
+    patient_payload = context.model_dump(
+        exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'user_id'})
     contragent_payload = {
         'name': context.name,
         'last_name': context.last_name,
@@ -137,5 +144,3 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
     patient_response = await convert_to_patient_response(patient)
     logger.info(f'patient_response: {patient_response}')
     return PatientResponse.model_validate(patient_response)
-
-
