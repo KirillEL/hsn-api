@@ -22,8 +22,8 @@ class HsnPatientCreateContext(BaseModel):
     last_name: str
     patronymic: Optional[str] = None
     gender: str
-    birth_date: tdate
-    dod: Optional[tdate] = None
+    birth_date: str
+    dod: Optional[str] = None
     location: str
     district: str
     address: str
@@ -36,17 +36,20 @@ class HsnPatientCreateContext(BaseModel):
     lgota_drugs: str
     has_hospitalization: bool
     count_hospitalization: Optional[int] = None
-    last_hospitalization_date: Optional[tdate] = None
+    last_hospitalization_date: Optional[str] = None
 
 
 async def convert_to_patient_response(patient) -> PatientResponse:
     decrypted_name = contragent_hasher.decrypt(patient.contragent.name)
     decrypted_last_name = contragent_hasher.decrypt(patient.contragent.last_name)
     decrypted_patronymic = contragent_hasher.decrypt(patient.contragent.patronymic)
-    decrypted_birth_date = datetime.strptime(contragent_hasher.decrypt(patient.contragent.birth_date), "%Y-%m-%d").date()
+    decrypted_birth_date = datetime.strptime(contragent_hasher.decrypt(patient.contragent.birth_date), "%d-%m-%Y").date()
     decrypted_dod = None
     if patient.contragent.dod is not None:
-        decrypted_dod = datetime.strptime(contragent_hasher.decrypt(patient.contragent.dod), "%Y-%m-%d").date()
+        if patient.contragent.dod == "":
+            decrypted_dod = None
+        else:
+            decrypted_dod = datetime.strptime(contragent_hasher.decrypt(patient.contragent.dod), "%d-%m-%Y").date()
 
     full_name = f"{decrypted_last_name} {decrypted_name}"
     if decrypted_patronymic:
@@ -61,7 +64,7 @@ async def convert_to_patient_response(patient) -> PatientResponse:
         full_name=full_name,
         gender=patient.gender,
         age=age,
-        birth_date=decrypted_birth_date,
+        birth_date=str(decrypted_birth_date),
         dod=decrypted_dod,
         location=patient.location,
         district=patient.district,
@@ -85,7 +88,7 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
         'last_name': contragent_hasher.encrypt(contragent_payload['last_name']),
         'patronymic': contragent_hasher.encrypt(contragent_payload['patronymic']),
         'birth_date': contragent_hasher.encrypt(str(contragent_payload['birth_date'])),
-        'dod': contragent_hasher.encrypt(str(contragent_payload['dod']))
+        'dod': contragent_hasher.encrypt(str(contragent_payload['dod'])) if contragent_payload['dod'] else None
     }
     query = (
         insert(ContragentDBModel)
@@ -104,9 +107,9 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
     contragent_payload = {
         'name': context.name,
         'last_name': context.last_name,
-        'patronymic': context.patronymic,
+        'patronymic': context.patronymic if context.patronymic else "",
         'birth_date': context.birth_date,
-        'dod': context.dod
+        'dod': context.dod if context.dod else None
     }
     new_contragent_id = await create_contragent(contragent_payload)
     logger.info(f'контрагент создан успешно!')

@@ -26,7 +26,7 @@ class PatientDBModel(BaseDBModel):
     lgota_drugs = Column(String(100), nullable=False)
     has_hospitalization = Column(Boolean, nullable=False, server_default=text("false"))
     count_hospitalization = Column(Integer)
-    last_hospitalization_date = Column(DateTime(timezone=False))
+    last_hospitalization_date = Column(String(255))
 
     patient_note = Column(Text, nullable=True)
 

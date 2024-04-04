@@ -18,23 +18,34 @@ from pydantic import BaseModel, Field, validator, field_validator
 class CreatePatientRequestBody(BaseModel):
     name: str = Field(max_length=255)
     last_name: str = Field(max_length=255)
-    patronymic: Optional[str] = Field(max_length=255)
+    patronymic: Optional[str] = Field(None, max_length=255)
     gender: GenderType = Field(GenderType.MALE)
-    birth_date: tdate = Field(default=tdate.today())
-    dod: Optional[tdate] = Field(default=None)
+    birth_date: str = Field(default=datetime.today().strftime("%d-%m-%Y"))
+    dod: Optional[str] = Field(None)
     location: LocationType = Field(default=LocationType.NSK.value)
     district: str = Field(max_length=255)
     address: str = Field(max_length=255)
     phone: str
     clinic: str
-    patient_note: Optional[str] = Field(max_length=1000)
-    referring_doctor: Optional[str] = Field(max_length=255)
-    referring_clinic_organization: Optional[str] = Field(max_length=255)
+    patient_note: Optional[str] = Field(None,max_length=1000)
+    referring_doctor: Optional[str] = Field(None, max_length=255)
+    referring_clinic_organization: Optional[str] = Field(None, max_length=255)
     disability: Optional[DisabilityType] = Field(DisabilityType.NO.value)
     lgota_drugs: Optional[LgotaDrugsType] = Field(LgotaDrugsType.NO.value)
     has_hospitalization: bool
     count_hospitalization: Optional[int] = Field(0)
-    last_hospitalization_date: Optional[tdate] = Field(None)
+    last_hospitalization_date: Optional[str] = None
+
+    @field_validator("birth_date", "dod", "last_hospitalization_date")
+    def date_format_validation(cls, v):
+        if v is not None:
+            try:
+                parsed_date = datetime.strptime(v, "%d-%m-%Y")
+            except ValueError:
+                raise ValidationException(message="Date must be in DD-MM-YYYY format")
+            if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
+                raise ValidationException(message="Last hospitalization must not be later than the current day")
+        return v
 
     @field_validator("phone")
     def phone_validation(cls, v):

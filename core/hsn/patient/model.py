@@ -33,8 +33,8 @@ class Patient(BaseModel):
     cabinet_id: Optional[int] = None
     age: int
     gender: str
-    birth_date: tdate
-    dod: Optional[tdate] = None
+    birth_date: str
+    dod: Optional[str] = None
     location: str
     district: str
     address: str
@@ -47,7 +47,7 @@ class Patient(BaseModel):
     lgota_drugs: str
     has_hospitalization: bool
     count_hospitalization: Optional[int] = None
-    last_hospitalization_date: Optional[tdate] = None
+    last_hospitalization_date: Optional[str] = None
 
     contragent: Contragent
     cabinet: Optional[CabinetFlat] = None
@@ -73,8 +73,8 @@ class   PatientFlat(BaseModel):
     patronymic: Optional[str] = None
     age: int
     gender: str
-    birth_date: tdate
-    dod: Optional[tdate] = None
+    birth_date: str
+    dod: Optional[str] = None
     location: str
     district: str
     address: str
@@ -87,7 +87,7 @@ class   PatientFlat(BaseModel):
     lgota_drugs: str
     has_hospitalization: bool
     count_hospitalization: Optional[int] = None
-    last_hospitalization_date: Optional[tdate] = None
+    last_hospitalization_date: Optional[str] = None
 
 
     contragent: Contragent
@@ -101,8 +101,8 @@ class PatientResponse(BaseModel):
     full_name: str
     gender: str
     age: int
-    birth_date: tdate
-    dod: Optional[tdate] = None
+    birth_date: str
+    dod: Optional[str] = None
     location: str
     district: str
     address: str
@@ -115,4 +115,4 @@ class PatientResponse(BaseModel):
     lgota_drugs: str
     has_hospitalization: bool
     count_hospitalization: Optional[int] = None
-    last_hospitalization_date: Optional[tdate] = None
+    last_hospitalization_date: Optional[str] = None

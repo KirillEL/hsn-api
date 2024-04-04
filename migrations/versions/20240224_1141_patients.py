@@ -38,7 +38,7 @@ def upgrade() -> None:
     lgota_drugs varchar(100) not null,
     has_hospitalization boolean not null default false,
     count_hospitalization integer,
-    last_hospitalization_date timestamp without time zone,
+    last_hospitalization_date varchar(255),
     patient_note text,
     is_deleted boolean not null default false,
     
