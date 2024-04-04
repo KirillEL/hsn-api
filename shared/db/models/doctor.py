@@ -13,7 +13,7 @@ class DoctorDBModel(BaseDBModel):
     name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     patronymic = Column(String(100), nullable=False)
-    phone_number = Column(BigInteger, nullable=False, unique=True)
+    phone_number = Column(String(20), nullable=False, unique=True)
 
     user_id = Column(Integer, ForeignKey('public.users.id'), nullable=False, unique=True)
 

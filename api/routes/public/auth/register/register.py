@@ -1,10 +1,10 @@
 from typing import Optional
-
+import re
 from core.hsn.doctor.model import Role, UserAndDoctor
 
 from .router import auth_register_router
-from pydantic import BaseModel, Field
-from api.exceptions import ExceptionResponseSchema
+from pydantic import BaseModel, Field, field_validator
+from api.exceptions import ExceptionResponseSchema, ValidationException
 from fastapi import Request
 from core.user import user_command_create
 from core.user import UserDoctorCreateContext
@@ -18,11 +18,17 @@ class UserCreateRequest(BaseModel):
     name: str = Field(..., max_length=100)
     last_name: str = Field(..., max_length=100)
     patronymic: Optional[str] = Field(..., max_length=100)
-    phone_number: int = Field(..., gt=0)
+    phone_number: str = Field(max_length=20)
     is_glav: bool = Field(False)
     role: str = Field(None)
     cabinet_id: Optional[int] = Field(None, gt=0)
 
+    @field_validator("phone_number")
+    def phone_validation(cls, v):
+        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
+        if v and not re.search(regex, v, re.I):
+            raise ValidationException(message="Phone number is not valid")
+        return v
 
 @auth_register_router.post(
     "/",

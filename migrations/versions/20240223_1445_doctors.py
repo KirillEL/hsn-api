@@ -25,7 +25,7 @@ def upgrade() -> None:
     name varchar(100) not null,
     last_name varchar(100) not null,
     patronymic varchar(100),
-    phone_number BIGINT not null unique,
+    phone_number varchar(20) not null unique,
     user_id integer not null unique constraint doctors_user_fk
         references public.users,
     cabinet_id integer constraint doctors_cabinet_fk

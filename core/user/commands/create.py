@@ -6,7 +6,7 @@ from api.exceptions.base import InternalServerException, NotFoundException, Vali
 from api.routes.admin import roles
 from sqlalchemy.orm import joinedload
 from shared.db.db_session import SessionContext, db_session
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, field_validator
 from core.hsn.doctor.model import UserAndDoctor
 from sqlalchemy import insert, select
 
@@ -24,11 +24,12 @@ class UserDoctorCreateContext(BaseModel):
     name: str = Field(..., max_length=100)
     last_name: str = Field(..., max_length=100)
     patronymic: Optional[str] = Field(..., max_length=100)
-    phone_number: int = Field(..., gt=0)
+    phone_number: str
     is_glav: bool = Field(False)
     role: str = Field(None)
     cabinet_id: Optional[int] = Field(None, gt=0)
     user_id: int = Field(None, gt=0)
+
 
         
 @SessionContext()
