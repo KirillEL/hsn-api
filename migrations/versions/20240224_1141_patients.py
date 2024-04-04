@@ -30,7 +30,7 @@ def upgrade() -> None:
     location varchar(255) not null,
     district varchar(255) not null,
     address varchar(255) not null,
-    phone bigint not null,
+    phone varchar(20) not null,
     clinic varchar(255) not null,
     referring_doctor varchar(255),
     referring_clinic_organization varchar(255),

@@ -1,5 +1,6 @@
 from datetime import date as tdate, datetime
 from typing import Optional
+import re
 from fastapi import Request, status
 
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
@@ -10,8 +11,8 @@ from sqlalchemy import insert
 from shared.db.db_session import db_session
 from .router import patient_router
 from core.hsn.patient import Patient, HsnPatientCreateContext, hsn_patient_create
-from api.exceptions import ExceptionResponseSchema
-from pydantic import BaseModel, Field
+from api.exceptions import ExceptionResponseSchema, ValidationException
+from pydantic import BaseModel, Field, validator, field_validator
 
 
 class CreatePatientRequestBody(BaseModel):
@@ -24,7 +25,7 @@ class CreatePatientRequestBody(BaseModel):
     location: LocationType = Field(default=LocationType.NSK.value)
     district: str = Field(max_length=255)
     address: str = Field(max_length=255)
-    phone: int = Field(gt=0)
+    phone: str
     clinic: str
     patient_note: Optional[str] = Field(max_length=1000)
     referring_doctor: Optional[str] = Field(max_length=255)
@@ -35,8 +36,12 @@ class CreatePatientRequestBody(BaseModel):
     count_hospitalization: Optional[int] = Field(0)
     last_hospitalization_date: Optional[tdate] = Field(None)
 
-
-
+    @field_validator("phone")
+    def phone_validation(cls, v):
+        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
+        if v and not re.search(regex, v, re.I):
+            raise ValidationException(message="Phone number is not valid")
+        return v
 
 
 @patient_router.post(
