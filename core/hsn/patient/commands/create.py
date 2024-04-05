@@ -44,11 +44,9 @@ async def convert_to_patient_response(patient) -> PatientResponse:
     decrypted_last_name = contragent_hasher.decrypt(patient.contragent.last_name)
     decrypted_patronymic = contragent_hasher.decrypt(patient.contragent.patronymic)
 
-    # Decrypt and directly format the birth date
     decrypted_birth_date_str = contragent_hasher.decrypt(patient.contragent.birth_date)
     decrypted_birth_date = datetime.strptime(decrypted_birth_date_str, "%d.%m.%Y").strftime("%d.%m.%Y")
 
-    # Handle decryption and formatting for the date of death (dod)
     decrypted_dod = None
     if patient.contragent.dod:
         decrypted_dod_str = contragent_hasher.decrypt(patient.contragent.dod)
