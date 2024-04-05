@@ -42,16 +42,16 @@ class CreatePatientRequestBody(BaseModel):
             try:
                 parsed_date = datetime.strptime(v, "%d.%m.%Y")
             except ValueError:
-                raise ValidationException(message="Date must be in DD.MM.YYYY format")
+                raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
             if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
-                raise ValidationException(message="Last hospitalization must not be later than the current day")
+                raise ValidationException(message="Дата последней госпитализации не должна быть позже чем текущая дата")
         return v
 
     @field_validator("phone")
     def phone_validation(cls, v):
         regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
         if v and not re.search(regex, v, re.I):
-            raise ValidationException(message="Phone number is not valid")
+            raise ValidationException(message="Номер телефона не валидный!")
         return v
 
 
