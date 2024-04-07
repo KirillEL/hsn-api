@@ -1,6 +1,7 @@
 from sqlalchemy import update, select
 from sqlalchemy.orm import selectinload
 
+from api.exceptions import NotFoundException, InternalServerException
 from core.hsn.patient.commands.create import convert_to_patient_response
 from core.hsn.patient.model import PatientResponse
 from core.hsn.patient.queries.own import GenderType
@@ -43,37 +44,53 @@ class ContragentUpdateContext(BaseModel):
     birth_date: Optional[str] = None
     dod: Optional[str] = None
 
+async def check_patient_exists_by_id(patient_id: int):
+    query = (
+        select(PatientDBModel)
+        .where(PatientDBModel.id == patient_id)
+    )
+    cursor = await db_session.execute(query)
+    patient = cursor.scalars().first()
+    if patient is None:
+        raise NotFoundException(message="Пациент с таким id не найден!")
 
 @SessionContext()
 async def hsn_update_patient_by_id(context: HsnPatientUpdateContext):
-    # Update PatientDBModel
-    patient_update_values = {key: value for key, value in context.dict().items() if
-                             key in PatientDBModel.__table__.columns and value is not None}
-    if patient_update_values:
-        await db_session.execute(
-            update(PatientDBModel).values(**patient_update_values, editor_id=context.user_id).where(
-                PatientDBModel.id == context.patient_id))
+    try:
+        await check_patient_exists_by_id(context.patient_id)
+        patient_update_values = {key: value for key, value in context.dict().items() if
+                                 key in PatientDBModel.__table__.columns and value is not None}
+        if patient_update_values:
+            await db_session.execute(
+                update(PatientDBModel).values(**patient_update_values, editor_id=context.user_id).where(
+                    PatientDBModel.id == context.patient_id))
 
-    query_get_patient_contragent_id = (
-        select(PatientDBModel.contragent_id)
-        .where(PatientDBModel.id == context.patient_id)
-    )
-    cursor = await db_session.execute(query_get_patient_contragent_id)
-    contragent_id = cursor.scalar()
+        query_get_patient_contragent_id = (
+            select(PatientDBModel.contragent_id)
+            .where(PatientDBModel.id == context.patient_id)
+        )
+        cursor = await db_session.execute(query_get_patient_contragent_id)
+        contragent_id = cursor.scalar()
 
-    contragent_update_values = {key: contragent_hasher.encrypt(value) for key, value in context.dict().items() if
-                                key in ContragentDBModel.__table__.columns and value is not None}
-    if contragent_update_values:
-        await db_session.execute(update(ContragentDBModel).values(**contragent_update_values).where(
-            ContragentDBModel.id == contragent_id))
+        contragent_update_values = {key: contragent_hasher.encrypt(value) for key, value in context.dict().items() if
+                                    key in ContragentDBModel.__table__.columns and value is not None}
+        if contragent_update_values:
+            await db_session.execute(update(ContragentDBModel).values(**contragent_update_values).where(
+                ContragentDBModel.id == contragent_id))
 
 
-    await db_session.commit()
+        await db_session.commit()
 
-    # Fetch updated patient data
-    result = await db_session.execute(select(PatientDBModel).options(selectinload(PatientDBModel.contragent)).where(
-        PatientDBModel.id == context.patient_id))
-    updated_patient = result.scalars().first()
-    if updated_patient:
-        converted_patient = await convert_to_patient_response(updated_patient)  # Assuming this is an async function
-        return PatientResponse.parse_obj(converted_patient)
+        # Fetch updated patient data
+        result = await db_session.execute(select(PatientDBModel).options(selectinload(PatientDBModel.contragent)).where(
+            PatientDBModel.id == context.patient_id))
+        updated_patient = result.scalars().first()
+        if updated_patient:
+            converted_patient = await convert_to_patient_response(updated_patient)  # Assuming this is an async function
+            return PatientResponse.parse_obj(converted_patient)
+    except NotFoundException as ne:
+        await db_session.rollback()
+        raise ne
+    except Exception as e:
+        await db_session.rollback()
+        raise InternalServerException(message=str(e))
