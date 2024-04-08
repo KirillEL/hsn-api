@@ -14,3 +14,9 @@ class AppointmentComplaintBlock(BaseModel):
     has_orthopnea: Optional[bool] = False
     has_heartbeat: Optional[bool] = True
     note: Optional[str] = None
+
+
+class AppointmentComplaintBlockFieldsResponse(BaseModel):
+    booleanName: Optional[str] = None
+    displayName: str
+    textName: Optional[str] = None

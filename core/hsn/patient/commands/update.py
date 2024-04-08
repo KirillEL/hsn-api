@@ -86,7 +86,7 @@ async def hsn_update_patient_by_id(context: HsnPatientUpdateContext):
             PatientDBModel.id == context.patient_id))
         updated_patient = result.scalars().first()
         if updated_patient:
-            converted_patient = await convert_to_patient_response(updated_patient)  # Assuming this is an async function
+            converted_patient = await convert_to_patient_response(updated_patient)  
             return PatientResponse.parse_obj(converted_patient)
     except NotFoundException as ne:
         await db_session.rollback()
