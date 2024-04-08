@@ -29,6 +29,8 @@ class AppointmentEkgBlock(BaseModel):
     mgp: Optional[int] = None
     zslg: Optional[int] = None
     local_hypokines: Optional[bool] = False
+    difusal_hypokines: Optional[bool] = False
     distol_disfunction: Optional[bool] = False
+    valvular_lesions: Optional[bool] = False
     anevrizma: Optional[bool] = False
     note: Optional[str] = None

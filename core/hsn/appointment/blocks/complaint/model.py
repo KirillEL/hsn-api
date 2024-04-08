@@ -16,7 +16,7 @@ class AppointmentComplaintBlock(BaseModel):
     note: Optional[str] = None
 
 
-class AppointmentComplaintBlockFieldsResponse(BaseModel):
+class AppointmentBlockBooleanFieldsResponse(BaseModel):
     name: str
     displayName: str
     value: Optional[bool] = None
