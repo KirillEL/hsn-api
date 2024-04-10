@@ -1,6 +1,8 @@
 from .list import *
 from .create import *
 from .get_by_id import *
+from .initialize import *
+from .status import *
 
 from .router import appointment_router
 from .block_ekg import block_ekg_router

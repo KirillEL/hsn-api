@@ -21,27 +21,27 @@ def upgrade():
     # Добавление новых столбцов
     op.execute('''
         ALTER TABLE public.appointments
-        ADD COLUMN block_clinic_doctor_id INTEGER NOT NULL;
+        ADD COLUMN block_clinic_doctor_id INTEGER;
         ''')
     op.execute('''
         ALTER TABLE public.appointments
-        ADD COLUMN block_diagnose_id INTEGER NOT NULL;
+        ADD COLUMN block_diagnose_id INTEGER;
         ''')
     op.execute('''
         ALTER TABLE public.appointments
-        ADD COLUMN block_laboratory_test_id INTEGER NOT NULL;
+        ADD COLUMN block_laboratory_test_id INTEGER;
         ''')
     op.execute('''
         ALTER TABLE public.appointments
-        ADD COLUMN block_ekg_id INTEGER NOT NULL;
+        ADD COLUMN block_ekg_id INTEGER;
         ''')
     op.execute('''
         ALTER TABLE public.appointments
-        ADD COLUMN block_complaint_id INTEGER NOT NULL;
+        ADD COLUMN block_complaint_id INTEGER;
         ''')
     op.execute('''
         ALTER TABLE public.appointments
-        ADD COLUMN block_clinical_condition_id INTEGER NOT NULL;
+        ADD COLUMN block_clinical_condition_id INTEGER;
         ''')
 
     # Добавление ограничений внешнего ключа

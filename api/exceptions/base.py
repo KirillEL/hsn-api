@@ -54,3 +54,9 @@ class InternalServerException(CustomException):
     code = HTTPStatus.INTERNAL_SERVER_ERROR
     error_code = HTTPStatus.INTERNAL_SERVER_ERROR
     message = HTTPStatus.INTERNAL_SERVER_ERROR.description
+
+
+class UnprocessableEntityException(CustomException):
+    code = HTTPStatus.UNPROCESSABLE_ENTITY
+    error_code = HTTPStatus.UNPROCESSABLE_ENTITY
+    message = HTTPStatus.UNPROCESSABLE_ENTITY.description

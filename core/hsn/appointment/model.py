@@ -29,7 +29,7 @@ class Appointment(BaseModel):
     block_complaint: AppointmentComplaintBlock
     block_clinical_condition: AppointmentClinicalConditionBlock
 
-
+    status: str
     is_deleted: bool
     created_at: datetime
     created_by: UserAuthor
@@ -56,3 +56,5 @@ class PatientAppointmentFlat(BaseModel):
     block_ekg: AppointmentEkgBlock
     block_complaint: AppointmentComplaintBlock
     block_clinical_condition: AppointmentClinicalConditionBlock
+
+    status: str

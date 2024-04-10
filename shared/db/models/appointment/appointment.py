@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, text
+import enum
+
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, text, Enum
+from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship, foreign
 
 from .. import UserDBModel
@@ -9,6 +12,13 @@ from .blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
 from .blocks.block_ekg import AppointmentEkgBlockDBModel
 from .blocks.block_complaint import AppointmentComplaintBlockDBModel
 from .blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
+
+
+class AppointmentStatus(str, enum.Enum):
+    PROGRESS = "progress"
+    COMPLETED = "completed"
+
+
 class AppointmentDBModel(BaseDBModel):
     __tablename__ = 'appointments'
     __table_args__ = {'schema': 'public'}
@@ -19,24 +29,25 @@ class AppointmentDBModel(BaseDBModel):
     date = Column(DateTime(timezone=False), nullable=False, server_default=text("now()"))
     date_next = Column(DateTime(timezone=False))
 
-    block_clinic_doctor_id = Column(Integer, ForeignKey('public.appointment_block_clinic_doctors.id'), nullable=False)
+    block_clinic_doctor_id = Column(Integer, ForeignKey('public.appointment_block_clinic_doctors.id'))
     block_clinic_doctor = relationship(AppointmentBlockClinicDoctorDBModel, uselist=False)
 
-    block_diagnose_id = Column(Integer, ForeignKey('public.appointment_block_diagnoses.id'), nullable=False)
+    block_diagnose_id = Column(Integer, ForeignKey('public.appointment_block_diagnoses.id'))
     block_diagnose = relationship(AppointmentDiagnoseBlockDBModel, uselist=False)
 
-    block_laboratory_test_id = Column(Integer, ForeignKey('public.appointment_block_laboratory_tests.id'), nullable=False)
+    block_laboratory_test_id = Column(Integer, ForeignKey('public.appointment_block_laboratory_tests.id'))
     block_laboratory_test = relationship(AppointmentLaboratoryTestBlockDBModel, uselist=False)
 
-    block_ekg_id = Column(Integer, ForeignKey('public.appointment_block_ekgs.id'), nullable=False)
+    block_ekg_id = Column(Integer, ForeignKey('public.appointment_block_ekgs.id'))
     block_ekg = relationship(AppointmentEkgBlockDBModel, uselist=False)
 
-    block_complaint_id = Column(Integer, ForeignKey('public.appointment_block_complaints.id'), nullable=False)
+    block_complaint_id = Column(Integer, ForeignKey('public.appointment_block_complaints.id'))
     block_complaint = relationship(AppointmentComplaintBlockDBModel, uselist=False)
 
-    block_clinical_condition_id = Column(Integer, ForeignKey('public.appointment_block_clinical_conditions.id'), nullable=False)
+    block_clinical_condition_id = Column(Integer, ForeignKey('public.appointment_block_clinical_conditions.id'))
     block_clinical_condition = relationship(AppointmentClinicalConditionBlockDBModel, uselist=False)
 
+    status = Column(String(25), nullable=False, server_default=text("progress"))
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
