@@ -7,6 +7,7 @@ from datetime import date as tdate, datetime
 from fastapi import Request
 
 class CreateBlockEkgRequestBody(BaseModel):
+    appointment_id: int = Field(gt=0)
     date_ekg: tdate = Field(default=datetime.today())
     sinus_ritm: bool = Field(False)
     av_blokada: bool = Field(False)

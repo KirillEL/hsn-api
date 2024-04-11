@@ -19,8 +19,8 @@ class Appointment(BaseModel):
     id: int
     doctor_id: int
     patient_id: int
-    date: tdate
-    date_next: Optional[tdate] = None
+    date: str
+    date_next: Optional[str] = None
 
     block_clinic_doctor: AppointmentClinicDoctorBlock
     block_diagnose: AppointmentDiagnoseBlock
@@ -47,14 +47,14 @@ class PatientAppointmentFlat(BaseModel):
     id: int
     doctor_id: int
     patient_id: int
-    date: tdate
-    date_next: Optional[tdate] = None
+    date: str
+    date_next: Optional[str] = None
 
-    block_clinic_doctor: AppointmentClinicDoctorBlock
-    block_diagnose: AppointmentDiagnoseBlock
-    block_laboratory_test: AppointmentLaboratoryTestBlock
-    block_ekg: AppointmentEkgBlock
-    block_complaint: AppointmentComplaintBlock
-    block_clinical_condition: AppointmentClinicalConditionBlock
+    block_clinic_doctor: Optional[AppointmentClinicDoctorBlock] = None
+    block_diagnose: Optional[AppointmentDiagnoseBlock] = None
+    block_laboratory_test: Optional[AppointmentLaboratoryTestBlock] = None
+    block_ekg: Optional[AppointmentEkgBlock] = None
+    block_complaint: Optional[AppointmentComplaintBlock] = None
+    block_clinical_condition: Optional[AppointmentClinicalConditionBlock] = None
 
     status: str

@@ -2,6 +2,7 @@ from typing import Optional
 
 from loguru import logger
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload, contains_eager, selectinload
 
 from api.exceptions import NotFoundException, BadRequestException, ValidationException
 from core.hsn.appointment import Appointment
@@ -22,15 +23,26 @@ class HsnAppointmentListContext(BaseModel):
 async def hsn_appointment_list(context: HsnAppointmentListContext):
     try:
         logger.info("Получение списка приемов...")
-        query = (
-            select(AppointmentDBModel)
-            .where(AppointmentDBModel.is_deleted.is_(False))
-            .where(AppointmentDBModel.doctor_id == context.user_id)
-        )
+        # Создаем базовый запрос
+        query = select(AppointmentDBModel).where(AppointmentDBModel.is_deleted.is_(False),
+                                                 AppointmentDBModel.doctor_id == context.user_id)
+
+        query = query.outerjoin(AppointmentDBModel.block_clinic_doctor) \
+            .outerjoin(AppointmentDBModel.block_clinical_condition) \
+            .outerjoin(AppointmentDBModel.block_diagnose) \
+            .outerjoin(AppointmentDBModel.block_ekg) \
+            .outerjoin(AppointmentDBModel.block_complaint) \
+            .outerjoin(AppointmentDBModel.block_laboratory_test)
+
+        query = query.options(selectinload(AppointmentDBModel.block_clinic_doctor),
+                              selectinload(AppointmentDBModel.block_clinical_condition),
+                              selectinload(AppointmentDBModel.block_diagnose),
+                              selectinload(AppointmentDBModel.block_ekg),
+                              selectinload(AppointmentDBModel.block_complaint),
+                              selectinload(AppointmentDBModel.block_laboratory_test))
 
         if context.limit is not None:
             query = query.limit(context.limit)
-
         if context.offset is not None:
             query = query.offset(context.offset)
 
@@ -42,6 +54,5 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
         logger.error(f'Ошибка валидации приемов: {ve}')
         raise ValidationException()
     except Exception as e:
-        logger.error(f'Ошибка при получение всех приемов: {e}')
+        logger.error(f'Ошибка при получении всех приемов: {e}')
         raise BadRequestException()
-

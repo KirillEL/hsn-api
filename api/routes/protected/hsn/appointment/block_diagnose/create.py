@@ -10,6 +10,8 @@ from fastapi import Request
 
 
 class CreateBlockDiagnoseRequestBody(BaseModel):
+    appointment_id: int = Field(gt=0)
+
     diagnose: str = Field(max_length=1000)
     classification_func_classes: ClassificationFuncClassesType = Field(ClassificationFuncClassesType.FIRST.value)
     classification_adjacent_release: ClassificationAdjacentReleaseType = Field(ClassificationAdjacentReleaseType.LOW.value)

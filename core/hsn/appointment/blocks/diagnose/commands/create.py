@@ -1,11 +1,18 @@
 from typing import Optional
 
-from sqlalchemy import insert
+from sqlalchemy import insert, update, exc
+
+from api.exceptions import NotFoundException, InternalServerException
+from api.exceptions.base import UnprocessableEntityException
+from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
 from shared.db.db_session import db_session, SessionContext
+from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
 from pydantic import BaseModel
 
+
 class HsnAppointmentBlockDiagnoseCreateContext(BaseModel):
+    appointment_id: int
     diagnose: str
     classification_func_classes: str
     classification_adjacent_release: str
@@ -43,14 +50,37 @@ class HsnAppointmentBlockDiagnoseCreateContext(BaseModel):
 
     another: Optional[str] = None
 
+
 @SessionContext()
 async def hsn_appointment_block_diagnose_create(context: HsnAppointmentBlockDiagnoseCreateContext):
-    query = (
-        insert(AppointmentDiagnoseBlockDBModel)
-        .values(**context.model_dump())
-        .returning(AppointmentDiagnoseBlockDBModel.id)
-    )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
-    new_block_diagnose_id = cursor.scalar()
-    return new_block_diagnose_id
+    try:
+        await check_appointment_exists(context.appointment_id)
+        payload = context.model_dump(exclude={'appointment_id'})
+        query = (
+            insert(AppointmentDiagnoseBlockDBModel)
+            .values(**payload)
+            .returning(AppointmentDiagnoseBlockDBModel.id)
+        )
+        cursor = await db_session.execute(query)
+        new_block_diagnose_id = cursor.scalar()
+
+        query_update_appointment = (
+            update(AppointmentDBModel)
+            .values(
+                block_diagnose_id=new_block_diagnose_id
+            )
+            .where(AppointmentDBModel.id == context.appointment_id)
+        )
+        await db_session.execute(query)
+
+        await db_session.commit()
+        return new_block_diagnose_id
+    except NotFoundException as ne:
+        await db_session.rollback()
+        raise ne
+    except exc.SQLAlchemyError as sqle:
+        await db_session.rollback()
+        raise UnprocessableEntityException(message=str(sqle))
+    except Exception as e:
+        await db_session.rollback()
+        raise InternalServerException(message=str(e))

@@ -9,6 +9,7 @@ from datetime import date as tdate
 from fastapi import Request
 
 class CreateBlockClinicDoctorRequestBody(BaseModel):
+    appointment_id: int = Field(gt=0)
     referring_doctor: Optional[str] = Field(None, max_length=500)
     referring_clinic_organization: Optional[str] = Field(None, max_length=500)
     disability: DisabilityType = Field(DisabilityType.NO.value)

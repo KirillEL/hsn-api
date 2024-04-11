@@ -7,6 +7,7 @@ from typing import Optional
 from fastapi import Request
 
 class CreateBlockClinicalConditionRequestBody(BaseModel):
+    appointment_id: int = Field(gt=0)
     heart_failure_om: Optional[bool] = Field(False)
     orthopnea: Optional[bool] = Field(False)
     paroxysmal_nocturnal_dyspnea: Optional[bool] = Field(False)

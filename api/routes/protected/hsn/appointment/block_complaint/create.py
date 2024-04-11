@@ -9,6 +9,7 @@ from fastapi import Request
 
 
 class CreateBlockComplaintRequestBody(BaseModel):
+    appointment_id: int = Field(gt=0)
     has_fatigue: bool = Field(False)
     has_dyspnea: bool = Field(False)
     has_swelling_legs: bool = Field(False)

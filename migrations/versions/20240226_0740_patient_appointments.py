@@ -26,8 +26,8 @@ def upgrade() -> None:
         references public.doctors,
     patient_id integer not null constraint appointment_patient_id_fk
         references public.patients,
-    date timestamp without time zone not null default now(),
-    date_next timestamp without time zone,
+    date text not null default to_char(current_date, 'DD.MM.YYYY'),
+    date_next text,
     
     is_deleted boolean not null default false,
     

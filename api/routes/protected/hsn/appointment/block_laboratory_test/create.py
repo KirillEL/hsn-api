@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import Request
 
 class CreateBlockLaboratoryTestRequestBody(BaseModel):
+    appointment_id: int = Field(gt=0)
     nt_pro_bnp: float = Field(gt=0)
     nt_pro_bnp_date: tdate = Field(default=datetime.date.today())
     hbalc: float = Field(gt=0)
