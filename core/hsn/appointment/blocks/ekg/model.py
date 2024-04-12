@@ -7,7 +7,7 @@ class AppointmentEkgBlock(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    date_ekg: tdate
+    date_ekg: str
     sinus_ritm: Optional[bool] = False
     av_blokada: Optional[bool] = False
     hypertrofia_lg: Optional[bool] = False
@@ -18,7 +18,7 @@ class AppointmentEkgBlock(BaseModel):
     fabrilycia_predcerdiy: Optional[bool] = False
     trepetanie_predcerdiy: Optional[bool] = False
     another_changes: Optional[str] = None
-    date_echo_ekg: tdate
+    date_echo_ekg: str
     fv: int
     sdla: Optional[int] = None
     lp: Optional[int] = None

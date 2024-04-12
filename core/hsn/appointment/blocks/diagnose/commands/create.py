@@ -71,7 +71,7 @@ async def hsn_appointment_block_diagnose_create(context: HsnAppointmentBlockDiag
             )
             .where(AppointmentDBModel.id == context.appointment_id)
         )
-        await db_session.execute(query)
+        await db_session.execute(query_update_appointment)
 
         await db_session.commit()
         return new_block_diagnose_id

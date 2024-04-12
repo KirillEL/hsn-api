@@ -7,7 +7,7 @@ class AppointmentEkgBlockDBModel(BaseDBModel):
     __table_args__ = {'schema': 'public'}
 
     id = Column(Integer, primary_key=True, nullable=False)
-    date_ekg = Column(DateTime(timezone=False), nullable=False)
+    date_ekg = Column(Text, nullable=False)
     sinus_ritm = Column(Boolean, nullable=False, server_default=text("false"))
     av_blokada = Column(Boolean, nullable=False, server_default=text("false"))
     hypertrofia_lg = Column(Boolean, nullable=False, server_default=text("false"))
@@ -19,7 +19,7 @@ class AppointmentEkgBlockDBModel(BaseDBModel):
     trepetanie_predcerdiy = Column(Boolean, nullable=False, server_default=text("false"))
     another_changes = Column(Text)
 
-    date_echo_ekg = Column(DateTime(timezone=False), nullable=False)
+    date_echo_ekg = Column(Text, nullable=False)
     fv = Column(Integer, nullable=False)
     sdla = Column(Integer)
     lp = Column(Integer)

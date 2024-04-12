@@ -18,11 +18,10 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade():
-    # Команды для выполнения при миграции вверх
     op.execute("""
     CREATE TABLE public.appointment_block_ekgs (
         id SERIAL PRIMARY KEY,
-        date_ekg TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+        date_ekg TEXT NOT NULL,
         sinus_ritm BOOLEAN NOT NULL DEFAULT false,
         av_blokada BOOLEAN NOT NULL DEFAULT false,
         hypertrofia_lg BOOLEAN NOT NULL DEFAULT false,
@@ -33,7 +32,7 @@ def upgrade():
         fabrilycia_predcerdiy BOOLEAN NOT NULL DEFAULT false,
         trepetanie_predcerdiy BOOLEAN NOT NULL DEFAULT false,
         another_changes TEXT,
-        date_echo_ekg TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+        date_echo_ekg TEXT NOT NULL,
         fv INTEGER NOT NULL,
         sdla INTEGER,
         lp INTEGER,
@@ -53,7 +52,6 @@ def upgrade():
     """)
 
 def downgrade():
-    # Команды для выполнения при откате миграции
     op.execute("""
     DROP TABLE public.appointment_block_ekgs;
     """)
