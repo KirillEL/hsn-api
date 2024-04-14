@@ -51,9 +51,7 @@ async def hsn_get_block_diagnose_fields():
                 field_responses.append(AppointmentBlockBooleanTextFieldsResponse(
                     booleanName=field_name,
                     displayName=displayName,
-                    textName=textName,
-                    booleanValue=None,
-                    textValue=None
+                    textName=textName
                 ))
 
     return field_responses

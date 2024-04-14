@@ -9,16 +9,13 @@ class AppointmentBlockBooleanTextFieldsResponse(BaseModel):
     booleanName: str
     displayName: str
     textName: str
-    booleanValue: Optional[bool] = None
-    textValue: Optional[str] = None
+
 
 
 class BaseTextDateField(BaseModel):
     textName: str
     displayName: str
     dateName: str
-    textValue: Optional[str] = None
-    dateValue: Optional[str] = None
 
 
 class AppointmentBlockTextDateFieldsResponse(BaseTextDateField):
