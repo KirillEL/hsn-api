@@ -1,8 +1,9 @@
 from typing import Optional, Dict, Any
 
 from pydantic import BaseModel
-from sqlalchemy import insert, update
+from sqlalchemy import insert, update, select
 
+from api.exceptions.base import BlockAlreadyExistsException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
 from core.hsn.purpose.commands.create import check_appointment_exists
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
@@ -76,6 +77,28 @@ class HsnBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
         }
 
 
+async def check_block_complaint_exists_in_appointment(appointment_id: int):
+    query = (
+        select(AppointmentDBModel.block_complaint_id)
+        .where(AppointmentDBModel.id == appointment_id)
+    )
+    cursor = await db_session.execute(query)
+    block_complaint = cursor.scalar()
+    if block_complaint:
+        raise BlockAlreadyExistsException(message="Блок жалоб пациента уже присутствует у приема!")
+
+
+async def check_block_clinical_condition_exists_in_appointment(appointment_id: int):
+    query = (
+        select(AppointmentDBModel.block_clinical_condition_id)
+        .where(AppointmentDBModel.id == appointment_id)
+    )
+    cursor = await db_session.execute(query)
+    block_clinical_condition = cursor.scalar()
+    if block_clinical_condition:
+        raise BlockAlreadyExistsException(message="Блок клинического состояния уже присутствует у приема!")
+
+
 @SessionContext()
 async def hsn_block_complaint_and_clinical_condition_create(context: HsnBlockComplaintAndClinicalCondtionCreateContext):
     await check_appointment_exists(context.appointment_id)
@@ -87,6 +110,7 @@ async def hsn_block_complaint_and_clinical_condition_create(context: HsnBlockCom
     )
     cursor = await db_session.execute(query_insert_block_complaint)
     new_block_complaint_id = cursor.scalar()
+    await check_block_complaint_exists_in_appointment(new_block_complaint_id)
 
     query_insert_block_clinical_condidtion = (
         insert(AppointmentClinicalConditionBlockDBModel)
@@ -95,6 +119,7 @@ async def hsn_block_complaint_and_clinical_condition_create(context: HsnBlockCom
     )
     cursor = await db_session.execute(query_insert_block_clinical_condidtion)
     new_block_clinical_condition_id = cursor.scalar()
+    await check_block_clinical_condition_exists_in_appointment(new_block_clinical_condition_id)
 
     query_update_appointment = (
         update(AppointmentDBModel)

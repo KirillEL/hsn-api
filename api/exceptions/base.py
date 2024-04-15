@@ -60,3 +60,9 @@ class UnprocessableEntityException(CustomException):
     code = HTTPStatus.UNPROCESSABLE_ENTITY
     error_code = HTTPStatus.UNPROCESSABLE_ENTITY
     message = HTTPStatus.UNPROCESSABLE_ENTITY.description
+
+
+class BlockAlreadyExistsException(CustomException):
+    code = HTTPStatus.CONFLICT
+    error_code = HTTPStatus.CONFLICT
+    message = ""
