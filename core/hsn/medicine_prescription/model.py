@@ -9,7 +9,8 @@ class MedicinePrescription(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-
+    medicine_group: str
+    name: str
 
     note: Optional[str] = None
 
@@ -22,3 +23,13 @@ class MedicinePrescription(BaseModel):
 
     deleted_at: Optional[datetime] = None
     deleted_by: Optional[UserAuthor] = None
+
+
+class MedicinePrescriptionFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    medicine_group: str
+    name: str
+
+    note: Optional[str] = None
