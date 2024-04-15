@@ -6,6 +6,7 @@ from core.hsn.appointment.blocks.ekg import hsn_get_block_ekg_fields
 from .router import block_ekg_router
 from api.exceptions import ExceptionResponseSchema
 
+
 @block_ekg_router.get(
     "/fields",
     response_model=AppointmentBlockEkgBooleanFieldsResponse,
