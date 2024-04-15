@@ -3,6 +3,7 @@ from .commands.create import hsn_appointment_block_complaint_create, HsnAppointm
 from .queries.get_fields import hsn_get_block_complaint_fields
 from .commands.update import  hsn_block_complaint_update, HsnBlockComplaintUpdateContext
 from .queries.by_appointment_id import hsn_get_block_complaint_by_appointment_id
+from .commands.create_with_condition import hsn_block_complaint_and_clinical_condition_create, HsnBlockComplaintAndClinicalCondtionCreateContext
 
 __all__ = [
     'AppointmentComplaintBlock',
@@ -11,5 +12,7 @@ __all__ = [
     'hsn_get_block_complaint_fields',
     'hsn_block_complaint_update',
     'HsnBlockComplaintUpdateContext',
-    'hsn_get_block_complaint_by_appointment_id'
+    'hsn_get_block_complaint_by_appointment_id',
+    'hsn_block_complaint_and_clinical_condition_create',
+    'HsnBlockComplaintAndClinicalCondtionCreateContext'
 ]
