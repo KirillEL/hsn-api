@@ -1,6 +1,7 @@
 from sqlalchemy import inspect
 
-from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse
+from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse, \
+    AppointmentBlockEkgBooleanFieldsResponse
 from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBModel
 from shared.db.db_session import SessionContext
 
@@ -8,7 +9,21 @@ from shared.db.db_session import SessionContext
 @SessionContext()
 async def hsn_get_block_ekg_fields():
     inspector = inspect(AppointmentEkgBlockDBModel)
-    field_responses = []
+    response = AppointmentBlockEkgBooleanFieldsResponse()
+
+    ekg_fields = {
+        "sinus_ritm", "av_blokada", "hypertrofia_lg", "ritm_eks",
+        "av_uzlovaya_tahikardia", "superventrikulyrnaya_tahikardia",
+        "zheludochnaya_tahikardia", "fabrilycia_predcerdiy", "trepetanie_predcerdiy"
+    }
+    echo_ekg_fields = {
+        "local_hypokines", "difusal_hypokines", "distol_disfunction",
+        "valvular_lesions", "anevrizma"
+    }
+
+    echo_ekg_integer_fields = {
+        "fv", "sdla", "lp", "pp", "kdr_lg", "ksr_lg", "kdo_lg", "mgp", "zslg"
+    }
 
     display_names = {
         "sinus_ritm": "Синусовый ритм",
@@ -22,27 +37,21 @@ async def hsn_get_block_ekg_fields():
         "trepetanie_predcerdiy": "Трепетание предсердий",
         "local_hypokines": "Локальный гипокинез",
         "difusal_hypokines": "Дифунзный гипогинез",
-        "distol_disfunction": "Диастолическая дизфункция ",
+        "distol_disfunction": "Диастолическая дизфункция",
         "valvular_lesions": "Клапанные поражения",
-        "anevrizma": "Аневризма"
+        "anevrizma": "Аневризма",
+        "fv": "ФВ",
+        "sdla": "СДЛА",
+        "lp": "ЛП",
+        "pp": "ПП",
+        "kdr_kg": "КДР ЛЖ",
+        "ksr_lg": "КСР ЛЖ",
+        "kdo_lg": "КДО ЛЖ",
+        "mgp": "МЖП",
+        "zslg": "ЗСЛЖ"
     }
 
-    exclude_fields = {
-        "id",
-        "date_ekg",
-        "another_changes",
-        "date_echo_ekg",
-        "fv",
-        "sdla",
-        "lp",
-        "pp",
-        "kdr_lg",
-        "ksr_lg",
-        "kdo_lg",
-        "mgp",
-        "zslg",
-        "note"
-    }
+    exclude_fields = {"id", "date_ekg", "another_changes", "date_echo_ekg", "note"}
 
     for column in inspector.columns.values():
         field_name = column.name
@@ -51,6 +60,11 @@ async def hsn_get_block_ekg_fields():
                 name=field_name,
                 displayName=display_names.get(field_name, "")
             )
-            field_responses.append(field_response)
+            if field_name in ekg_fields:
+                response.ekg.append(field_response)
+            elif field_name in echo_ekg_fields:
+                response.echo_ekg.boolean_fields.append(field_response)
+            elif field_name in echo_ekg_integer_fields:
+                response.echo_ekg.integer_fields.append(field_response)
 
-    return field_responses
+    return response

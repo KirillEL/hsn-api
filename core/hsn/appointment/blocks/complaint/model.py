@@ -19,3 +19,13 @@ class AppointmentComplaintBlock(BaseModel):
 class AppointmentBlockBooleanFieldsResponse(BaseModel):
     name: str
     displayName: str
+
+
+class EchoEkgFieldsResponse(BaseModel):
+    integer_fields: list[AppointmentBlockBooleanFieldsResponse] = []
+    boolean_fields: list[AppointmentBlockBooleanFieldsResponse] = []
+
+
+class AppointmentBlockEkgBooleanFieldsResponse(BaseModel):
+    ekg: list[AppointmentBlockBooleanFieldsResponse] = []
+    echo_ekg: EchoEkgFieldsResponse = EchoEkgFieldsResponse()
