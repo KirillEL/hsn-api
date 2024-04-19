@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, t
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship, foreign
 
+from .purpose import AppointmentPurposeDBModel
 from .. import UserDBModel
 from ..BASE import BaseDBModel
 from .blocks.block_clinic_doctor import AppointmentBlockClinicDoctorDBModel
@@ -46,6 +47,9 @@ class AppointmentDBModel(BaseDBModel):
 
     block_clinical_condition_id = Column(Integer, ForeignKey('public.appointment_block_clinical_conditions.id'))
     block_clinical_condition = relationship(AppointmentClinicalConditionBlockDBModel, uselist=False)
+    purposes = relationship(AppointmentPurposeDBModel,
+                            primaryjoin="AppointmentDBModel.id == AppointmentPurposeDBModel.appointment_id",
+                            back_populates="appointment")
 
     status = Column(String(25), nullable=False, server_default=text("progress"))
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))

@@ -11,6 +11,8 @@ from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field, ValidationError
 
+from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
+
 
 class HsnAppointmentListContext(BaseModel):
     user_id: int = Field(gt=0)
@@ -32,14 +34,17 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
             .outerjoin(AppointmentDBModel.block_diagnose) \
             .outerjoin(AppointmentDBModel.block_ekg) \
             .outerjoin(AppointmentDBModel.block_complaint) \
-            .outerjoin(AppointmentDBModel.block_laboratory_test)
+            .outerjoin(AppointmentDBModel.block_laboratory_test) \
+            .outerjoin(AppointmentDBModel.purposes)
 
         query = query.options(selectinload(AppointmentDBModel.block_clinic_doctor),
                               selectinload(AppointmentDBModel.block_clinical_condition),
                               selectinload(AppointmentDBModel.block_diagnose),
                               selectinload(AppointmentDBModel.block_ekg),
                               selectinload(AppointmentDBModel.block_complaint),
-                              selectinload(AppointmentDBModel.block_laboratory_test))
+                              selectinload(AppointmentDBModel.block_laboratory_test),
+                              selectinload(AppointmentDBModel.purposes).selectinload(
+                                  AppointmentPurposeDBModel.medicine_prescription))
 
         if context.limit is not None:
             query = query.limit(context.limit)
@@ -47,7 +52,7 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
             query = query.offset(context.offset)
 
         cursor = await db_session.execute(query)
-        patient_appointments = cursor.scalars().all()
+        patient_appointments = cursor.unique().scalars().all()
 
         return [PatientAppointmentFlat.model_validate(p_a) for p_a in patient_appointments]
     except ValidationError as ve:

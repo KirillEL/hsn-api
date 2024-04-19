@@ -10,6 +10,7 @@ from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
+from core.hsn.purpose import AppointmentPurposeFlat
 from core.user import UserAuthor
 
 
@@ -56,5 +57,6 @@ class PatientAppointmentFlat(BaseModel):
     block_ekg: Optional[AppointmentEkgBlock] = None
     block_complaint: Optional[AppointmentComplaintBlock] = None
     block_clinical_condition: Optional[AppointmentClinicalConditionBlock] = None
+    purposes: Optional[list[AppointmentPurposeFlat]] = None
 
     status: str

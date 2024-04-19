@@ -1,21 +1,30 @@
+from loguru import logger
+from sqlalchemy.orm import joinedload
+
 from api.exceptions import NotFoundException, InternalServerException
+from api.exceptions.base import UnprocessableEntityException
 from core.hsn.purpose import AppointmentPurposeFlat
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field
 from typing import Optional
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, exc
 
 from shared.db.models import MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 
 
+class MedicineContext(BaseModel):
+    medicine_prescription_id: int = Field(gt=0)
+    dosa: str
+    note: Optional[str] = None
+
+
 class HsnAppointmentPurposeCreateContext(BaseModel):
     user_id: int = Field(gt=0)
     appointment_id: int
-    medicine_prescription_id: int
-    note: Optional[str] = None
-    dosa: str
+    medicine_prescriptions: list[MedicineContext]
+
 
 async def check_appointment_exists(appointment_id: int):
     query = (
@@ -38,25 +47,44 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
     if medicine_prescription is None:
         raise NotFoundException(message="Такого препарата не найдено!")
 
+
 @SessionContext()
 async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateContext):
     try:
         await check_appointment_exists(context.appointment_id)
-        await check_medicine_prescription_exists(context.medicine_prescription_id)
+        for med_prescription in context.medicine_prescriptions:
+            await check_medicine_prescription_exists(med_prescription.medicine_prescription_id)
         payload = context.model_dump(exclude={'user_id'})
-        query = (
-            insert(AppointmentPurposeDBModel)
-            .values(
-                author_id=context.user_id,
-                **payload
+        appointment_id = context.appointment_id
+        created_purposes = []
+        for med_prescription in context.medicine_prescriptions:
+            logger.debug(f'med_prescription: {med_prescription}')
+            query = (
+                insert(AppointmentPurposeDBModel)
+                .values(
+                    author_id=context.user_id,
+                    appointment_id=appointment_id,
+                    **med_prescription.model_dump()
+                )
+                .returning(AppointmentPurposeDBModel.id)
             )
-            .returning(AppointmentPurposeDBModel)
-        )
-        cursor = await db_session.execute(query)
-        await db_session.commit()
-        new_appointment_purpose = cursor.scalars().first()
+            cursor = await db_session.execute(query)
+            inserted_id = cursor.scalar()
 
-        return AppointmentPurposeFlat.model_validate(new_appointment_purpose)
+            select_query = select(AppointmentPurposeDBModel).options(
+                joinedload(AppointmentPurposeDBModel.medicine_prescription)).where(AppointmentPurposeDBModel.id == inserted_id)
+            cursor = await db_session.execute(select_query)
+            created_purpose = cursor.scalar_one()
+            logger.debug(f'created_purpose: {created_purpose.medicine_prescription.__dict__}')
+            created_purposes.append(created_purpose)
+
+        await db_session.commit()
+
+        return [AppointmentPurposeFlat.model_validate(p) for p in created_purposes]
     except NotFoundException as ne:
         await db_session.rollback()
         raise ne
+    except exc.SQLAlchemyError as sqle:
+        await db_session.rollback()
+        raise UnprocessableEntityException(message=str(sqle))
+

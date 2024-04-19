@@ -26,10 +26,21 @@ class AppointmentPurpose(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
+class MedicinePrescriptionFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    medicine_group: str
+    name: str
+    note: Optional[str] = None
+
+
 class AppointmentPurposeFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     appointment_id: int
     medicine_prescription_id: int
+    dosa: str
     note: Optional[str] = None
+    medicine_prescription: MedicinePrescriptionFlat

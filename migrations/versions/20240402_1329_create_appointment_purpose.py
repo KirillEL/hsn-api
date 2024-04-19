@@ -27,10 +27,39 @@ def upgrade() -> None:
     medicine_prescription_id integer constraint medicine_prescription_id_fk
         references public.medicine_prescriptions,
     dosa varchar(100) not null,
-    note text
+    note text,
+    
+    is_deleted boolean not null default false,
+
+        created_at   timestamp with time zone default now() not null,
+        created_by   integer not null,
+
+        updated_at   timestamp with time zone,
+        updated_by   integer,
+
+        deleted_at   timestamp with time zone,
+        deleted_by   integer
     );
     ''')
 
+    op.execute('''
+                    create trigger appointment_purpose_updated_at_trg
+                    before update
+                    on public.appointment_purposes
+                    for each row
+                    execute procedure base.set_updated_at();
+                    ''')
+
+    op.execute('''
+                        create trigger appointment_purpose_deleted_at_trg
+                        before update
+                        on public.appointment_purposes
+                        for each row
+                        execute procedure base.set_deleted_at();
+                        ''')
+
 
 def downgrade() -> None:
+    op.execute('drop trigger if exists appointment_purpose_updated_at_trg on public.appointment_purposes;')
+    op.execute('drop trigger if exists appointment_purpose_deleted_at_trg on public.appointment_purposes;')
     op.execute('drop table if exists public.appointment_purposes;')

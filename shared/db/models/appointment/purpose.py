@@ -1,6 +1,6 @@
 from sqlalchemy.orm import relationship, foreign
 
-from .. import UserDBModel
+from .. import UserDBModel, MedicinesPrescriptionDBModel
 from ..BASE import BaseDBModel
 from sqlalchemy import Column, ForeignKey, Text, Integer, Boolean, text, DateTime, String
 
@@ -11,7 +11,11 @@ class AppointmentPurposeDBModel(BaseDBModel):
 
     id = Column(Integer, primary_key=True, nullable=False)
     appointment_id = Column(Integer, ForeignKey('public.appointments.id'), nullable=False)
+    appointment = relationship("AppointmentDBModel",
+                               primaryjoin="AppointmentDBModel.id == AppointmentPurposeDBModel.appointment_id",
+                               back_populates="purposes")
     medicine_prescription_id = Column(Integer, ForeignKey('public.medicine_prescriptions.id'), nullable=False)
+    medicine_prescription = relationship(MedicinesPrescriptionDBModel, uselist=False)
     dosa = Column(String(100), nullable=False)
     note = Column(Text)
 
@@ -41,4 +45,3 @@ class AppointmentPurposeDBModel(BaseDBModel):
                               uselist=False,
                               viewonly=True,
                               lazy='selectin')
-
