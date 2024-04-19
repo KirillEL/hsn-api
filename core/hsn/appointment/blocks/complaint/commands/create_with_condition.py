@@ -44,7 +44,7 @@ class HsnBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
     irregular_pulse: Optional[bool] = False
     tachypnea: Optional[bool] = False
     hepatomegaly: Optional[bool] = False
-    other_symptoms: Optional[str] = False
+    other_symptoms: Optional[str] = None
 
     height: Optional[int] = None
     weight: Optional[float] = None

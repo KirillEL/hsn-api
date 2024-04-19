@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+
 
 class AppointmentComplaintBlock(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -29,3 +31,8 @@ class EchoEkgFieldsResponse(BaseModel):
 class AppointmentBlockEkgBooleanFieldsResponse(BaseModel):
     ekg: list[AppointmentBlockBooleanFieldsResponse] = []
     echo_ekg: EchoEkgFieldsResponse = EchoEkgFieldsResponse()
+
+
+class AppointmentComplaintWithClinicalCondition(BaseModel):
+    block_complaint: AppointmentComplaintBlock
+    block_clinical_condition: AppointmentClinicalConditionBlock
