@@ -1,9 +1,9 @@
 from loguru import logger
 from sqlalchemy.orm import joinedload
 
-from api.exceptions import NotFoundException, InternalServerException
+from api.exceptions import NotFoundException
 from api.exceptions.base import UnprocessableEntityException
-from core.hsn.purpose import AppointmentPurposeFlat
+from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field
 from typing import Optional

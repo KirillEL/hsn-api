@@ -1,8 +1,7 @@
-from datetime import datetime, date
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import date as tdate
 
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
@@ -10,7 +9,7 @@ from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
-from core.hsn.purpose import AppointmentPurposeFlat
+from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
 from core.user import UserAuthor
 
 

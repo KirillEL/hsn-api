@@ -5,7 +5,7 @@ from sqlalchemy import insert, update, select
 
 from api.exceptions.base import BlockAlreadyExistsException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
-from core.hsn.purpose.commands.create import check_appointment_exists
+from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel

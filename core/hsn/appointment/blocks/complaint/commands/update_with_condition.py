@@ -4,7 +4,7 @@ from sqlalchemy import update, select
 
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
-from core.hsn.purpose.commands.create import check_appointment_exists
+from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
