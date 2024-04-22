@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 
 @medicine_prescription_router.get(
-    "/get_fields",
+    "/fields",
     response_model=list[GetMedicinePrescriptionFieldsResponse],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
