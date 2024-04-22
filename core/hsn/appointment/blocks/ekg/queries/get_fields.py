@@ -44,7 +44,7 @@ async def hsn_get_block_ekg_fields():
         "sdla": "СДЛА",
         "lp": "ЛП",
         "pp": "ПП",
-        "kdr_kg": "КДР ЛЖ",
+        "kdr_lg": "КДР ЛЖ",
         "ksr_lg": "КСР ЛЖ",
         "kdo_lg": "КДО ЛЖ",
         "mgp": "МЖП",
