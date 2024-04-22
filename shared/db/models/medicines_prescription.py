@@ -20,7 +20,7 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     updated_at = Column(DateTime)
     deleted_at = Column(DateTime)
 
-    author_id = Column('created_by', Integer, nullable=False)
+    author_id = Column('created_by', Integer, nullable=True)
     created_by = relationship(UserDBModel,
                               primaryjoin=author_id == foreign(UserDBModel.id),
                               uselist=False,

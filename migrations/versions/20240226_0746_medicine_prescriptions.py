@@ -68,7 +68,7 @@ def upgrade() -> None:
     
     
     created_at   timestamp with time zone default now() not null,
-    created_by   integer not null,
+    created_by   integer,
 
     updated_at   timestamp with time zone,
     updated_by   integer,
