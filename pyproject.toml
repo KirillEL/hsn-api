@@ -16,6 +16,7 @@ loguru = "^0.7.2"
 gunicorn = "^21.2.0"
 fastapi-admin = "^1.0.4"
 cryptography = "^42.0.3"
+fastapi-cache2 = {extras = ["redis"], version = "^0.2.1"}
 
 [tool.poetry.dev-dependencies]
 SQLAlchemy = "^2.0.25"
