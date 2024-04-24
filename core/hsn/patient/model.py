@@ -120,3 +120,9 @@ class PatientResponseWithoutFullName(BasePatientResponse):
     name: str
     last_name: str
     patronymic: Optional[str] = None
+
+
+class PatientAvailableColumnsResponse(BaseModel):
+    title: str
+    value: str
+    disabled: Optional[bool] = None
