@@ -5,6 +5,7 @@ from .commands.create import HsnPatientCreateContext, hsn_patient_create
 from .commands.delete import hsn_patient_delete
 from .commands.update import hsn_update_patient_by_id, HsnPatientUpdateContext
 from .queries.own import hsn_get_own_patients
+from .queries.by_appointment_id import hsn_get_patient_by_appointment_id
 
 
 __all__ = [
@@ -16,5 +17,6 @@ __all__ = [
     'hsn_patient_delete',
     'hsn_get_own_patients',
     'hsn_update_patient_by_id',
-    'HsnPatientUpdateContext'
+    'HsnPatientUpdateContext',
+    'hsn_get_patient_by_appointment_id'
 ]

@@ -11,7 +11,7 @@ from datetime import date
 class Contragent(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    phone_number: str | int # int
+    phone_number: str | int  # int
     snils: str
     address: str
     mis_number: str | int  # int
@@ -19,8 +19,6 @@ class Contragent(BaseModel):
     relative_phone_number: Optional[str | int] = None  # int
     parent: Optional[str] = None
     date_dead: Optional[str] = None  # date
-
-
 
 
 class Patient(BaseModel):
@@ -64,7 +62,7 @@ class Patient(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
-class   PatientFlat(BaseModel):
+class PatientFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -89,16 +87,12 @@ class   PatientFlat(BaseModel):
     count_hospitalization: Optional[int] = None
     last_hospitalization_date: Optional[str] = None
 
-
     contragent: Contragent
     cabinet: Optional[CabinetFlat] = None
 
 
-class PatientResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class BasePatientResponse(BaseModel):
     id: int
-    full_name: str
     gender: str
     age: int
     birth_date: str
@@ -106,7 +100,7 @@ class PatientResponse(BaseModel):
     location: str
     district: str
     address: str
-    phone: int
+    phone: str
     clinic: str
     patient_note: Optional[str] = None
     referring_doctor: Optional[str] = None
@@ -117,3 +111,12 @@ class PatientResponse(BaseModel):
     count_hospitalization: Optional[int] = None
     last_hospitalization_date: Optional[str] = None
 
+
+class PatientResponse(BasePatientResponse):
+    full_name: str
+
+
+class PatientResponseWithoutFullName(BasePatientResponse):
+    name: str
+    last_name: str
+    patronymic: Optional[str] = None

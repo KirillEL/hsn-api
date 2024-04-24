@@ -1,4 +1,4 @@
-from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse
+from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientResponseWithoutFullName
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field, ValidationError
 from typing import Optional
@@ -39,7 +39,7 @@ class HsnPatientCreateContext(BaseModel):
     last_hospitalization_date: Optional[str] = None
 
 
-async def convert_to_patient_response(patient) -> PatientResponse:
+async def convert_to_patient_response(patient, type: str = "full_name") ->  PatientResponse | PatientResponseWithoutFullName:
     decrypted_name = contragent_hasher.decrypt(patient.contragent.name)
     decrypted_last_name = contragent_hasher.decrypt(patient.contragent.last_name)
     decrypted_patronymic = contragent_hasher.decrypt(patient.contragent.patronymic)
@@ -61,28 +61,54 @@ async def convert_to_patient_response(patient) -> PatientResponse:
     today = tdate.today()
     age = today.year - birth_date_obj.year - ((today.month, today.day) < (birth_date_obj.month, birth_date_obj.day))
 
-    patient_response = PatientResponse(
-        id=patient.id,
-        full_name=full_name,
-        gender=patient.gender,
-        age=age,
-        birth_date=decrypted_birth_date,  # Already formatted
-        dod=decrypted_dod,  # Already formatted, if exists
-        location=patient.location,
-        district=patient.district,
-        address=patient.address,
-        phone=patient.phone,
-        clinic=patient.clinic,
-        patient_note=patient.patient_note,
-        referring_doctor=patient.referring_doctor,
-        referring_clinic_organization=patient.referring_clinic_organization,
-        disability=patient.disability,
-        lgota_drugs=patient.lgota_drugs,
-        has_hospitalization=patient.has_hospitalization,
-        count_hospitalization=patient.count_hospitalization,
-        last_hospitalization_date=patient.last_hospitalization_date  # Assuming this is correctly formatted or null
-    )
-    return patient_response
+    if type == "full_name":
+        patient_response = PatientResponse(
+            id=patient.id,
+            full_name=full_name,
+            gender=patient.gender,
+            age=age,
+            birth_date=decrypted_birth_date,  # Already formatted
+            dod=decrypted_dod,  # Already formatted, if exists
+            location=patient.location,
+            district=patient.district,
+            address=patient.address,
+            phone=patient.phone,
+            clinic=patient.clinic,
+            patient_note=patient.patient_note,
+            referring_doctor=patient.referring_doctor,
+            referring_clinic_organization=patient.referring_clinic_organization,
+            disability=patient.disability,
+            lgota_drugs=patient.lgota_drugs,
+            has_hospitalization=patient.has_hospitalization,
+            count_hospitalization=patient.count_hospitalization,
+            last_hospitalization_date=patient.last_hospitalization_date  # Assuming this is correctly formatted or null
+        )
+        return patient_response
+    else:
+        patient_response = PatientResponseWithoutFullName(
+            id=patient.id,
+            name=decrypted_name,
+            last_name=decrypted_last_name,
+            patronymic=decrypted_patronymic,
+            gender=patient.gender,
+            age=age,
+            birth_date=decrypted_birth_date,  # Already formatted
+            dod=decrypted_dod,  # Already formatted, if exists
+            location=patient.location,
+            district=patient.district,
+            address=patient.address,
+            phone=patient.phone,
+            clinic=patient.clinic,
+            patient_note=patient.patient_note,
+            referring_doctor=patient.referring_doctor,
+            referring_clinic_organization=patient.referring_clinic_organization,
+            disability=patient.disability,
+            lgota_drugs=patient.lgota_drugs,
+            has_hospitalization=patient.has_hospitalization,
+            count_hospitalization=patient.count_hospitalization,
+            last_hospitalization_date=patient.last_hospitalization_date  # Assuming this is correctly formatted or null
+        )
+        return patient_response
 
 
 async def create_contragent(contragent_payload: dict[str, any]) -> int:
