@@ -11,7 +11,6 @@ from fastapi import Request
 
 
 class MedicineGroupEnum(Enum):
-    """Enumeration of possible medicine groups"""
     BAB = "b-АБ"
     GLYPHOZYN = "Глифозины"
     STATIN = "Статины"
@@ -33,7 +32,7 @@ class MedicineGroupEnum(Enum):
 
 
 class CreateMedicinePrescriptionRequestBody(BaseModel):
-    medicine_group: MedicineGroupEnum = Field(MedicineGroupEnum.BAB.value)
+    medicine_group_id: int = Field(gt=0)
     name: str = Field(max_length=500)
     note: Optional[str] = Field(None, max_length=1000)
 

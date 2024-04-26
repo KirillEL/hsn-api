@@ -1,5 +1,7 @@
 from loguru import logger
 from sqlalchemy import insert, select, func
+
+from shared.db.models import MedicinesGroupDBModel
 from shared.db.models.medicines_prescription import MedicinesPrescriptionDBModel
 from shared.db.db_session import db_session, SessionContext
 
@@ -48,7 +50,8 @@ payloads = {
 @SessionContext()
 async def create_med_prescriptions():
     query = (
-        select(func.count()).select_from(MedicinesPrescriptionDBModel).where(MedicinesPrescriptionDBModel.is_deleted.is_(False))
+        select(func.count()).select_from(MedicinesPrescriptionDBModel).where(
+            MedicinesPrescriptionDBModel.is_deleted.is_(False))
     )
     cursor = await db_session.execute(query)
     count = cursor.scalar()
@@ -56,13 +59,35 @@ async def create_med_prescriptions():
         logger.info("Препараты созданы уже!")
         return
     logger.debug(f'count {count}')
-    for group, names in payloads.items():
-        for name in names:
-            prescription = MedicinesPrescriptionDBModel(
-                medicine_group=group,
-                name=name
+    for med_group in med_groups.values():
+        query = (
+            insert(MedicinesGroupDBModel)
+            .values(
+                name=med_group,
+                author_id=1
             )
-            db_session.add(prescription)
+        )
+        await db_session.execute(query)
+    await db_session.commit()
+    logger.info(f"Справочник групп препаратов успешно создан!")
+
+    for key, value in payloads.items():
+        query = (
+            select(MedicinesGroupDBModel.id)
+            .where(MedicinesGroupDBModel.name.contains(key))
+        )
+        cursor = await db_session.execute(query)
+        id = cursor.scalar()
+        for val in value:
+            query = (
+                insert(MedicinesPrescriptionDBModel)
+                .values(
+                    medicine_group_id=id,
+                    name=val
+                )
+            )
+            await db_session.execute(query)
 
     await db_session.commit()
-    logger.info("Препараты созданы...")
+
+    logger.info(f'Все препараты успешно созданы!')
