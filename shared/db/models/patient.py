@@ -20,8 +20,6 @@ class PatientDBModel(BaseDBModel):
     address = Column(String(255), nullable=False)
     phone = Column(String(20), nullable=False)
     clinic = Column(String(255), nullable=False)
-    referring_doctor = Column(String(255))
-    referring_clinic_organization = Column(String(255))
     patient_note = Column(Text, nullable=True)
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
