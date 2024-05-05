@@ -1,3 +1,4 @@
+from .fields import *
 from .create import *
 from .update import *
 from .get_by_appointment_id import *

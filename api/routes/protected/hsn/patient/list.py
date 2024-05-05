@@ -24,7 +24,6 @@ class SortParams(BaseModel):
 class GetOwnPatientsQueryParams(BaseModel):
     limit: Optional[int] = None
     offset: Optional[int] = None
-    # Assuming full_name and gender are meant to be lists based on your alias notation
     full_name: Optional[List[str]] = None
     gender: Optional[List[str]] = None
     columnKey: Optional[str] = None

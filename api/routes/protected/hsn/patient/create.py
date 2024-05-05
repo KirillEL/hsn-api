@@ -28,15 +28,9 @@ class CreatePatientRequestBody(BaseModel):
     phone: str
     clinic: str
     patient_note: Optional[str] = Field(None,max_length=1000)
-    referring_doctor: Optional[str] = Field(None, max_length=255)
-    referring_clinic_organization: Optional[str] = Field(None, max_length=255)
-    disability: Optional[DisabilityType] = Field(DisabilityType.NO.value)
-    lgota_drugs: Optional[LgotaDrugsType] = Field(LgotaDrugsType.NO.value)
-    has_hospitalization: bool
-    count_hospitalization: Optional[int] = Field(0)
-    last_hospitalization_date: Optional[str] = None
 
-    @field_validator("birth_date", "dod", "last_hospitalization_date")
+
+    @field_validator("birth_date", "dod")
     def date_format_validation(cls, v):
         if v is not None:
             try:

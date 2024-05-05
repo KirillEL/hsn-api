@@ -30,13 +30,7 @@ class HsnPatientCreateContext(BaseModel):
     phone: str
     clinic: str
     patient_note: Optional[str] = None
-    referring_doctor: Optional[str] = None
-    referring_clinic_organization: Optional[str] = None
-    disability: str
-    lgota_drugs: str
-    has_hospitalization: bool
-    count_hospitalization: Optional[int] = None
-    last_hospitalization_date: Optional[str] = None
+
 
 
 async def convert_to_patient_response(patient, type: str = "full_name") ->  PatientResponse | PatientResponseWithoutFullName:
@@ -75,13 +69,6 @@ async def convert_to_patient_response(patient, type: str = "full_name") ->  Pati
             phone=patient.phone,
             clinic=patient.clinic,
             patient_note=patient.patient_note,
-            referring_doctor=patient.referring_doctor,
-            referring_clinic_organization=patient.referring_clinic_organization,
-            disability=patient.disability,
-            lgota_drugs=patient.lgota_drugs,
-            has_hospitalization=patient.has_hospitalization,
-            count_hospitalization=patient.count_hospitalization,
-            last_hospitalization_date=patient.last_hospitalization_date  # Assuming this is correctly formatted or null
         )
         return patient_response
     else:
@@ -100,13 +87,6 @@ async def convert_to_patient_response(patient, type: str = "full_name") ->  Pati
             phone=patient.phone,
             clinic=patient.clinic,
             patient_note=patient.patient_note,
-            referring_doctor=patient.referring_doctor,
-            referring_clinic_organization=patient.referring_clinic_organization,
-            disability=patient.disability,
-            lgota_drugs=patient.lgota_drugs,
-            has_hospitalization=patient.has_hospitalization,
-            count_hospitalization=patient.count_hospitalization,
-            last_hospitalization_date=patient.last_hospitalization_date  # Assuming this is correctly formatted or null
         )
         return patient_response
 

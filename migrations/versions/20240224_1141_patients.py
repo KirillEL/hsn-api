@@ -32,13 +32,6 @@ def upgrade() -> None:
     address varchar(255) not null,
     phone varchar(20) not null,
     clinic varchar(255) not null,
-    referring_doctor varchar(255),
-    referring_clinic_organization varchar(255),
-    disability varchar(100) not null,
-    lgota_drugs varchar(100) not null,
-    has_hospitalization boolean not null default false,
-    count_hospitalization integer,
-    last_hospitalization_date varchar(255),
     patient_note text,
     is_deleted boolean not null default false,
     
