@@ -22,12 +22,6 @@ class PatientDBModel(BaseDBModel):
     clinic = Column(String(255), nullable=False)
     referring_doctor = Column(String(255))
     referring_clinic_organization = Column(String(255))
-    disability = Column(String(100), nullable=False)
-    lgota_drugs = Column(String(100), nullable=False)
-    has_hospitalization = Column(Boolean, nullable=False, server_default=text("false"))
-    count_hospitalization = Column(Integer)
-    last_hospitalization_date = Column(String(255))
-
     patient_note = Column(Text, nullable=True)
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)

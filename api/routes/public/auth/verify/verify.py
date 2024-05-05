@@ -9,7 +9,7 @@ class AuthVerifyTokenRequest(BaseModel):
 
 
 @auth_verify_router.post(
-    '/',
+    '',
     summary="Верификация пользователя"
 )
 async def verify_user(body: AuthVerifyTokenRequest):

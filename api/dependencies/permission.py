@@ -38,8 +38,6 @@ class IsAuthenticatedAdministrator(BasePermission):
         return False
     
 
-
-
 class AlowAll(BasePermission):
 
     async def has_permission(self, request: Request) -> bool:

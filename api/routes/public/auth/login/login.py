@@ -13,7 +13,7 @@ class AuthRequest(BaseModel):
 
 
 @auth_login_router.post(
-    "/",
+    "",
     response_model=AuthLoginResponse,
     responses={"404": {"model": ExceptionResponseSchema}},
     summary="Вход в аккаунт"

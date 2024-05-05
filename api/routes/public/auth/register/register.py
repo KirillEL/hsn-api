@@ -30,7 +30,7 @@ class UserCreateRequest(BaseModel):
 
 
 @auth_register_router.post(
-    "/",
+    "",
     response_model=UserAndDoctor,
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Регистрация пользователя"
