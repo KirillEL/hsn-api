@@ -5,7 +5,7 @@ from typing import Optional, List
 from fastapi import Request, Depends, Query
 from pydantic import BaseModel, Field, parse_obj_as
 
-from core.hsn.patient.model import Patient, PatientFlat, PatientResponse
+from core.hsn.patient.model import Patient, PatientFlat, PatientResponse, PatientResponseWithoutFullName
 from core.hsn.patient.queries.own import hsn_get_own_patients, GenderType
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema
@@ -31,7 +31,7 @@ class GetOwnPatientsQueryParams(BaseModel):
 
 
 class GetOwnPatientResponse(BaseModel):
-    data: list[PatientResponse]
+    data: list[PatientResponseWithoutFullName]
     total: int
 
 

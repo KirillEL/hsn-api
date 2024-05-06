@@ -9,7 +9,7 @@ from api.exceptions import NotFoundException
 from loguru import logger
 
 from ..commands.create import convert_to_patient_response
-from ..model import Contragent
+from ..model import Contragent, PatientResponseWithoutFullName
 from utils import contragent_hasher
 from shared.db.models.contragent import ContragentDBModel
 
@@ -30,5 +30,5 @@ async def hsn_get_patient_by_id(current_user_id: int, patient_id: int):
     if patient is None:
         raise NotFoundException(message="Пациент с таким id не найден!")
 
-    converted_patient = await convert_to_patient_response(patient)
-    return PatientResponse.model_validate(converted_patient)
+    converted_patient = await convert_to_patient_response(patient, type="without")
+    return PatientResponseWithoutFullName.model_validate(converted_patient)
