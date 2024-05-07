@@ -86,7 +86,7 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         raise NotFoundException(message="Пациенты не найдены!")
     converted_patients = []
     for patient in patients:
-        conv_patient = await convert_to_patient_response(patient, type="without")
+        conv_patient = await convert_to_patient_response(patient)
         converted_patients.append(conv_patient)
 
     if full_name:

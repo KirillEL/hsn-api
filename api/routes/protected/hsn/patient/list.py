@@ -31,7 +31,7 @@ class GetOwnPatientsQueryParams(BaseModel):
 
 
 class GetOwnPatientResponse(BaseModel):
-    data: list[PatientResponseWithoutFullName]
+    data: list[PatientResponse]
     total: int
 
 
