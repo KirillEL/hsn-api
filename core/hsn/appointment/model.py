@@ -1,8 +1,6 @@
 from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
@@ -41,12 +39,21 @@ class Appointment(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
+class PatientFlatForAppointmentList(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+    last_name: str
+    patronymic: Optional[str] = None
+
+
 class PatientAppointmentFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
 
     id: int
     doctor_id: int
-    patient_id: int
+    patient_id: Optional[int] = None
+    patient: Optional[PatientFlatForAppointmentList] = None
     date: str
     date_next: Optional[str] = None
 
