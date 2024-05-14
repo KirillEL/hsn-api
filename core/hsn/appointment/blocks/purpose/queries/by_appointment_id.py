@@ -1,3 +1,4 @@
+from loguru import logger
 from sqlalchemy import select, exc
 from sqlalchemy.orm import selectinload
 
@@ -26,12 +27,9 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
 
         return [AppointmentPurposeFlat.model_validate(p) for p in purposes]
     except NotFoundException as ne:
-        await db_session.rollback()
         raise ne
     except exc.SQLAlchemyError as sqle:
-        await db_session.rollback()
         raise UnprocessableEntityException(message=str(sqle))
     except Exception as e:
-        await db_session.rollback()
         raise InternalServerException
 

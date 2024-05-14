@@ -7,6 +7,7 @@ from core.hsn.appointment import Appointment, HsnAppointmentListContext, hsn_app
 from fastapi import Request, Depends
 from pydantic import BaseModel
 
+
 class GetAppointmentListQueryParams(BaseModel):
     limit: Optional[int] = None
     offset: Optional[int] = None

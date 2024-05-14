@@ -31,6 +31,6 @@ async def appointment_create(request: Request, body: AppointmentCreateRequestBod
     context = HsnCreatePatientAppontmentContext(
         user_id=request.user.id,
         doctor_id=request.user.doctor.id
-        **body.model_dump()
+                  ** body.model_dump()
     )
     return await hsn_patient_appontment_create(context)

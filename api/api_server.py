@@ -3,6 +3,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
 from typing import List
+
+from loguru import logger
+
 from infra.config import config
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials, HTTPBasic
@@ -54,6 +57,7 @@ def init_middlewares() -> List[Middleware]:
 def init_listeners(app: FastAPI) -> None:
     @app.exception_handler(CustomException)
     async def custom_exception_handler(request: Request, exc: CustomException):
+        logger.error(f'Exception: {exc.error_code}; Message: {exc.message}')
         return JSONResponse(
             status_code=exc.code,
             content={"error_code": exc.error_code, "message": exc.message}

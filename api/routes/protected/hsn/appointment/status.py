@@ -13,4 +13,5 @@ from fastapi import Request
     tags=["Прием"]
 )
 async def get_appointment_status(request: Request, patient_appointment_id: int):
-    return await hsn_get_appointment_status(patient_appointment_id)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_get_appointment_status(doctor_id,patient_appointment_id)

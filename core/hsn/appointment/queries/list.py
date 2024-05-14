@@ -61,7 +61,6 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
 
         patient_appointments = cursor.unique().scalars().all()
         for appointment in patient_appointments:
-            logger.debug(f'appointment: {appointment.patient.__dict__}')
             appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
             appointment.patient.contragent.last_name = contragent_hasher.decrypt(
                 appointment.patient.contragent.last_name)

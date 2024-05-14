@@ -8,24 +8,23 @@ from shared.db.models.appointment.appointment import AppointmentDBModel, Appoint
 
 
 @SessionContext()
-async def hsn_get_appointment_status(patient_appointment_id: int):
+async def hsn_get_appointment_status(doctor_id: int, patient_appointment_id: int):
+    logger.info(f'hsn_get_appointment_status...')
     try:
         query = (
             select(AppointmentDBModel)
             .where(AppointmentDBModel.id == patient_appointment_id)
+            .where(AppointmentDBModel.doctor_id == doctor_id)
         )
         cursor = await db_session.execute(query)
         appointment = cursor.scalars().first()
-        if appointment is None:
+        if not appointment:
             raise NotFoundException(message="Прием не найден!")
         logger.info(f'status: {appointment.status}')
         return appointment.status
     except NotFoundException as ne:
-        logger.error(f'NotFoundError')
         raise ne
     except exc.SQLAlchemyError as sqle:
-        logger.error(f'sqlalchemyError: {sqle}')
-        raise UnprocessableEntityException
+        raise UnprocessableEntityException(message=str(sqle))
     except Exception as e:
-        logger.error(f'server_error: {e}')
         raise InternalServerException

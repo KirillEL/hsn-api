@@ -2,8 +2,6 @@ from core.hsn.medicine_prescription.queries.fields import hsn_medicine_prescript
     GetMedicinePrescriptionFieldsResponse
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema
-from pydantic import BaseModel
-
 
 
 @block_purpose_router.get(

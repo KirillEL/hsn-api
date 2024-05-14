@@ -1,11 +1,12 @@
 from fastapi import HTTPException
 from loguru import logger
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import select, exc
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
 
 from api.exceptions import InternalServerException
+from api.exceptions.base import UnprocessableEntityException
 from shared.db.models.medicines_prescription import MedicinesPrescriptionDBModel
 from shared.db.db_session import db_session, SessionContext
 
@@ -51,8 +52,9 @@ async def hsn_medicine_prescriptions_get_fields():
             ) for group in grouped_prescriptions
         ]
         return response
+    except exc.SQLAlchemyError as sqle:
+        raise UnprocessableEntityException(message=str(sqle))
     except Exception as e:
-        logger.error(f'{e}')
         raise InternalServerException
 
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, root_validator, model_validator
 from starlette import status
 from fastapi import Request
 
@@ -22,6 +22,19 @@ class AppointmentInitializeRequestBody(BaseModel):
             return value
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
+
+    @model_validator(mode='after')
+    def check_dates(self):
+        date = self.date
+        date_next = self.date_next
+        if date and date_next:
+            date_dt = datetime.strptime(date, "%d.%m.%Y")
+            date_next_dt = datetime.strptime(date_next, "%d.%m.%Y")
+
+            if date_next_dt <= date_dt:
+                raise ValidationException(message="Дата следующего приема должна быть больше даты приема")
+
+        return self
 
 
 @appointment_router.post(

@@ -1,15 +1,31 @@
 from loguru import logger
 from pydantic import ValidationError
-from sqlalchemy import select
+from sqlalchemy import select, RowMapping
 from sqlalchemy.orm import selectinload
 
-from api.exceptions import NotFoundException, ValidationException, BadRequestException
+from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
 from shared.db.models import PatientDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 from utils import contragent_hasher
+
+
+async def build_patient_info(appointment: RowMapping):
+    appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
+    appointment.patient.contragent.last_name = contragent_hasher.decrypt(
+        appointment.patient.contragent.last_name)
+    if appointment.patient.contragent.patronymic:
+        appointment.patient.contragent.patronymic = contragent_hasher.decrypt(
+            appointment.patient.contragent.patronymic)
+
+    patient_info = PatientFlatForAppointmentList(
+        name=appointment.patient.contragent.name,
+        last_name=appointment.patient.contragent.last_name,
+        patronymic=appointment.patient.contragent.patronymic
+    )
+    return patient_info
 
 
 @SessionContext()
@@ -42,21 +58,10 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
 
         cursor = await db_session.execute(query)
         appointment = cursor.scalars().first()
-        if appointment is None:
+        if not appointment:
             raise NotFoundException(message="Прием не найден!")
 
-        appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
-        appointment.patient.contragent.last_name = contragent_hasher.decrypt(
-            appointment.patient.contragent.last_name)
-        if appointment.patient.contragent.patronymic:
-            appointment.patient.contragent.patronymic = contragent_hasher.decrypt(
-                appointment.patient.contragent.patronymic)
-
-        patient_info = PatientFlatForAppointmentList(
-            name=appointment.patient.contragent.name,
-            last_name=appointment.patient.contragent.last_name,
-            patronymic=appointment.patient.contragent.patronymic
-        )
+        patient_info = await build_patient_info(appointment)
 
         appointment_flat = PatientAppointmentFlat(
             id=appointment.id,
@@ -74,9 +79,12 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
             status=appointment.status
         )
         return PatientAppointmentFlat.model_validate(appointment_flat)
+    except NotFoundException as ne:
+        logger.error(f'Ошибка 404: {ne}')
+        raise ne
     except ValidationError as ve:
         logger.error(f'Ошибка валидации приема: {ve}')
-        raise ValidationException()
+        raise ValidationException(message=str(ve))
     except Exception as e:
         logger.error(f'Возникла ошибка: {e}')
-        raise e
+        raise InternalServerException(message=str(e))
