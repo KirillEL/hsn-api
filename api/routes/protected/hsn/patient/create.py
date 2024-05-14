@@ -27,8 +27,7 @@ class CreatePatientRequestBody(BaseModel):
     address: str = Field(max_length=255)
     phone: str
     clinic: str
-    patient_note: Optional[str] = Field(None,max_length=1000)
-
+    patient_note: Optional[str] = Field(None, max_length=1000)
 
     @field_validator("birth_date", "dod")
     def date_format_validation(cls, v):

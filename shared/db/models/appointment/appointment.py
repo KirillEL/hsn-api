@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, text, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, text, Enum, Text
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship, foreign
 
@@ -30,8 +30,8 @@ class AppointmentDBModel(BaseDBModel):
     patient_id = Column(Integer, ForeignKey('public.patients.id'), nullable=False)
     patient = relationship(PatientDBModel, uselist=False)
 
-    date = Column(DateTime(timezone=False), nullable=False, server_default=text("now()"))
-    date_next = Column(DateTime(timezone=False))
+    date = Column(Text, nullable=False)
+    date_next = Column(Text)
 
     block_clinic_doctor_id = Column(Integer, ForeignKey('public.appointment_block_clinic_doctors.id'))
     block_clinic_doctor = relationship(AppointmentBlockClinicDoctorDBModel, uselist=False)

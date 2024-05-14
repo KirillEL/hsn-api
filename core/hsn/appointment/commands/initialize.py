@@ -2,6 +2,7 @@ from typing import Optional
 
 from loguru import logger
 
+from api.decorators import HandleExceptions
 from api.exceptions import InternalServerException, NotFoundException
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.db_session import db_session, SessionContext
@@ -15,7 +16,8 @@ class HsnInitializeAppointmentContext(BaseModel):
     user_id: int = Field(gt=0)
     doctor_id: int = Field(gt=0)
     patient_id: int
-    date_next: Optional[str] = None
+    date: Optional[str] = Field(None)
+    date_next: Optional[str] = Field(None)
 
 
 async def check_patient_exists(patient_id: int):
@@ -30,33 +32,21 @@ async def check_patient_exists(patient_id: int):
 
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_appointment_initialize(context: HsnInitializeAppointmentContext):
     payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
     logger.info(f'start initialize patient_appointment...')
-    try:
-        await check_patient_exists(context.patient_id)
-        query = (
-            insert(AppointmentDBModel)
-            .values(
-                **payload,
-                author_id=context.user_id
-            )
-            .returning(AppointmentDBModel.id)
+    await check_patient_exists(context.patient_id)
+    query = (
+        insert(AppointmentDBModel)
+        .values(
+            **payload,
+            author_id=context.user_id
         )
-        cursor = await db_session.execute(query)
-        await db_session.commit()
-        new_patient_appointment_id = cursor.scalar()
-        logger.info(f'patient_appointment_model_id: {new_patient_appointment_id}')
-        return new_patient_appointment_id
-    except NotFoundException as ne:
-        await db_session.rollback()
-        logger.error(f'NotFoundException: {ne}')
-        raise ne
-    except exc.SQLAlchemyError as sqle:
-        await db_session.rollback()
-        logger.error(f'SQLAlchemyError: {sqle}')
-        raise UnprocessableEntityException(message=str(sqle))
-    except Exception as e:
-        await db_session.rollback()
-        logger.error(f'server error: {e}')
-        raise InternalServerException(message="Проблемы на сервере")
+        .returning(AppointmentDBModel.id)
+    )
+    cursor = await db_session.execute(query)
+    await db_session.commit()
+    new_patient_appointment_id = cursor.scalar()
+    logger.info(f'patient_appointment_model_id: {new_patient_appointment_id}')
+    return new_patient_appointment_id

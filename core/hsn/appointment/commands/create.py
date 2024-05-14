@@ -1,5 +1,6 @@
 from sqlalchemy import insert, select
 
+from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from shared.db.models import BaseDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -74,30 +75,24 @@ async def check_clinical_condition_exists(block_clinical_condition_id: int):
 
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_patient_appontment_create(context: HsnCreatePatientAppontmentContext):
-    try:
-        await check_block_clinic_doctor_exists(context.block_clinic_doctor_id)
-        await check_block_diagnose_exists(context.block_diagnose_id)
-        await check_block_laboratory_test_exists(context.block_laboratory_test_id)
-        await check_block_ekg_exists(context.block_ekg_id)
-        await check_block_complaint_exists(context.block_complaint_id)
-        await check_clinical_condition_exists(context.block_clinical_condition_id)
-        payload = context.model_dump(exclude={'user_id'})
-        query = (
-            insert(AppointmentDBModel)
-            .values(
-                author_id=context.user_id,
-                **payload
-            )
-            .returning(AppointmentDBModel.id)
+    await check_block_clinic_doctor_exists(context.block_clinic_doctor_id)
+    await check_block_diagnose_exists(context.block_diagnose_id)
+    await check_block_laboratory_test_exists(context.block_laboratory_test_id)
+    await check_block_ekg_exists(context.block_ekg_id)
+    await check_block_complaint_exists(context.block_complaint_id)
+    await check_clinical_condition_exists(context.block_clinical_condition_id)
+    payload = context.model_dump(exclude={'user_id'})
+    query = (
+        insert(AppointmentDBModel)
+        .values(
+            author_id=context.user_id,
+            **payload
         )
-        cursor = await db_session.execute(query)
-        await db_session.commit()
-        new_appointment_id = cursor.scalar()
-        return new_appointment_id
-    except NotFoundException as ne:
-        await db_session.rollback()
-        raise ne
-    except Exception:
-        await db_session.rollback()
-        raise InternalServerException
+        .returning(AppointmentDBModel.id)
+    )
+    cursor = await db_session.execute(query)
+    await db_session.commit()
+    new_appointment_id = cursor.scalar()
+    return new_appointment_id
