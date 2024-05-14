@@ -1,12 +1,14 @@
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from api.decorators import HandleExceptions
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.medicines_prescription import MedicinesPrescriptionDBModel
 from core.hsn.medicine_prescription import MedicinePrescriptionFlat
 
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_medicine_prescription_all(limit: int = None, offset: int = None):
     query = (
         select(MedicinesPrescriptionDBModel)

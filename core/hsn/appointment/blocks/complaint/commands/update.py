@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import select, update
 
+from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -22,6 +23,7 @@ class HsnBlockComplaintUpdateContext(BaseModel):
 
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_block_complaint_update(context: HsnBlockComplaintUpdateContext):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 

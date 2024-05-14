@@ -2,6 +2,7 @@ from typing import Optional
 
 from sqlalchemy import insert, update, exc
 
+from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
@@ -46,36 +47,26 @@ class HsnAppointmentBlockClinicalConditionCreateContext(BaseModel):
 
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_appointment_block_clinical_condition_create(context: HsnAppointmentBlockClinicalConditionCreateContext):
-    try:
-        await check_appointment_exists(context.appointment_id)
-        payload = context.model_dump(exclude={'appointment_id'})
-        query = (
-            insert(AppointmentClinicalConditionBlockDBModel)
-            .values(**payload)
-            .returning(AppointmentClinicalConditionBlockDBModel.id)
+    await check_appointment_exists(context.appointment_id)
+    payload = context.model_dump(exclude={'appointment_id'})
+    query = (
+        insert(AppointmentClinicalConditionBlockDBModel)
+        .values(**payload)
+        .returning(AppointmentClinicalConditionBlockDBModel.id)
+    )
+    cursor = await db_session.execute(query)
+    new_block_clinical_condition_id = cursor.scalar()
+
+    query_update_appointment = (
+        update(AppointmentDBModel)
+        .values(
+            block_clinical_condition_id=new_block_clinical_condition_id
         )
-        cursor = await db_session.execute(query)
-        new_block_clinical_condition_id = cursor.scalar()
+        .where(AppointmentDBModel.id == context.appointment_id)
+    )
+    await db_session.execute(query_update_appointment)
 
-        query_update_appointment = (
-            update(AppointmentDBModel)
-            .values(
-                block_clinical_condition_id=new_block_clinical_condition_id
-            )
-            .where(AppointmentDBModel.id == context.appointment_id)
-        )
-        await db_session.execute(query_update_appointment)
-
-        await db_session.commit()
-        return new_block_clinical_condition_id
-    except NotFoundException as ne:
-        await db_session.rollback()
-        raise ne
-    except exc.SQLAlchemyError as sqle:
-        await db_session.rollback()
-        raise UnprocessableEntityException(message=str(sqle))
-    except Exception as e:
-        await db_session.rollback()
-        raise InternalServerException(message=str(e))
-
+    await db_session.commit()
+    return new_block_clinical_condition_id

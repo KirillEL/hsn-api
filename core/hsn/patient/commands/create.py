@@ -1,3 +1,4 @@
+from api.decorators import HandleExceptions
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientResponseWithoutFullName
 from shared.db.db_session import db_session, SessionContext
@@ -33,8 +34,8 @@ class HsnPatientCreateContext(BaseModel):
     patient_note: Optional[str] = None
 
 
-
-async def convert_to_patient_response(patient, type: str = "full_name") ->  PatientResponse | PatientResponseWithoutFullName:
+async def convert_to_patient_response(patient,
+                                      type: str = "full_name") -> PatientResponse | PatientResponseWithoutFullName:
     decrypted_name = contragent_hasher.decrypt(patient.contragent.name)
     decrypted_last_name = contragent_hasher.decrypt(patient.contragent.last_name)
     decrypted_patronymic = contragent_hasher.decrypt(patient.contragent.patronymic)
@@ -112,6 +113,7 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
 
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_patient_create(context: HsnPatientCreateContext):
     logger.info(f'Начало создания пациента')
     patient_payload = context.model_dump(
@@ -123,40 +125,31 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
         'birth_date': context.birth_date,
         'dod': context.dod if context.dod else None
     }
-    try:
-        new_contragent_id = await create_contragent(contragent_payload)
-        logger.info(f'контрагент создан успешно!')
+    new_contragent_id = await create_contragent(contragent_payload)
+    logger.info(f'контрагент создан успешно!')
 
-        query = (
-            insert(PatientDBModel)
-            .values(
-                author_id=context.user_id,
-                cabinet_id=context.cabinet_id,
-                **patient_payload,
-                contragent_id=new_contragent_id
-            )
-            .returning(PatientDBModel.id)
+    query = (
+        insert(PatientDBModel)
+        .values(
+            author_id=context.user_id,
+            cabinet_id=context.cabinet_id,
+            **patient_payload,
+            contragent_id=new_contragent_id
         )
-        cursor = await db_session.execute(query)
-        await db_session.commit()
-        patient_id = cursor.scalar()
-        query_get = (
-            select(PatientDBModel)
-            .options(joinedload(PatientDBModel.contragent))
-            .where(PatientDBModel.id == patient_id)
-        )
-        cursor = await db_session.execute(query_get)
-        patient = cursor.scalars().first()
-        if not patient:
-            raise NotFoundException(message="Пациент не найден!")
-        patient_response = await convert_to_patient_response(patient)
-        logger.info(f'patient_response: {patient_response}')
-        return PatientResponse.model_validate(patient_response)
-    except NotFoundException as ne:
-        raise ne
-    except exc.SQLAlchemyError as sqle:
-        await db_session.rollback()
-        raise UnprocessableEntityException(message=str(sqle))
-    except Exception:
-        await db_session.rollback()
-        raise InternalServerException
+        .returning(PatientDBModel.id)
+    )
+    cursor = await db_session.execute(query)
+    await db_session.commit()
+    patient_id = cursor.scalar()
+    query_get = (
+        select(PatientDBModel)
+        .options(joinedload(PatientDBModel.contragent))
+        .where(PatientDBModel.id == patient_id)
+    )
+    cursor = await db_session.execute(query_get)
+    patient = cursor.scalars().first()
+    if not patient:
+        raise NotFoundException(message="Пациент не найден!")
+    patient_response = await convert_to_patient_response(patient)
+    logger.info(f'patient_response: {patient_response}')
+    return PatientResponse.model_validate(patient_response)

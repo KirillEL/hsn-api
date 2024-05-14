@@ -1,3 +1,4 @@
+from api.decorators import HandleExceptions
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models import CabinetDBModel, DoctorDBModel
@@ -15,30 +16,21 @@ from utils import contragent_hasher
 from shared.db.models.contragent import ContragentDBModel
 
 
-
 @SessionContext()
+@HandleExceptions()
 async def hsn_get_patient_by_id(current_user_id: int, patient_id: int):
-    try:
-        query = (
-            select(PatientDBModel)
-            .options(joinedload(PatientDBModel.cabinet)
-                     .joinedload(CabinetDBModel.doctors)
-                     , joinedload(PatientDBModel.contragent))
-            .where(DoctorDBModel.user_id == current_user_id)
-            .where(PatientDBModel.id == patient_id)
-        )
-        cursor = await db_session.execute(query)
-        patient = cursor.scalars().first()
-        if patient is None:
-            raise NotFoundException(message="Пациент с таким id не найден!")
+    query = (
+        select(PatientDBModel)
+        .options(joinedload(PatientDBModel.cabinet)
+                 .joinedload(CabinetDBModel.doctors)
+                 , joinedload(PatientDBModel.contragent))
+        .where(DoctorDBModel.user_id == current_user_id)
+        .where(PatientDBModel.id == patient_id)
+    )
+    cursor = await db_session.execute(query)
+    patient = cursor.scalars().first()
+    if not patient:
+        raise NotFoundException(message="Пациент с таким id не найден!")
 
-        converted_patient = await convert_to_patient_response(patient, type="without")
-        return PatientResponseWithoutFullName.model_validate(converted_patient)
-    except NotFoundException as ne:
-        raise ne
-    except ValidationError as ve:
-        raise ValidationException(message=str(ve))
-    except exc.SQLAlchemyError as sqle:
-        raise UnprocessableEntityException(message=str(sqle))
-    except Exception:
-        raise InternalServerException
+    converted_patient = await convert_to_patient_response(patient, type="without")
+    return PatientResponseWithoutFullName.model_validate(converted_patient)

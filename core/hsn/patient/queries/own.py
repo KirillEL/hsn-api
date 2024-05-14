@@ -4,6 +4,8 @@ from typing import Dict
 
 from sqlalchemy import desc, asc, func
 from loguru import logger
+
+from api.decorators import HandleExceptions
 from api.exceptions.base import NotFoundException
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import ContragentDBModel
@@ -31,10 +33,14 @@ class LocationType(Enum):
     NSK = "Новосибирск"
     ANOTHER = "другое"
 
+
 ContragentAlias = aliased(ContragentDBModel, name="contragents_1")
 
+
 @SessionContext()
-async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, full_name: str = None, gender: str = None, columnKey: str = None, order: str = None):
+@HandleExceptions()
+async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, full_name: str = None,
+                               gender: str = None, columnKey: str = None, order: str = None):
     query = (
         select(PatientDBModel)
         .options(joinedload(PatientDBModel.cabinet)
@@ -62,20 +68,19 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
 
     logger.debug(f'columnKey: {columnKey}')
     logger.debug(f'desc: {order}')
-    if columnKey is not None and hasattr(PatientDBModel, columnKey):
+    if columnKey and hasattr(PatientDBModel, columnKey):
         column_attribute = getattr(PatientDBModel, columnKey)
         if order == "asc":
             query = query.order_by(asc(column_attribute))
         else:
             query = query.order_by(desc(column_attribute))
 
-    if columnKey is not None and hasattr(ContragentAlias, columnKey) and columnKey != 'id':
+    if columnKey and hasattr(ContragentAlias, columnKey) and columnKey != 'id':
         column_attribute = getattr(ContragentAlias, columnKey)
         if order == "asc":
             query = query.order_by(asc(column_attribute))
         else:
             query = query.order_by(desc(column_attribute))
-
 
     total_count_result = await db_session.execute(query_count)
     total_count = total_count_result.scalar()
@@ -90,7 +95,8 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         converted_patients.append(conv_patient)
 
     if full_name:
-        filtered_patients = [patient for patient in converted_patients if full_name[0].lower() in patient.full_name.lower()]
+        filtered_patients = [patient for patient in converted_patients if
+                             full_name[0].lower() in patient.full_name.lower()]
         total_count = len(filtered_patients)
     else:
         filtered_patients = converted_patients

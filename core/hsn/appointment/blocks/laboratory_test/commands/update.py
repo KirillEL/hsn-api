@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import select, update
 
+from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -52,6 +53,7 @@ class HsnBlockLaboratoryTestUpdateContext(BaseModel):
 
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_block_laboratory_test_update(context: HsnBlockLaboratoryTestUpdateContext):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 

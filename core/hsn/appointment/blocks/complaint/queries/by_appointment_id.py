@@ -1,3 +1,4 @@
+from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
 from shared.db.db_session import db_session, SessionContext
@@ -6,6 +7,7 @@ from shared.db.models.appointment.blocks.block_complaint import AppointmentCompl
 from sqlalchemy import select
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_get_block_complaint_by_appointment_id(appointment_id:int):
     query = (
         select(AppointmentDBModel.block_complaint_id)

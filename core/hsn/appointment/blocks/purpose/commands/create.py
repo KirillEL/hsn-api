@@ -1,6 +1,7 @@
 from loguru import logger
 from sqlalchemy.orm import joinedload
 
+from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
@@ -49,42 +50,36 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
 
 
 @SessionContext()
+@HandleExceptions()
 async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateContext):
-    try:
-        await check_appointment_exists(context.appointment_id)
-        for med_prescription in context.medicine_prescriptions:
-            await check_medicine_prescription_exists(med_prescription.medicine_prescription_id)
-        payload = context.model_dump(exclude={'user_id'})
-        appointment_id = context.appointment_id
-        created_purposes = []
-        for med_prescription in context.medicine_prescriptions:
-            logger.debug(f'med_prescription: {med_prescription}')
-            query = (
-                insert(AppointmentPurposeDBModel)
-                .values(
-                    author_id=context.user_id,
-                    appointment_id=appointment_id,
-                    **med_prescription.model_dump()
-                )
-                .returning(AppointmentPurposeDBModel.id)
+    await check_appointment_exists(context.appointment_id)
+    for med_prescription in context.medicine_prescriptions:
+        await check_medicine_prescription_exists(med_prescription.medicine_prescription_id)
+    payload = context.model_dump(exclude={'user_id'})
+    appointment_id = context.appointment_id
+    created_purposes = []
+    for med_prescription in context.medicine_prescriptions:
+        logger.debug(f'med_prescription: {med_prescription}')
+        query = (
+            insert(AppointmentPurposeDBModel)
+            .values(
+                author_id=context.user_id,
+                appointment_id=appointment_id,
+                **med_prescription.model_dump()
             )
-            cursor = await db_session.execute(query)
-            inserted_id = cursor.scalar()
+            .returning(AppointmentPurposeDBModel.id)
+        )
+        cursor = await db_session.execute(query)
+        inserted_id = cursor.scalar()
 
-            select_query = select(AppointmentPurposeDBModel).options(
-                joinedload(AppointmentPurposeDBModel.medicine_prescription)).where(AppointmentPurposeDBModel.id == inserted_id)
-            cursor = await db_session.execute(select_query)
-            created_purpose = cursor.scalar_one()
-            logger.debug(f'created_purpose: {created_purpose.medicine_prescription.__dict__}')
-            created_purposes.append(created_purpose)
+        select_query = select(AppointmentPurposeDBModel).options(
+            joinedload(AppointmentPurposeDBModel.medicine_prescription)).where(
+            AppointmentPurposeDBModel.id == inserted_id)
+        cursor = await db_session.execute(select_query)
+        created_purpose = cursor.scalar_one()
+        logger.debug(f'created_purpose: {created_purpose.medicine_prescription.__dict__}')
+        created_purposes.append(created_purpose)
 
-        await db_session.commit()
+    await db_session.commit()
 
-        return [AppointmentPurposeFlat.model_validate(p) for p in created_purposes]
-    except NotFoundException as ne:
-        await db_session.rollback()
-        raise ne
-    except exc.SQLAlchemyError as sqle:
-        await db_session.rollback()
-        raise UnprocessableEntityException(message=str(sqle))
-
+    return [AppointmentPurposeFlat.model_validate(p) for p in created_purposes]
