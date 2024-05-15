@@ -1,11 +1,9 @@
 from fastapi import FastAPI, Request, Depends, HTTPException
-from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
 from typing import List
 
 from loguru import logger
-from starlette_admin.contrib.sqla import Admin, ModelView
 
 from infra.config import config
 from fastapi.openapi.docs import get_swagger_ui_html
