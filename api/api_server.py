@@ -5,15 +5,17 @@ from fastapi.middleware import Middleware
 from typing import List
 
 from loguru import logger
+from starlette_admin.contrib.sqla import Admin, ModelView
 
 from infra.config import config
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from starlette.responses import JSONResponse
 from starlette.status import HTTP_401_UNAUTHORIZED
-
 from api.routes import main_router
 from api.exceptions import CustomException
+from shared.db.db_session import engine
+from shared.db.models import UserDBModel
 from .middlewares import AuthMiddleware, AuthBackend
 from core.on_startup import hsn_create_admin, hsn_create_role_doctor, create_med_prescriptions
 

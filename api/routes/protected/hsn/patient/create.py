@@ -2,6 +2,7 @@ from datetime import date as tdate, datetime
 from typing import Optional
 import re
 from fastapi import Request, status
+from loguru import logger
 
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
 from core.hsn.patient.model import PatientFlat, PatientResponse
@@ -12,7 +13,7 @@ from shared.db.db_session import db_session
 from .router import patient_router
 from core.hsn.patient import Patient, HsnPatientCreateContext, hsn_patient_create
 from api.exceptions import ExceptionResponseSchema, ValidationException
-from pydantic import BaseModel, Field, validator, field_validator
+from pydantic import BaseModel, Field, validator, field_validator, model_validator
 
 
 class CreatePatientRequestBody(BaseModel):
@@ -47,6 +48,17 @@ class CreatePatientRequestBody(BaseModel):
             raise ValidationException(message="Номер телефона не валидный!")
         return v
 
+    @model_validator(mode="after")
+    def validate_birth_date(self):
+        birth_date = datetime.strptime(self.birth_date, "%d.%m.%Y")
+        current_date = datetime.now()
+        age = (current_date - birth_date).days / 365.25
+        logger.debug(f'age: {age}')
+        if age < 0:
+            raise ValidationException(message="Дата рождения не должна быть в будущем.")
+        if age > 150:
+            raise ValidationException(message="Возраст не должен превышать 150 лет.")
+        return self
 
 @patient_router.post(
     "",

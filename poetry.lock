@@ -1688,6 +1688,29 @@ anyio = ">=3.4.0,<5"
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7)", "pyyaml"]
 
 [[package]]
+name = "starlette-admin"
+version = "0.13.2"
+description = "Fast, beautiful and extensible administrative interface framework for Starlette/FastApi applications"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "starlette_admin-0.13.2-py3-none-any.whl", hash = "sha256:95b60ce71f05696df49d95b8664726abb9e3f76a44b49aeea25d1d6b68c039ed"},
+    {file = "starlette_admin-0.13.2.tar.gz", hash = "sha256:4a2ee4e5e24b49aaaa6c034ba7f538a6accdd736c4ae7ea2c38cfb0c2c09bcce"},
+]
+
+[package.dependencies]
+jinja2 = ">=3,<4"
+python-multipart = "*"
+starlette = "*"
+
+[package.extras]
+cov = ["coverage[toml] (>=7.0.0,<7.4.0)"]
+dev = ["pre-commit (>=2.20.0,<4.0.0)", "uvicorn (>=0.20.0,<0.26.0)"]
+doc = ["mkdocs (>=1.4.2,<2.0.0)", "mkdocs-material (>=9.0.0,<10.0.0)", "mkdocs-static-i18n (>=0.53.0,<0.57.0)", "mkdocstrings[python] (>=0.19.0,<0.25.0)"]
+i18n = ["babel (>=2.13.0)"]
+test = ["aiomysql (>=0.1.1,<0.3.0)", "aiosqlite (>=0.17.0,<0.20.0)", "arrow (>=1.2.3,<1.4.0)", "asyncpg (>=0.27.0,<0.30.0)", "backports-zoneinfo", "black (==24.1.1)", "colour (>=0.1.5,<0.2.0)", "fasteners (==0.19)", "httpx (>=0.23.3,<0.27.0)", "itsdangerous (>=2.1.2,<2.2.0)", "mongoengine (>=0.25.0,<0.28.0)", "mypy (==1.8.0)", "odmantic (>=0.9.0,<0.10.0)", "passlib (>=1.7.4,<1.8.0)", "phonenumbers (>=8.13.3,<8.14.0)", "pillow (>=9.4.0,<9.6.0)", "psycopg2-binary (>=2.9.5,<3.0.0)", "pydantic[email] (>=1.10.2,<2.6.0)", "pymysql[rsa] (>=1.0.2,<1.2.0)", "pytest (>=7.2.0,<7.5.0)", "pytest-asyncio (>=0.20.2,<0.24.0)", "ruff (==0.1.15)", "sqlalchemy-file (>=0.5.0,<0.7.0)", "sqlalchemy-utils (>=0.40.0,<0.42.0)", "sqlmodel (>=0.0.11,<0.15.0)", "tinydb (>=4.7.0,<4.9.0)"]
+
+[[package]]
 name = "tortoise-orm"
 version = "0.20.1"
 description = "Easy async ORM for python, built with relations in mind"
@@ -2092,4 +2115,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a116f23bb9cab16cc9f062fb10a4b6bd27af148960ad869e4f33f3b7ca863e3d"
+content-hash = "a63d19262bb673079f49a5721ce18c5091ad00fbeb58d5842e50b04333b9e495"
