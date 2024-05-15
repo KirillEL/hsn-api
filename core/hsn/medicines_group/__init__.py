@@ -1,5 +1,6 @@
-from .model import MedicinesGroup
+from .model import MedicinesGroup, MedicineGroupFlat
 
 __all__ = [
-    'MedicinesGroup'
+    'MedicinesGroup',
+    'MedicineGroupFlat'
 ]

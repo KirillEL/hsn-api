@@ -22,6 +22,7 @@ class DoctorFlat(BaseModel):
 
     is_deleted: Optional[bool] = False
 
+
 class DoctorWithUserAndCabinetFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -37,6 +38,7 @@ class DoctorWithUserAndCabinetFlat(BaseModel):
 
     cabinet_id: Optional[int] = None
     cabinet: Optional[CabinetFlat] = None
+
 
 class Doctor(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -76,5 +78,3 @@ class UserAndDoctor(BaseModel):
     is_deleted: Optional[bool] = False
     roles: list[Role]
     doctor: Optional[DoctorFlat] = None
-    
-    

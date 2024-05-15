@@ -24,9 +24,7 @@ class MedOrganization(BaseModel):
 
 
 class MedOrganizationFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
 
     id: int
     name: str
-
-    is_deleted: bool

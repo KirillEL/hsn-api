@@ -78,7 +78,8 @@ def test_user():
 
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=application, base_url="http://localhost:9999/api/v1", headers={"Content-Type": "application/json"}) as ac:
+    async with AsyncClient(app=application, base_url="http://localhost:9999/api/v1",
+                           headers={"Content-Type": "application/json"}) as ac:
         yield ac
 
 
@@ -86,22 +87,4 @@ async def ac() -> AsyncGenerator[AsyncClient, None]:
 async def transaction():
     async with test_async_session_factory.begin() as session:
         yield session
-    print("here_1")
-    await session.rollback()
-    print("here_2")
-
-
-# @pytest.fixture(autouse=True, scope="session")
-# async def create_roles(transaction):
-#     try:
-#         doctor_role = RoleDBModel(
-#             name="doctor"
-#         )
-#         transaction.add(doctor_role)
-#         admin_role = RoleDBModel(name="admin")
-#         transaction.add(admin_role)
-#         await transaction.commit()
-#     except IntegrityError:
-#         await transaction.rollback()
-
-
+        await session.rollback()

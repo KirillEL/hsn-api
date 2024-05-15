@@ -6,7 +6,7 @@ from core.user import UserAuthor
 
 
 class MedicinesGroup(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
 
     id: int
     code: str
@@ -23,3 +23,11 @@ class MedicinesGroup(BaseModel):
     deleted_at: Optional[datetime] = None
     deleted_by: Optional[UserAuthor] = None
 
+
+class MedicineGroupFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+    id: int
+    code: str
+    name: str
+    note: Optional[str] = None

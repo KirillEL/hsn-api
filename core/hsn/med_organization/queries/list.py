@@ -1,11 +1,13 @@
 from sqlalchemy import select
+
+from api.decorators import HandleExceptions
 from shared.db.models.med_organization import MedOrganizationDBModel
 from shared.db.db_session import db_session, SessionContext
 from core.hsn.med_organization import MedOrganization
 
 
-
 @SessionContext()
+@HandleExceptions()
 async def hsn_query_med_organization_list(limit: int = None, offset: int = None, pattern: str = None):
     query = select(MedOrganizationDBModel)
 
@@ -19,7 +21,7 @@ async def hsn_query_med_organization_list(limit: int = None, offset: int = None,
         query = query.offset(offset)
 
     if pattern is not None:
-        query = query.where(MedOrganizationDBModel.name.ilike(f'%{pattern}%'))
+        query = query.where(MedOrganizationDBModel.name.contains(pattern))
 
     cursor = await db_session.execute(query)
     return [MedOrganization.model_validate(item) for item in cursor.scalars().all()]
