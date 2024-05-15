@@ -73,7 +73,8 @@ async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateCon
         inserted_id = cursor.scalar()
 
         select_query = select(AppointmentPurposeDBModel).options(
-            joinedload(AppointmentPurposeDBModel.medicine_prescription)).where(
+            joinedload(AppointmentPurposeDBModel.medicine_prescription).joinedload(
+                MedicinesPrescriptionDBModel.medicine_group)).where(
             AppointmentPurposeDBModel.id == inserted_id)
         cursor = await db_session.execute(select_query)
         created_purpose = cursor.scalar_one()
