@@ -57,7 +57,7 @@ async def hsn_get_block_laboratory_test_fields():
         "general_blood_analysis": ["hemoglobin", "hemoglobin_date", "eritrocit", "eritrocit_date"],
         "blood_chemistry": ["lpnp", "lpnp_date", "general_hc", "general_hc_date", "natriy", "natriy_date", "kaliy",
                             "kaliy_date", "glukoza", "glukoza_date", "mochevaya_kislota", "mochevaya_kislota_date",
-                            "skf", "skf_date", "kreatinin", "kreatinin_date", "tg", "tg_date"],
+                            "skf", "skf_date", "kreatinin", "kreatinin_date", "tg", "tg_date", "lpvp", "lpvp_date"],
         "general_urine_analysis": ["protein", "protein_date", "urine_eritrocit", "urine_eritrocit_date",
                                    "urine_leycocit", "urine_leycocit_date", "microalbumuria", "microalbumuria_date"]
     }
