@@ -23,8 +23,9 @@ class HandleExceptions:
             except exc.SQLAlchemyError as sqle:
                 await db_session.rollback()
                 raise UnprocessableEntityException(message=str(sqle))
-            except Exception:
+            except Exception as e:
                 await db_session.rollback()
+                logger.error(f'exception: {str(e)}')
                 raise InternalServerException
 
         return wrapper

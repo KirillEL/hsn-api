@@ -1,5 +1,6 @@
 from sqlalchemy.orm import joinedload
 
+from api.decorators import HandleExceptions
 from core.user.model import UserWithPasswordFlat
 from .router import admin_users_router
 from api.exceptions import ExceptionResponseSchema
@@ -15,6 +16,7 @@ from core.user import User, UserFlat
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()
+@HandleExceptions()
 async def admin_users_list(limit: int = None, offset: int = None, pattern: str = None):
     query = (
         select(UserDBModel)

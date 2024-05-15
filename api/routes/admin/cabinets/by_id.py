@@ -1,4 +1,6 @@
 from sqlalchemy import select
+
+from api.decorators import HandleExceptions
 from shared.db.db_session import db_session, SessionContext
 from api.exceptions import ExceptionResponseSchema, NotFoundException
 from .router import admin_cabinet_router
@@ -12,10 +14,11 @@ from shared.db.models.cabinet import CabinetDBModel
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()
+@HandleExceptions()
 async def admin_cabinet_by_id(cabinet_id: int):
     query = (
         select(CabinetDBModel)
-        .where(CabinetDBModel.cabinet_id == cabinet_id, CabinetDBModel.is_deleted.is_(False))
+        .where(CabinetDBModel.id == cabinet_id, CabinetDBModel.is_deleted.is_(False))
     )
     cursor = await db_session.execute(query)
     cabinet = cursor.scalars().first()

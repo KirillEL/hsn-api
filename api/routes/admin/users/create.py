@@ -1,3 +1,4 @@
+from api.decorators import HandleExceptions
 from shared.db.models.role import RoleDBModel
 from shared.db.models.user import UserDBModel
 from shared.db.models.user_role import UserRoleDBModel
@@ -38,44 +39,38 @@ async def check_role_exists(role: str) -> None | int:
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()
+@HandleExceptions()
 async def admin_user_create(dto: CreateUserDto):
-    try:
-        role_id = await check_role_exists(dto.role)
-        query = (
-            insert(UserDBModel)
-            .values(
-                login=dto.login,
-                password=PasswordHasher.hash_password(dto.password)
-            )
-            .returning(UserDBModel.id)
+    role_id = await check_role_exists(dto.role)
+    query = (
+        insert(UserDBModel)
+        .values(
+            login=dto.login,
+            password=PasswordHasher.hash_password(dto.password)
         )
-        cursor = await db_session.execute(query)
-        new_user_id = cursor.scalar()
+        .returning(UserDBModel.id)
+    )
+    cursor = await db_session.execute(query)
+    new_user_id = cursor.scalar()
 
-        query_add_user_role = (
-            insert(UserRoleDBModel)
-            .values(
-                user_id=new_user_id,
-                role_id=role_id
-            )
-            .returning(None)
+    query_add_user_role = (
+        insert(UserRoleDBModel)
+        .values(
+            user_id=new_user_id,
+            role_id=role_id
         )
-        await db_session.execute(query_add_user_role)
+        .returning(None)
+    )
+    await db_session.execute(query_add_user_role)
 
-        query_get_new_user = (
-            select(UserDBModel)
-            .options(joinedload(UserDBModel.roles))
-            .where(UserDBModel.id == new_user_id)
-        )
-        cursor = await db_session.execute(query_get_new_user)
-        new_user = cursor.scalars().first()
+    query_get_new_user = (
+        select(UserDBModel)
+        .options(joinedload(UserDBModel.roles))
+        .where(UserDBModel.id == new_user_id)
+    )
+    cursor = await db_session.execute(query_get_new_user)
+    new_user = cursor.scalars().first()
 
-        validated_user = UserFlat.model_validate(new_user)
-        await db_session.commit()
-        return validated_user
-
-    except ValidationError as ve:
-        raise ValidationException(message=str(ve))
-    except Exception as e:
-        await db_session.rollback()
-        raise InternalServerException
+    validated_user = UserFlat.model_validate(new_user)
+    await db_session.commit()
+    return validated_user
