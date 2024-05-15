@@ -61,7 +61,11 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
     cursor = await db_session.execute(query)
 
     patient_appointments = cursor.unique().scalars().all()
+    logger.debug(f'len_patient_appointments: {len(patient_appointments)}')
+    if len(patient_appointments) == 0:
+        raise NotFoundException(message="Приемы не найдены!")
     for appointment in patient_appointments:
+        logger.debug(f'appointment: {appointment.patient.contragent.__dict__}')
         appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
         appointment.patient.contragent.last_name = contragent_hasher.decrypt(
             appointment.patient.contragent.last_name)

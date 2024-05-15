@@ -26,6 +26,6 @@ class HandleExceptions:
             except Exception as e:
                 await db_session.rollback()
                 logger.error(f'exception: {str(e)}')
-                raise InternalServerException
+                raise e
 
         return wrapper
