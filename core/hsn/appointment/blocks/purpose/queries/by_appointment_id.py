@@ -16,10 +16,12 @@ from shared.db.db_session import db_session, SessionContext
 @SessionContext()
 @HandleExceptions()
 async def hsn_get_purposes_by_appointment_id(appointment_id: int):
+    results_dict = dict()
     await check_appointment_exists(appointment_id)
     query = (
         select(AppointmentPurposeDBModel)
-        .options(selectinload(AppointmentPurposeDBModel.medicine_prescription).selectinload(MedicinesPrescriptionDBModel.medicine_group))
+        .options(selectinload(AppointmentPurposeDBModel.medicine_prescription).selectinload(
+            MedicinesPrescriptionDBModel.medicine_group))
         .where(AppointmentPurposeDBModel.appointment_id == appointment_id)
         .where(AppointmentPurposeDBModel.is_deleted.is_(False))
     )
@@ -40,9 +42,6 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
             )
         )
         results.append(final_result)
-        results_dict: list[dict] = []
         for r in results:
-            results_dict.append({
-                r.medicine_group: r.medicine_group_data
-            })
+            results_dict[r.medicine_group] = r.medicine_group_data
     return results_dict
