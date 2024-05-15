@@ -23,8 +23,7 @@ def upgrade() -> None:
     CREATE OR REPLACE FUNCTION base.check_appointment_completion()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.block_clinic_doctor_id IS NOT NULL AND
-       NEW.block_diagnose_id IS NOT NULL AND
+    IF NEW.block_diagnose_id IS NOT NULL AND
        NEW.block_laboratory_test_id IS NOT NULL AND
        NEW.block_ekg_id IS NOT NULL AND
        NEW.block_complaint_id IS NOT NULL AND
