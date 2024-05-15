@@ -52,3 +52,19 @@ class AppointmentPurposeFlat(BaseModel):
     dosa: str
     note: Optional[str] = None
     medicine_prescription: MedicinePrescriptionFlat
+
+
+class MedicineGroupData(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+    id: int
+    name: str
+    dosa: str
+    note: Optional[str] = None
+
+
+class AppointmentPurposeResponseFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    medicine_group: str
+    medicine_group_data: Optional[MedicineGroupData] = None

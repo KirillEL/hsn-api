@@ -1,4 +1,5 @@
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat, hsn_get_purposes_by_appointment_id
+from core.hsn.appointment.blocks.purpose.model import AppointmentPurposeResponseFlat
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request
@@ -6,7 +7,7 @@ from fastapi import Request
 
 @block_purpose_router.get(
     "/{appointment_id}",
-    response_model=list[AppointmentPurposeFlat],
+    response_model=list[dict],
     responses={'400': {"model": ExceptionResponseSchema}}
 )
 async def get_purposes_by_appointment_id(request: Request, appointment_id: int):

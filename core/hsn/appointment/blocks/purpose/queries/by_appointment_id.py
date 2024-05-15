@@ -7,6 +7,7 @@ from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
 from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
+from core.hsn.appointment.blocks.purpose.model import AppointmentPurposeResponseFlat, MedicineGroupData
 from shared.db.models import MedicinesPrescriptionDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 from shared.db.db_session import db_session, SessionContext
@@ -27,4 +28,21 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
     if len(purposes) == 0:
         raise NotFoundException(message="У приема нет блока назначений лекарственных препаратов")
 
-    return [AppointmentPurposeFlat.model_validate(p) for p in purposes]
+    results = []
+    for purpose in purposes:
+        final_result = AppointmentPurposeResponseFlat(
+            medicine_group=purpose.medicine_prescription.medicine_group.name,
+            medicine_group_data=MedicineGroupData(
+                id=purpose.medicine_prescription.id,
+                name=purpose.medicine_prescription.name,
+                dosa=purpose.dosa,
+                note=purpose.note
+            )
+        )
+        results.append(final_result)
+        results_dict: list[dict] = []
+        for r in results:
+            results_dict.append({
+                r.medicine_group: r.medicine_group_data
+            })
+    return results_dict
