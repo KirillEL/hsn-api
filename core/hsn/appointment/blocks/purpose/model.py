@@ -26,11 +26,20 @@ class AppointmentPurpose(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
+class MedicineGroupFlat(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+    id: int
+    code: Optional[str] = None
+    name: str
+    note: Optional[str] = None
+
+
 class MedicinePrescriptionFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    #medicine_group: str
+    medicine_group: Optional[MedicineGroupFlat] = None
     name: str
     note: Optional[str] = None
 

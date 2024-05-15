@@ -9,7 +9,7 @@ from api.exceptions import NotFoundException, BadRequestException, ValidationExc
 from core.hsn.appointment import Appointment
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
 from core.hsn.patient.commands.create import convert_to_patient_response
-from shared.db.models import PatientDBModel
+from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field, ValidationError
@@ -51,7 +51,7 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
                           selectinload(AppointmentDBModel.block_complaint),
                           selectinload(AppointmentDBModel.block_laboratory_test),
                           selectinload(AppointmentDBModel.purposes).selectinload(
-                              AppointmentPurposeDBModel.medicine_prescription))
+                              AppointmentPurposeDBModel.medicine_prescription).selectinload(MedicinesPrescriptionDBModel.medicine_group))
 
     if context.limit is not None:
         query = query.limit(context.limit)
