@@ -90,7 +90,7 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
 
         appointment_flat = PatientAppointmentFlat(
             id=appointment.id,
-            patient=patient_info,
+            full_name=f'{patient_info.name} {patient_info.last_name} {patient_info.patronymic if patient_info.patronymic is not None else ""}'.rstrip(),
             doctor_id=appointment.doctor_id,
             date=appointment.date,
             date_next=str(appointment.date_next) if appointment.date_next else None,

@@ -52,8 +52,9 @@ class PatientAppointmentFlat(BaseModel):
 
     id: int
     doctor_id: int
-    patient_id: Optional[int] = None
-    patient: Optional[PatientFlatForAppointmentList] = None
+    #patient_id: Optional[int] = None
+    #patient: Optional[PatientFlatForAppointmentList] = None
+    full_name: str
     date: str
     date_next: Optional[str] = None
 
