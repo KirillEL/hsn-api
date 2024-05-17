@@ -37,8 +37,8 @@ class LocationType(Enum):
 ContragentAlias = aliased(ContragentDBModel, name="contragents_1")
 
 
-@SessionContext()
 @HandleExceptions()
+@SessionContext()
 async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, full_name: str = None,
                                gender: str = None, columnKey: str = None, order: str = None):
     query = (

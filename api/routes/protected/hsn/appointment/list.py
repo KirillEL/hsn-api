@@ -12,10 +12,13 @@ class GetAppointmentListQueryParams(BaseModel):
     limit: Optional[int] = None
     offset: Optional[int] = None
 
+class GetOwnPatientAppointmentsResponse(BaseModel):
+    data: list[PatientAppointmentFlat]
+    total: int
 
 @appointment_router.get(
     "",
-    response_model=list[PatientAppointmentFlat],
+    response_model=GetOwnPatientAppointmentsResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
     tags=["Прием"]
 )

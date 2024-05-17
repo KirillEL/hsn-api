@@ -1,7 +1,7 @@
 from typing import Optional
 
 from loguru import logger
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import joinedload, contains_eager, selectinload
 
 from api.decorators import HandleExceptions
@@ -51,7 +51,16 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
                           selectinload(AppointmentDBModel.block_complaint),
                           selectinload(AppointmentDBModel.block_laboratory_test),
                           selectinload(AppointmentDBModel.purposes).selectinload(
-                              AppointmentPurposeDBModel.medicine_prescription).selectinload(MedicinesPrescriptionDBModel.medicine_group))
+                              AppointmentPurposeDBModel.medicine_prescription).selectinload(
+                              MedicinesPrescriptionDBModel.medicine_group))
+
+    query_count = (
+        select(func.count(AppointmentDBModel.id))
+        .where(AppointmentDBModel.is_deleted.is_(False))
+        .where(AppointmentDBModel.doctor_id == context.user_id)
+    )
+    cursor_count = await db_session.execute(query_count)
+    count_appointments = cursor_count.scalar()
 
     if context.limit is not None:
         query = query.limit(context.limit)
@@ -96,4 +105,7 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
         )
         results.append(appointment_flat)
 
-    return results
+    return {
+        "data": results,
+        "total": count_appointments
+    }
