@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from api.dependencies.permission import IsAuthenticatedAdministrator
 from api.dependencies import PermissionDependency
+from .db import db_router
 
 from .users import admin_users_router
 from .patients import admin_patient_router
@@ -34,3 +35,4 @@ admin_router.include_router(admin_doctor_router)
 admin_router.include_router(admin_supplied_diagnose_router)
 admin_router.include_router(admin_medicine_prescription_router)
 admin_router.include_router(admin_clinical_assesment_router)
+admin_router.include_router(db_router)
