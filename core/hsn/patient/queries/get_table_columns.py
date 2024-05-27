@@ -224,7 +224,7 @@ async def hsn_patient_columns(user_id: int):
     cursor = await db_session.execute(query)
     patient_table_columns = cursor.scalars().first()
     if not patient_table_columns:
-        raise NotFoundException(message="Настройки не найдены")
+        return []
     logger.debug(f'settings: {patient_table_columns}')
 
     patient_data_indices = {col["dataIndex"] for col in patient_table_columns}
