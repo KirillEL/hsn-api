@@ -28,6 +28,5 @@ async def hsn_patient_columns_create(context: HsnPatientColumnsCreateContext):
     )
     cursor = await db_session.execute(query)
     await db_session.commit()
-    await db_session.refresh(PatientTableColumnsDBModel)
     new_patient_columns = cursor.scalars().first()
     return PatientTableColumns.model_validate(new_patient_columns)

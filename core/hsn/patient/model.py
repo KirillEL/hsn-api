@@ -122,7 +122,7 @@ class PatientAvailableColumnsResponse(BaseModel):
 
 
 class TableColumns(BaseModel):
-    name: str
+    dataIndex: str
     hidden: bool
 
 

@@ -5,9 +5,10 @@ from api.exceptions import ExceptionResponseSchema
 from fastapi import Request
 
 
+
+
 @patient_router.get(
     "/table/columns",
-    response_model=PatientTableResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Получить настройки таблицы для пациентов"
 )
