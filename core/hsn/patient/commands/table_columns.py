@@ -35,6 +35,7 @@ async def create_default_columns_settings(user_id:int):
         cursor = await db_session.execute(query)
         await db_session.commit()
         return cursor.scalar_one()
+    return exists.id
 
 @SessionContext()
 @HandleExceptions()
