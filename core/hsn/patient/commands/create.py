@@ -81,8 +81,8 @@ async def convert_to_patient_response(patient,
             patronymic=decrypted_patronymic,
             gender=patient.gender,
             age=age,
-            birth_date=decrypted_birth_date,  # Already formatted
-            dod=decrypted_dod,  # Already formatted, if exists
+            birth_date=decrypted_birth_date,
+            dod=decrypted_dod,
             location=patient.location,
             district=patient.district,
             address=patient.address,

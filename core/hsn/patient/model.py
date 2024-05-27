@@ -105,7 +105,6 @@ class BasePatientResponse(BaseModel):
     patient_note: Optional[str] = None
 
 
-
 class PatientResponse(BasePatientResponse):
     full_name: str
 
@@ -120,3 +119,22 @@ class PatientAvailableColumnsResponse(BaseModel):
     title: str
     value: str
     disabled: Optional[bool] = None
+
+
+class TableColumns(BaseModel):
+    name: str
+    hidden: bool
+
+
+class PatientTableColumns(BaseModel):
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True, extra='ignore')
+
+    id: int
+    user_id: int
+    table_columns: list[TableColumns]
+
+
+class PatientTableResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    id: int
+    table_columns: list[TableColumns]

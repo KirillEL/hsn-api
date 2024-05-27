@@ -14,6 +14,7 @@ class HandleExceptions:
         @wraps(func)
         async def wrapper(*args, **kwargs):
             try:
+                logger.debug(f'HandleExceptions')
                 return await func(*args, **kwargs)
             except NotFoundException as ne:
                 raise ne

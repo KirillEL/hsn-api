@@ -2,6 +2,8 @@ from contextvars import ContextVar, Token
 from functools import wraps
 from typing import Union
 from uuid import uuid4
+
+from loguru import logger
 from sqlalchemy import create_engine
 
 from sqlalchemy.ext.asyncio import (
@@ -54,7 +56,7 @@ class SessionContext:
         async def _session_context(*args, **kwargs):
             session_id = str(uuid4())
             context = set_session_context(session_id)
-
+            logger.debug(f'sessionContext')
             try:
                 result = await func(*args, **kwargs)
             except Exception as e:

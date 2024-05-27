@@ -84,11 +84,19 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    # Drop functions first
     op.execute('drop function base.set_updated_at();')
     op.execute('drop function base.set_deleted_at();')
+
+    # Drop custom types
+    op.execute('drop type IF EXISTS classification_nc_stage_type;')
+    op.execute('drop type if exists distance_walking_type;')
+    op.execute('drop type if exists classification_adjacent_release_type;')
+    op.execute('drop type if exists classification_func_classes_type;')
+    op.execute('drop type if exists lgota_drugs_type;')
+    op.execute('drop type if exists disability_type;')
+    op.execute('drop type if exists gender_type;')
+
+    # Finally, drop the schema
     op.execute('drop schema base;')
-    op.execute('drop type classification_func_classes_type;')
-    op.execute('drop type lgota_drugs_type;')
-    op.execute('drop type disability_type;')
-    op.execute('drop type gender_type;')
 

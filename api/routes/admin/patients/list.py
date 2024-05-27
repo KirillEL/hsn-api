@@ -1,6 +1,9 @@
+from typing import Optional
+
 from api.decorators import HandleExceptions
+from core.hsn.cabinet.model import CabinetFlat
 from core.hsn.patient.commands.create import convert_to_patient_response
-from core.hsn.patient.model import PatientFlat, BasePatientResponse
+from core.hsn.patient.model import PatientFlat, BasePatientResponse, Contragent, PatientResponseWithoutFullName
 from shared.db.models.patient import PatientDBModel
 from shared.db.db_session import db_session, SessionContext
 from .router import admin_patient_router
@@ -11,7 +14,7 @@ from sqlalchemy.orm import joinedload
 
 @admin_patient_router.get(
     "/patients",
-    response_model=list[BasePatientResponse],
+    response_model=list[PatientResponseWithoutFullName],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 @SessionContext()

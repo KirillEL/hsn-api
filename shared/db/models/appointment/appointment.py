@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship, foreign
 
 from .purpose import AppointmentPurposeDBModel
-from .. import UserDBModel, PatientHospitalizationsDBModel
+from .. import UserDBModel, PatientHospitalizationsDBModel, DoctorDBModel
 from ..BASE import BaseDBModel
 from .blocks.block_clinic_doctor import AppointmentBlockClinicDoctorDBModel
 from .blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
@@ -27,6 +27,7 @@ class AppointmentDBModel(BaseDBModel):
 
     id = Column(Integer, primary_key=True, nullable=False)
     doctor_id = Column(Integer, ForeignKey('public.doctors.id'), nullable=False)
+    doctor = relationship(DoctorDBModel, uselist=False)
     patient_id = Column(Integer, ForeignKey('public.patients.id'), nullable=False)
     patient = relationship(PatientDBModel, uselist=False)
 

@@ -20,7 +20,8 @@ class GetOwnPatientAppointmentsResponse(BaseModel):
     "",
     response_model=GetOwnPatientAppointmentsResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
-    tags=["Прием"]
+    tags=["Прием"],
+    summary="Получить список всех приемов"
 )
 async def get_appointment_list(request: Request, params: GetAppointmentListQueryParams = Depends()):
     context = HsnAppointmentListContext(

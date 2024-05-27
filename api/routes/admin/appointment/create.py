@@ -1,11 +1,11 @@
 from api.decorators import HandleExceptions
-from router import admin_appointment_router
+from .router import admin_appointment_router
 from api.exceptions import ExceptionResponseSchema
 from shared.db.db_session import SessionContext
 
 
 @admin_appointment_router.post(
-    "/appointments",
+    "/create",
     response_model=bool,
     responses={"400": {"model": ExceptionResponseSchema}}
 )

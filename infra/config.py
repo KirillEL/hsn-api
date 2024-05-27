@@ -1,4 +1,3 @@
-
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 from typing import Dict, Optional
@@ -22,14 +21,15 @@ class Config(BaseSettings):
     DB_PORT: int
     DB_NAME: str
     DB_URI: str
+    DB_TEST_URI: str
 
     ADMIN_PASS: str
 
     DOCS_USERNAME: str
     DOCS_PASSWORD: str
 
-    JWT_SECRET: Optional[str] = "frtrtt"
-    JWT_ALGORITHM: Optional[str] = "HS256"
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
 
 
 class LocalConfig(Config):
