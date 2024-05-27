@@ -228,7 +228,16 @@ async def hsn_patient_columns(user_id: int):
         return default_payload
     logger.debug(f'settings: {patient_table_columns}')
 
-    patient_data_indices = {col["dataIndex"] for col in patient_table_columns if col["hidden"] == False}
+    patient_data_indices = {col["dataIndex"] for col in patient_table_columns}
+
+    for column in default_payload:
+        data_index = column["dataIndex"]
+        for patient_col in patient_table_columns:
+            if data_index == patient_col["dataIndex"]:
+                if patient_col.get("hidden", False):
+                    column["hidden"] = True
+                elif "hidden" in column:
+                    del column["hidden"]
 
     filtered_payload = [
         column for column in default_payload if column["dataIndex"] in patient_data_indices
@@ -244,3 +253,20 @@ async def hsn_patient_columns(user_id: int):
     sorted_payload = sorted(filtered_payload, key=lambda x: int(x["key"]))
     logger.debug(f'sorted_payload: {sorted_payload}')
     return sorted_payload
+
+    # patient_data_indices = {col["dataIndex"] for col in patient_table_columns}
+    #
+    # filtered_payload = [
+    #     column for column in default_payload if column["dataIndex"] in patient_data_indices
+    # ]
+    #
+    # title_to_key_map = {col["dataIndex"]: i + 1 for i, col in enumerate(patient_table_columns)}
+    #
+    # for column in filtered_payload:
+    #     title = column["dataIndex"]
+    #     if title in title_to_key_map:
+    #         column["key"] = str(title_to_key_map[title])
+    #
+    # sorted_payload = sorted(filtered_payload, key=lambda x: int(x["key"]))
+    # logger.debug(f'sorted_payload: {sorted_payload}')
+    # return sorted_payload
