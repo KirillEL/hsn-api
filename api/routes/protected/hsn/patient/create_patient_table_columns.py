@@ -10,7 +10,7 @@ class CreatePatientTableColumnsRequest(BaseModel):
     table_columns: list[TableColumns]
 
 
-@patient_router.post(
+@patient_router.patch(
     "/table/columns",
     response_model=PatientTableColumns,
     responses={"400": {"model": ExceptionResponseSchema}},
