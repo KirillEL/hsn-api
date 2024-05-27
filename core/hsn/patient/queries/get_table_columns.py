@@ -214,6 +214,7 @@ default_payload = [
     }
 ]
 
+
 @SessionContext()
 @HandleExceptions()
 async def hsn_patient_columns(user_id: int):
@@ -227,7 +228,7 @@ async def hsn_patient_columns(user_id: int):
         return default_payload
     logger.debug(f'settings: {patient_table_columns}')
 
-    patient_data_indices = {col["dataIndex"] for col in patient_table_columns}
+    patient_data_indices = {col["dataIndex"] for col in patient_table_columns if col["hidden"] == False}
 
     filtered_payload = [
         column for column in default_payload if column["dataIndex"] in patient_data_indices
@@ -243,4 +244,3 @@ async def hsn_patient_columns(user_id: int):
     sorted_payload = sorted(filtered_payload, key=lambda x: int(x["key"]))
     logger.debug(f'sorted_payload: {sorted_payload}')
     return sorted_payload
-
