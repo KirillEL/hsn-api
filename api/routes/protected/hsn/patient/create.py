@@ -63,8 +63,8 @@ class CreatePatientRequestBody(BaseModel):
         logger.debug(f'age: {age}')
         if age < 0:
             raise ValidationException(message="Дата рождения не должна быть в будущем.")
-        if age > 150:
-            raise ValidationException(message="Возраст не должен превышать 150 лет.")
+        if age > 110:
+            raise ValidationException(message="Возраст не должен превышать 110 лет.")
         return self
 
 @patient_router.post(

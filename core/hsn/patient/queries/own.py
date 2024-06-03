@@ -25,7 +25,7 @@ class GenderType(str, Enum):
 class LgotaDrugsType(str, Enum):
     NO = "нет"
     YES = "да"
-    CCZ = "ссз"
+    CCZ = "ССЗ"
 
 
 class LocationType(Enum):
