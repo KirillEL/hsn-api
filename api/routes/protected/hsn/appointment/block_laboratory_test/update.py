@@ -13,7 +13,7 @@ from api.exceptions import ExceptionResponseSchema, ValidationException
 class UpdateBlockLaboratoryTestRequestBody(BaseModel):
     nt_pro_bnp: Optional[float] = Field(None, gt=0)
     nt_pro_bnp_date: Optional[str] = Field(None)
-    hbalc: Optional[float] = Field(None, gt=0)
+    hbalc: Optional[float] = Field(None)
     hbalc_date: Optional[str] = Field(None)
     eritrocit: Optional[float] = Field(None, gt=0)
     eritrocit_date: Optional[str] = Field(None)
