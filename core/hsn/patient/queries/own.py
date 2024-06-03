@@ -83,9 +83,9 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         column_last_name = getattr(ContragentDBModel, 'last_name')
         column_patronymic = getattr(ContragentDBModel, 'patronymic')
         if order == "ascend":
-            query = query.order_by(text("public.contragents.name asc"))
+            query = query.order_by(asc(PatientDBModel.contragent.name))
         else:
-            query = query.order_by(text("public.contragents.name desc"))
+            query = query.order_by(desc(PatientDBModel.contragent.name))
 
     if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
         column_attribute = getattr(ContragentDBModel, columnKey)
