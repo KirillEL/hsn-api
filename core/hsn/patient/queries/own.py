@@ -34,8 +34,6 @@ class LocationType(Enum):
     ANOTHER = "другое"
 
 
-
-
 @HandleExceptions()
 @SessionContext()
 async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, full_name: str = None,
@@ -80,7 +78,8 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
             query = query.order_by(desc(column_attribute))
 
     if columnKey == 'full_name':
-        full_name_expr = func.concat(contragent_alias.last_name, ' ', contragent_alias.first_name, ' ', contragent_alias.patronymic)
+        full_name_expr = func.concat(contragent_alias.last_name, ' ', contragent_alias.name, ' ',
+                                     contragent_alias.patronymic)
         if order == "ascend":
             query = query.order_by(asc(full_name_expr))
         else:
