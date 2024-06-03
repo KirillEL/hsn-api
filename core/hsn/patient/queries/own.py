@@ -57,14 +57,14 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         .where(DoctorDBModel.user_id == current_user_id)
     )
     logger.debug(f"Query_count: {query_count}")
-    if limit is not None:
+    if limit:
         query = query.limit(limit)
 
-    if offset is not None:
+    if offset:
         query = query.offset(offset)
 
     logger.debug(f'gender: {gender}')
-    if gender is not None:
+    if gender:
         query = query.where(PatientDBModel.gender == gender[0])
 
     if location:
@@ -79,13 +79,12 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
 
     if columnKey == 'full_name':
         column_name = getattr(ContragentDBModel, 'name')
-        logger.debug(f'column_name: {column_name}')
         column_last_name = getattr(ContragentDBModel, 'last_name')
         column_patronymic = getattr(ContragentDBModel, 'patronymic')
         if order == "ascend":
-            query = query.order_by(asc(PatientDBModel.contragent.name))
+            query = query.order_by(asc(column_name))
         else:
-            query = query.order_by(desc(PatientDBModel.contragent.name))
+            query = query.order_by(desc(column_name))
 
     if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
         column_attribute = getattr(ContragentDBModel, columnKey)
