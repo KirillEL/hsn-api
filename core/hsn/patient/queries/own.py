@@ -40,7 +40,7 @@ class LocationType(Enum):
 @HandleExceptions()
 @SessionContext()
 async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, full_name: str = None,
-                               gender: str = None, columnKey: str = None, order: str = None):
+                               gender: str = None, location: str = None, columnKey: str = None, order: str = None):
     query = (
         select(PatientDBModel)
         .options(joinedload(PatientDBModel.cabinet)
@@ -65,6 +65,9 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
     logger.debug(f'gender: {gender}')
     if gender is not None:
         query = query.where(PatientDBModel.gender == gender[0])
+
+    if location:
+        query = query.where(PatientDBModel.location == location[0])
 
     logger.debug(f'columnKey: {columnKey}')
     logger.debug(f'desc: {order}')

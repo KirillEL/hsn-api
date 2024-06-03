@@ -26,6 +26,7 @@ class GetOwnPatientsQueryParams(BaseModel):
     offset: Optional[int] = None
     full_name: Optional[List[str]] = None
     gender: Optional[List[str]] = None
+    location: Optional[List[str]] = None
     columnKey: Optional[str] = None
     order: Optional[str] = None
 
@@ -47,6 +48,7 @@ async def get_own_patients(
         offset: Optional[int] = Query(None),
         full_name: Optional[List[str]] = Query(None, alias="filters[full_name][0]"),
         gender: Optional[List[str]] = Query(None, alias="filters[gender][0]"),
+        location: Optional[List[str]] = Query(None, alias="filters[location][0]"),
         columnKey: Optional[str] = Query(None, alias="sortParams[columnKey]"),
         order: Optional[str] = Query(None, alias="sortParams[order]")
 ):
@@ -55,6 +57,7 @@ async def get_own_patients(
         offset=offset,
         full_name=full_name,
         gender=gender,
+        location=location,
         columnKey=columnKey,
         order=order
     )
@@ -64,6 +67,7 @@ async def get_own_patients(
         offset=params.offset,
         full_name=params.full_name,
         gender=params.gender,
+        location=params.location,
         columnKey=params.columnKey,
         order=params.order
     )
