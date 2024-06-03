@@ -83,6 +83,7 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         else:
             query = query.order_by(desc(column_attribute))
 
+    query = query.order_by(desc('id'))
     total_count_result = await db_session.execute(query_count)
     total_count = total_count_result.scalar()
     cursor = await db_session.execute(query)
