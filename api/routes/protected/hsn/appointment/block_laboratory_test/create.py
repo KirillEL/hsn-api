@@ -51,12 +51,14 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
     @field_validator('nt_pro_bnp_date', 'hbalc_date', 'eritrocit_date',
                      'hemoglobin_date', 'tg_date', 'lpvp_date', 'lpnp_date',
                      'general_hc_date', 'natriy_date', 'kaliy_date', 'glukoza_date',
-                     'mochevaya_kislota_date', 'skf_date', 'kreatinin_date', 'protein_date', 'urine_eritrocit_date', 'urine_leycocit_date',
+                     'mochevaya_kislota_date', 'skf_date', 'kreatinin_date', 'protein_date', 'urine_eritrocit_date',
+                     'urine_leycocit_date',
                      'microalbumuria_date')
     def check_date_format(cls, value):
         try:
-            datetime.strptime(value, "%d.%m.%Y")
-            return value
+            parsed_date = datetime.strptime(value, "%d.%m.%Y")
+            if parsed_date > datetime.now():
+                raise ValidationException(message="Даты не могут быть позднее текущего дня")
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
 

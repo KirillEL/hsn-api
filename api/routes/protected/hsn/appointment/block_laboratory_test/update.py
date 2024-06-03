@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import Request
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
     HsnBlockLaboratoryTestUpdateContext, hsn_block_laboratory_test_update
@@ -49,6 +49,12 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
     microalbumuria_date: Optional[str] = Field(None)
     note: Optional[str] = Field(None, max_length=1000)
 
+    @field_validator('hbalc')
+    def check_hbalc_value(cls, value):
+        if value is not None and value <= 0:
+            raise ValidationException(message="Hbalc должно быть больше 0")
+
+
     @field_validator('nt_pro_bnp_date', 'hbalc_date', 'eritrocit_date',
                      'hemoglobin_date', 'tg_date', 'lpvp_date', 'lpnp_date',
                      'general_hc_date', 'natriy_date', 'kaliy_date', 'glukoza_date',
@@ -57,10 +63,15 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
                      'microalbumuria_date')
     def check_date_format(cls, value):
         try:
-            datetime.strptime(value, "%d.%m.%Y")
-            return value
+            parsed_date = datetime.strptime(value, "%d.%m.%Y")
+            if parsed_date > datetime.now():
+                raise ValidationException(message="Даты не могут быть позже текущего дня")
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
+
+
+
+
 
 
 @block_laboratory_test_router.patch(
