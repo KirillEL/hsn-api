@@ -69,25 +69,22 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
     if location:
         query = query.where(PatientDBModel.location == location[0])
 
-    logger.debug(f'columnKey: {columnKey}')
-    logger.debug(f'desc: {order}')
     if columnKey and hasattr(PatientDBModel, columnKey):
         column_attribute = getattr(PatientDBModel, columnKey)
-        if order == "asc":
+        if order == "ascend":
             query = query.order_by(asc(column_attribute))
         else:
             query = query.order_by(desc(column_attribute))
 
     if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
         column_attribute = getattr(ContragentDBModel, columnKey)
-        if order == "asc":
+        if order == "ascend":
             query = query.order_by(asc(column_attribute))
         else:
             query = query.order_by(desc(column_attribute))
 
     total_count_result = await db_session.execute(query_count)
     total_count = total_count_result.scalar()
-    logger.debug(f'get total_count: {total_count}')
     cursor = await db_session.execute(query)
     patients = cursor.unique().scalars().all()
     if len(patients) == 0:
