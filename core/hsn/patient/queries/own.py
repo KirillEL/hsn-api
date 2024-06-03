@@ -41,6 +41,9 @@ class LocationType(Enum):
 async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, full_name: str = None,
                                gender: str = None, location: str = None, columnKey: str = None, order: str = None):
     logger.debug(f"columnKey: {columnKey}")
+
+    contragent_alias = aliased(ContragentDBModel)
+
     query = (
         select(PatientDBModel)
         .options(joinedload(PatientDBModel.cabinet)
@@ -77,10 +80,11 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
             query = query.order_by(desc(column_attribute))
 
     if columnKey == 'full_name':
+        full_name_expr = func.concat(contragent_alias.last_name, ' ', contragent_alias.first_name, ' ', contragent_alias.patronymic)
         if order == "ascend":
-            query = query.order_by(asc(ContragentDBModel.name))
+            query = query.order_by(asc(full_name_expr))
         else:
-            query = query.order_by(desc(ContragentDBModel.name))
+            query = query.order_by(desc(full_name_expr))
 
     if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
         column_attribute = getattr(ContragentDBModel, columnKey)

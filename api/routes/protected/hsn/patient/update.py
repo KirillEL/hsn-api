@@ -33,6 +33,7 @@ class UpdatePatientRequestBody(BaseModel):
     has_hospitalization: Optional[bool] = Field(None)
     count_hospitalization: Optional[int] = Field(None)
     last_hospitalization_date: Optional[str] = Field(None)
+    patient_note: Optional[str] = Field(None, max_length=1000)
 
     @field_validator("birth_date", "dod")
     def date_format_validation(cls, v):
@@ -63,7 +64,6 @@ class UpdatePatientRequestBody(BaseModel):
         if age > 110:
             raise ValidationException(message="Возраст не должен превышать 110 лет.")
         return self
-
 
 
 @patient_router.patch(
