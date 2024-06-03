@@ -16,7 +16,7 @@ class ClassificationAdjacentReleaseType(Enum):
 
 class ClassificationNcStageType(Enum):
     I = '1'
-    IIa = '2a'
+    IIa = '2а'
     IIb = '2б'
     III = '3'
 
