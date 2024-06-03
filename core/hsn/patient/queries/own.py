@@ -112,7 +112,7 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
 
     if full_name:
         filtered_patients = [patient for patient in converted_patients
-                             if full_name.lower() in patient.full_name.lower()]
+                             if full_name[0].lower() in patient.full_name.lower()]
         total_count = len(filtered_patients)
     else:
         filtered_patients = converted_patients
