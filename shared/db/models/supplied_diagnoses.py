@@ -11,9 +11,9 @@ class SuppliedDiagnosesDBModel(BaseDBModel):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    patient_appointment_id = Column(BigInteger, ForeignKey('public.patient_appointments.id'), nullable=False)
+    patient_appointment_id = Column(BigInteger, ForeignKey('public.appointments.id'), nullable=False)
     diagnose_catalog_id = Column(BigInteger, ForeignKey('public.diagnoses_catalog.id'), nullable=False)
-    medicine_prescription_id = Column(BigInteger, ForeignKey('public.medicines_prescription.id'), nullable=False)
+    medicine_prescription_id = Column(BigInteger, ForeignKey('public.medicine_prescriptions.id'), nullable=False)
 
     note = Column(Text)
 

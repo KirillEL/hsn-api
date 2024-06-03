@@ -69,21 +69,6 @@ services:
     networks:
       - hsn_network
 
-  test_database:
-    image: postgres
-    container_name: test_database
-    hostname: test_database
-    environment:
-      POSTGRES_DB: test_db
-      POSTGRES_USER: testuser
-      POSTGRES_PASSWORD: testuserpassword
-    ports:
-      - "5433:5432"
-    volumes:
-      - db-test-data:/var/lib/postgresql/data
-    networks:
-      - hsn_network
-
 networks:
   hsn_network:
     driver: 'bridge'
@@ -91,5 +76,3 @@ networks:
 volumes:
   db-data:
     name: db-data
-  db-test-data:
-    name: db-test-data

@@ -102,6 +102,13 @@ class BasePatientResponse(BaseModel):
     address: str
     phone: str
     clinic: str
+    referring_doctor: Optional[str] = None
+    referring_clinic_organization: Optional[str] = None
+    disability: str
+    lgota_drugs: str
+    has_hospitalization: bool
+    count_hospitalization: Optional[int] = None
+    last_hospitalization_date: Optional[str] = None
     patient_note: Optional[str] = None
 
 

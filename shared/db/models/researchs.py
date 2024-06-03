@@ -10,9 +10,9 @@ class ResearchDBModel(BaseDBModel):
     __table_args__ = {'schema': 'public'}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    analise_id = Column(BigInteger, ForeignKey('public.analyses.id'), nullable=False)
+    analise_id = Column(BigInteger, ForeignKey('public.analises.id'), nullable=False)
     date = Column(DateTime(timezone=True), nullable=False)
-    patient_appointment_id = Column(BigInteger, ForeignKey('public.patient_appointments.id'), nullable=False)
+    patient_appointment_id = Column(BigInteger, ForeignKey('public.appointments.id'), nullable=False)
     patient_hospitalization_id = Column(BigInteger, ForeignKey('public.patient_hospitalizations.id'), nullable=False)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))

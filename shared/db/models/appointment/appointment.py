@@ -55,7 +55,7 @@ class AppointmentDBModel(BaseDBModel):
                             primaryjoin="AppointmentDBModel.id == AppointmentPurposeDBModel.appointment_id",
                             back_populates="appointment")
 
-    status = Column(String(25), nullable=False, server_default=text("progress"))
+    status = Column(String(25), nullable=False, server_default=text("'progress'"))
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))

@@ -29,6 +29,13 @@ class HsnPatientUpdateContext(BaseModel):
     address: Optional[str] = None
     phone: Optional[str] = None
     clinic: Optional[str] = None
+    referring_doctor: Optional[str] = Field(None)
+    referring_clinic_organization: Optional[str] = Field(None)
+    disability: Optional[str] = None
+    lgota_drugs: Optional[str] = None
+    has_hospitalization: Optional[bool] = None
+    count_hospitalization: Optional[int] = Field(None)
+    last_hospitalization_date: Optional[str] = None
     patient_note: Optional[str] = None
 
 

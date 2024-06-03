@@ -20,6 +20,15 @@ class PatientDBModel(BaseDBModel):
     address = Column(String(255), nullable=False)
     phone = Column(String(20), nullable=False)
     clinic = Column(String(255), nullable=False)
+
+    referring_doctor = Column(Text)
+    referring_clinic_organization = Column(Text)
+    disability = Column(String(50), nullable=False, server_default=text("'нет'::character varying"))
+    lgota_drugs = Column(String(50), nullable=False, server_default=text("'нет'::character varying"))
+    has_hospitalization = Column(Boolean, nullable=False, server_default=text("false"))
+    count_hospitalization = Column(Integer)
+    last_hospitalization_date = Column(Text)
+
     patient_note = Column(Text, nullable=True)
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)

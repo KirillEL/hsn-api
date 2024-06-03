@@ -23,11 +23,18 @@ class CreatePatientRequestBody(BaseModel):
     gender: GenderType = Field(GenderType.MALE)
     birth_date: str = Field(default=datetime.today().strftime("%d.%m.%Y"))
     dod: Optional[str] = Field(None)
-    location: LocationType = Field(default=LocationType.NSK.value)
+    location: LocationType = Field(default=LocationType.NSK)
     district: str = Field(max_length=255)
     address: str = Field(max_length=255)
     phone: str
     clinic: str
+    referring_doctor: Optional[str] = Field(None)
+    referring_clinic_organization: Optional[str] = Field(None)
+    disability: DisabilityType = Field(DisabilityType.NO.value)
+    lgota_drugs: LgotaDrugsType = Field(LgotaDrugsType.NO.value)
+    has_hospitalization: bool
+    count_hospitalization: Optional[int] = Field(None)
+    last_hospitalization_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
     patient_note: Optional[str] = Field(None, max_length=1000)
 
     @field_validator("birth_date", "dod")

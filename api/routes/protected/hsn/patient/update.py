@@ -21,6 +21,13 @@ class UpdatePatientRequestBody(BaseModel):
     address: Optional[str] = Field(None, max_length=255)
     phone: Optional[str] = Field(None, max_length=20)
     clinic: Optional[str] = Field(None)
+    referring_doctor: Optional[str] = Field(None)
+    referring_clinic_organization: Optional[str] = Field(None)
+    disability: Optional[DisabilityType] = Field(None)
+    lgota_drugs: Optional[LgotaDrugsType] = Field(None)
+    has_hospitalization: Optional[bool] = Field(None)
+    count_hospitalization: Optional[int] = Field(None)
+    last_hospitalization_date: Optional[str] = Field(None)
 
 
 
