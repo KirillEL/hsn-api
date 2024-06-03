@@ -34,7 +34,7 @@ class LocationType(Enum):
     ANOTHER = "другое"
 
 
-# ContragentAlias = aliased(ContragentDBModel, name="contragents_1")
+ContragentAlias = aliased(ContragentDBModel, name="contragents_1")
 
 
 @HandleExceptions()
@@ -82,9 +82,9 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         column_last_name = getattr(ContragentDBModel, 'last_name')
         column_patronymic = getattr(ContragentDBModel, 'patronymic')
         if order == "ascend":
-            query = query.order_by(text("public.contragents_1.name asc"))
+            query = query.order_by(asc(ContragentAlias.name))
         else:
-            query = query.order_by(text("public.contragents_1.name desc"))
+            query = query.order_by(desc(ContragentAlias.name))
 
     if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
         column_attribute = getattr(ContragentDBModel, columnKey)
