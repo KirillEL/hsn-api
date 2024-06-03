@@ -36,7 +36,7 @@ class LocationType(Enum):
 
 @HandleExceptions()
 @SessionContext()
-async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, full_name: str = None,
+async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None,
                                gender: str = None, location: str = None, columnKey: str = None, order: str = None):
     logger.debug(f"columnKey: {columnKey}")
 
@@ -105,14 +105,12 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         conv_patient = await convert_to_patient_response(patient)
         converted_patients.append(conv_patient)
 
-    if full_name:
-        filtered_patients = [patient for patient in converted_patients if
-                             full_name[0].lower() in patient.full_name.lower()]
-        total_count = len(filtered_patients)
-    else:
-        filtered_patients = converted_patients
+    total_count = len(converted_patients)
+
+    if columnKey == 'age':
+        converted_patients.sort(key=lambda x: x["age"], reverse=(order != "ascend"))
 
     return {
-        "data": filtered_patients,
+        "data": converted_patients,
         "total": total_count
     }

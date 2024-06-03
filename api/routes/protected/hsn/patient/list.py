@@ -46,7 +46,6 @@ async def get_own_patients(
         request: Request,
         limit: Optional[int] = Query(None),
         offset: Optional[int] = Query(None),
-        full_name: Optional[List[str]] = Query(None, alias="filters[full_name][0]"),
         gender: Optional[List[str]] = Query(None, alias="filters[gender][0]"),
         location: Optional[List[str]] = Query(None, alias="filters[location][0]"),
         columnKey: Optional[str] = Query(None, alias="sortParams[columnKey]"),
@@ -55,7 +54,6 @@ async def get_own_patients(
     params = GetOwnPatientsQueryParams(
         limit=limit,
         offset=offset,
-        full_name=full_name,
         gender=gender,
         location=location,
         columnKey=columnKey,
@@ -65,7 +63,6 @@ async def get_own_patients(
         request.user.id,
         limit=params.limit,
         offset=params.offset,
-        full_name=params.full_name,
         gender=params.gender,
         location=params.location,
         columnKey=params.columnKey,
