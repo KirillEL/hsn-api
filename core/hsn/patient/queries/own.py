@@ -108,7 +108,7 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
     total_count = len(converted_patients)
 
     if columnKey == 'age':
-        converted_patients.sort(key=lambda x: x["age"], reverse=(order != "ascend"))
+        converted_patients.sort(key=lambda x: x.age, reverse=(order != "ascend"))
 
     return {
         "data": converted_patients,
