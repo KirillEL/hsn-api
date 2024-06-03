@@ -41,6 +41,7 @@ class LocationType(Enum):
 @SessionContext()
 async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None, full_name: str = None,
                                gender: str = None, location: str = None, columnKey: str = None, order: str = None):
+    logger.debug(f"columnKey: {columnKey}")
     query = (
         select(PatientDBModel)
         .options(joinedload(PatientDBModel.cabinet)
