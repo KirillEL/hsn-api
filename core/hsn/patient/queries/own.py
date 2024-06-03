@@ -34,7 +34,7 @@ class LocationType(Enum):
     ANOTHER = "другое"
 
 
-#ContragentAlias = aliased(ContragentDBModel, name="contragents_1")
+# ContragentAlias = aliased(ContragentDBModel, name="contragents_1")
 
 
 @HandleExceptions()
@@ -77,11 +77,22 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
             query = query.order_by(desc(column_attribute))
 
     if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
-        column_attribute = getattr(ContragentDBModel, columnKey)
-        if order == "ascend":
-            query = query.order_by(asc(column_attribute))
+        if columnKey == 'full_name':
+            column_name = getattr(ContragentDBModel, 'name')
+            column_last_name = getattr(ContragentDBModel, 'last_name')
+            column_patronymic = getattr(ContragentDBModel, 'patronymic')
+            if order == "ascend":
+                query = query.order_by(asc(column_name)).order_by(asc(column_last_name)).order_by(
+                    asc(column_patronymic))
+            else:
+                query = query.order_by(desc(column_name)).order_by(desc(column_last_name)).order_by(
+                    desc(column_patronymic))
         else:
-            query = query.order_by(desc(column_attribute))
+            column_attribute = getattr(ContragentDBModel, columnKey)
+            if order == "ascend":
+                query = query.order_by(asc(column_attribute))
+            else:
+                query = query.order_by(desc(column_attribute))
 
     query = query.order_by(desc('id'))
     total_count_result = await db_session.execute(query_count)
