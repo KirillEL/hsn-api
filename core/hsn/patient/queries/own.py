@@ -2,7 +2,7 @@ from datetime import date as tdate
 from enum import Enum
 from typing import Dict
 
-from sqlalchemy import desc, asc, func
+from sqlalchemy import desc, asc, func, text
 from loguru import logger
 
 from api.decorators import HandleExceptions
@@ -83,9 +83,9 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         column_last_name = getattr(ContragentDBModel, 'last_name')
         column_patronymic = getattr(ContragentDBModel, 'patronymic')
         if order == "ascend":
-            query = query.order_by(asc('name'))
+            query = query.order_by(asc(text('name_1')))
         else:
-            query = query.order_by(desc('name'))
+            query = query.order_by(desc(text('name_1')))
 
     if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
         column_attribute = getattr(ContragentDBModel, columnKey)
