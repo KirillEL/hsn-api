@@ -6,16 +6,16 @@ from pydantic import BaseModel, ConfigDict
 
 class DisabilityType(Enum):
     NO = 'нет'
-    FIRST = '1'
-    SECOND = '2'
-    THIRD = '3'
+    FIRST = 'I'
+    SECOND = 'II'
+    THIRD = 'III'
     CANCEL = 'отказ'
 
 
 class LgotaDrugsType(Enum):
     YES = 'да'
     NO = 'нет'
-    SSZ = 'ссз'
+    SSZ = 'ССЗ'
 
 
 class AppointmentClinicDoctorBlock(BaseModel):
