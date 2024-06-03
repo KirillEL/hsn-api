@@ -47,6 +47,7 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         .options(joinedload(PatientDBModel.cabinet)
                  .joinedload(CabinetDBModel.doctors)
                  , joinedload(PatientDBModel.contragent))
+        .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
         .where(DoctorDBModel.user_id == current_user_id)
     )
     logger.debug(f"Query: {query}")
