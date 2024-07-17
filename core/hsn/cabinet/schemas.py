@@ -41,3 +41,8 @@ class CabinetWithMedOrganizationFlat(BaseModel):
     med_id: int
     med_org: MedOrganizationFlat
     is_deleted: bool
+
+
+class CabinetFlatResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    number: str
