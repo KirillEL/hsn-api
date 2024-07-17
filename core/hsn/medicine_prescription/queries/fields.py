@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 from api.exceptions import InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.models.medicines_prescription import MedicinesPrescriptionDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 
 
 class MedicinePrescriptionSchema(BaseModel):
@@ -22,10 +22,9 @@ class GetMedicinePrescriptionFieldsResponse(BaseModel):
     medicine_prescriptions: list[MedicinePrescriptionSchema]
 
 
-@SessionContext()
 async def hsn_medicine_prescriptions_get_fields():
     try:
-        result = await db_session.execute(
+        result = await session.execute(
             select(MedicinesPrescriptionDBModel)
             .options(selectinload(MedicinesPrescriptionDBModel.medicine_group))
             .where(MedicinesPrescriptionDBModel.is_deleted.is_(False))

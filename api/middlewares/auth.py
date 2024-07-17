@@ -3,7 +3,7 @@ import typing
 from starlette.requests import HTTPConnection
 
 from core.user import UserFlat, hsn_user_get_me
-from core.user.model import User
+from core.user.schemas import User
 from core.user.queries.by_id import user_query_by_id
 from infra import config
 import jwt

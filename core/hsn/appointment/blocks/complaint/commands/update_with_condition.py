@@ -6,11 +6,14 @@ from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
 from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
-from shared.db.db_session import db_session, SessionContext
+from shared.db import Transaction
+from shared.db.db_session import session
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from pydantic import BaseModel, Field
+
+from shared.db.transaction import Propagation
 
 
 class HsnBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
@@ -85,8 +88,7 @@ class HsnBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
         }
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockComplaintAndClinicalConditionUpdateContext):
     user_id = context.user_id
     appointment_id = context.appointment_id
@@ -98,7 +100,7 @@ async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockCom
         select(AppointmentDBModel.block_complaint_id)
         .where(AppointmentDBModel.id == appointment_id)
     )
-    cursor = await db_session.execute(query_get_block_complaint_id)
+    cursor = await session.execute(query_get_block_complaint_id)
     block_complaint_id = cursor.scalar()
     if block_complaint_id is None:
         raise NotFoundException(message="У приема не привязан еще блок жалоб!")
@@ -107,7 +109,7 @@ async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockCom
         select(AppointmentDBModel.block_clinical_condition_id)
         .where(AppointmentDBModel.id == appointment_id)
     )
-    cursor = await db_session.execute(query_get_block_clinical_condition_id)
+    cursor = await session.execute(query_get_block_clinical_condition_id)
     block_clinical_condition_id = cursor.scalar()
     if block_clinical_condition_id is None:
         raise NotFoundException(message="У приема не привязан еще блок клинического состояния!")
@@ -118,7 +120,7 @@ async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockCom
         .where(AppointmentComplaintBlockDBModel.id == block_complaint_id)
         .returning(AppointmentComplaintBlockDBModel)
     )
-    cursor = await db_session.execute(query_update_block_complaint)
+    cursor = await session.execute(query_update_block_complaint)
     updated_block_complaint = cursor.scalars().first()
 
     query_update_block_clinical_condition = (
@@ -127,10 +129,9 @@ async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockCom
         .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
         .returning(AppointmentClinicalConditionBlockDBModel)
     )
-    cursor = await db_session.execute(query_update_block_clinical_condition)
+    cursor = await session.execute(query_update_block_clinical_condition)
     updated_block_clinical_condition = cursor.scalars().first()
 
-    await db_session.commit()
     response = AppointmentComplaintWithClinicalCondition(
         block_complaint=updated_block_complaint,
         block_clinical_condition=updated_block_clinical_condition

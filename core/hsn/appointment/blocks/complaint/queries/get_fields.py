@@ -2,11 +2,9 @@ from loguru import logger
 from sqlalchemy import inspect
 
 from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse
-from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 
 
-@SessionContext()
 async def hsn_get_block_complaint_fields():
     inspector = inspect(AppointmentComplaintBlockDBModel)
     field_responses = []

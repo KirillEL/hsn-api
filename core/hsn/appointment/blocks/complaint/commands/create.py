@@ -6,10 +6,13 @@ from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
-from shared.db.db_session import db_session, SessionContext
+from shared.db import Transaction
+from shared.db.db_session import session
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 from pydantic import BaseModel
+
+from shared.db.transaction import Propagation
 
 
 class HsnAppointmentBlockComplaintCreateContext(BaseModel):
@@ -23,8 +26,7 @@ class HsnAppointmentBlockComplaintCreateContext(BaseModel):
     note: Optional[str] = False
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_appointment_block_complaint_create(context: HsnAppointmentBlockComplaintCreateContext) -> int:
     await check_appointment_exists(context.appointment_id)
     payload = context.model_dump(exclude={'appointment_id'})
@@ -33,7 +35,7 @@ async def hsn_appointment_block_complaint_create(context: HsnAppointmentBlockCom
         .values(**payload)
         .returning(AppointmentComplaintBlockDBModel.id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     new_complaint_block_id = cursor.scalar()
 
     query_update_appointment = (
@@ -43,8 +45,6 @@ async def hsn_appointment_block_complaint_create(context: HsnAppointmentBlockCom
         )
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    await db_session.execute(query_update_appointment)
-
-    await db_session.commit()
+    await session.execute(query_update_appointment)
 
     return new_complaint_block_id

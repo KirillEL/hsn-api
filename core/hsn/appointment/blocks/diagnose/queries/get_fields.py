@@ -1,9 +1,7 @@
 from core.hsn.appointment.blocks.base_model import AppointmentBlockBooleanTextFieldsResponse
-from shared.db.db_session import SessionContext
 from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
 from sqlalchemy import inspect
 
-@SessionContext()
 async def hsn_get_block_diagnose_fields():
     inspector = inspect(AppointmentDiagnoseBlockDBModel)
     field_responses = []

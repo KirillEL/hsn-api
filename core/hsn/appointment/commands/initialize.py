@@ -5,11 +5,14 @@ from loguru import logger
 from api.decorators import HandleExceptions
 from api.exceptions import InternalServerException, NotFoundException
 from api.exceptions.base import UnprocessableEntityException
-from shared.db.db_session import db_session, SessionContext
+from shared.db import Transaction
+from shared.db.db_session import session
 from shared.db.models.patient import PatientDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from sqlalchemy import insert, exc, select
 from pydantic import BaseModel, ConfigDict, Field
+
+from shared.db.transaction import Propagation
 
 
 class HsnInitializeAppointmentContext(BaseModel):
@@ -25,17 +28,15 @@ async def check_patient_exists(patient_id: int):
         select(PatientDBModel)
         .where(PatientDBModel.id == patient_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     patient = cursor.scalars().first()
     if patient is None:
         raise NotFoundException(message="Пациент не найден!")
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_appointment_initialize(context: HsnInitializeAppointmentContext):
     payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
-    logger.info(f'start initialize patient_appointment...')
     await check_patient_exists(context.patient_id)
     query = (
         insert(AppointmentDBModel)
@@ -45,8 +46,6 @@ async def hsn_appointment_initialize(context: HsnInitializeAppointmentContext):
         )
         .returning(AppointmentDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
+    cursor = await session.execute(query)
     new_patient_appointment_id = cursor.scalar()
-    logger.info(f'patient_appointment_model_id: {new_patient_appointment_id}')
     return new_patient_appointment_id

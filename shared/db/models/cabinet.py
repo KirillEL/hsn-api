@@ -15,7 +15,7 @@ class CabinetDBModel(BaseDBModel):
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
     med_id = Column(BigInteger, ForeignKey('public.med_organizations.id'))
-    med_org = relationship("MedOrganizationDBModel", uselist=False)
+    med_org = relationship("MedOrganizationDBModel", uselist=False, lazy='selectin')
 
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime)

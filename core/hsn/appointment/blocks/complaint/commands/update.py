@@ -6,9 +6,11 @@ from sqlalchemy import select, update
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
+from shared.db import Transaction
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
+from shared.db.transaction import Propagation
 
 
 class HsnBlockComplaintUpdateContext(BaseModel):
@@ -22,8 +24,7 @@ class HsnBlockComplaintUpdateContext(BaseModel):
     note: Optional[str] = None
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_block_complaint_update(context: HsnBlockComplaintUpdateContext):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
@@ -32,7 +33,7 @@ async def hsn_block_complaint_update(context: HsnBlockComplaintUpdateContext):
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     block_complaint_id = cursor.scalar()
     if block_complaint_id is None:
         raise NotFoundException(message="У приема нет данного блока!")
@@ -43,7 +44,6 @@ async def hsn_block_complaint_update(context: HsnBlockComplaintUpdateContext):
         .where(AppointmentComplaintBlockDBModel.id == block_complaint_id)
         .returning(AppointmentComplaintBlockDBModel)
     )
-    cursor = await db_session.execute(query_update)
-    await db_session.commit()
+    cursor = await session.execute(query_update)
     updated_block_complaint = cursor.scalars().first()
     return AppointmentComplaintBlock.model_validate(updated_block_complaint)

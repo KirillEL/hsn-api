@@ -1,11 +1,10 @@
 from typing import List
-from shared.db.db_session import SessionContext, db_session
+from shared.db.db_session import session
 from shared.db.models.cabinet import CabinetDBModel
 from sqlalchemy import select, desc, func
-from core.hsn.cabinet.model import Cabinet
+from core.hsn.cabinet.schemas import Cabinet
 
 
-@SessionContext()
 async def hsn_query_cabinet_list(limit: int = None, offset: int = None, pattern: str = None):
     query = select(CabinetDBModel)
 
@@ -21,6 +20,6 @@ async def hsn_query_cabinet_list(limit: int = None, offset: int = None, pattern:
     if limit is not None:
         query = query.limit(limit)
 
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
 
     return [Cabinet.model_validate(cabinet) for cabinet in cursor.scalars().all()]

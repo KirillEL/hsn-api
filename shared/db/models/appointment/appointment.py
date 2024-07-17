@@ -29,31 +29,32 @@ class AppointmentDBModel(BaseDBModel):
     doctor_id = Column(Integer, ForeignKey('public.doctors.id'), nullable=False)
     doctor = relationship(DoctorDBModel, uselist=False)
     patient_id = Column(Integer, ForeignKey('public.patients.id'), nullable=False)
-    patient = relationship(PatientDBModel, uselist=False)
+
+    patient = relationship(PatientDBModel, uselist=False, lazy='selectin')
 
     date = Column(Text, nullable=False)
     date_next = Column(Text)
 
     block_clinic_doctor_id = Column(Integer, ForeignKey('public.appointment_block_clinic_doctors.id'))
-    block_clinic_doctor = relationship(AppointmentBlockClinicDoctorDBModel, uselist=False)
+    block_clinic_doctor = relationship(AppointmentBlockClinicDoctorDBModel, uselist=False, lazy='selectin')
 
     block_diagnose_id = Column(Integer, ForeignKey('public.appointment_block_diagnoses.id'))
-    block_diagnose = relationship(AppointmentDiagnoseBlockDBModel, uselist=False)
+    block_diagnose = relationship(AppointmentDiagnoseBlockDBModel, uselist=False, lazy='selectin')
 
     block_laboratory_test_id = Column(Integer, ForeignKey('public.appointment_block_laboratory_tests.id'))
-    block_laboratory_test = relationship(AppointmentLaboratoryTestBlockDBModel, uselist=False)
+    block_laboratory_test = relationship(AppointmentLaboratoryTestBlockDBModel, uselist=False, lazy='selectin')
 
     block_ekg_id = Column(Integer, ForeignKey('public.appointment_block_ekgs.id'))
-    block_ekg = relationship(AppointmentEkgBlockDBModel, uselist=False)
+    block_ekg = relationship(AppointmentEkgBlockDBModel, uselist=False, lazy='selectin')
 
     block_complaint_id = Column(Integer, ForeignKey('public.appointment_block_complaints.id'))
-    block_complaint = relationship(AppointmentComplaintBlockDBModel, uselist=False)
+    block_complaint = relationship(AppointmentComplaintBlockDBModel, uselist=False, lazy='selectin')
 
     block_clinical_condition_id = Column(Integer, ForeignKey('public.appointment_block_clinical_conditions.id'))
-    block_clinical_condition = relationship(AppointmentClinicalConditionBlockDBModel, uselist=False)
+    block_clinical_condition = relationship(AppointmentClinicalConditionBlockDBModel, uselist=False, lazy='selectin')
     purposes = relationship(AppointmentPurposeDBModel,
                             primaryjoin="AppointmentDBModel.id == AppointmentPurposeDBModel.appointment_id",
-                            back_populates="appointment")
+                            back_populates="appointment", lazy='selectin')
 
     status = Column(String(25), nullable=False, server_default=text("'progress'"))
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))

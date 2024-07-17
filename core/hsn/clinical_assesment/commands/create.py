@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
 from shared.db.db_session import db_session, SessionContext
-from ..model import ClinicalAssesment
+from ..schemas import ClinicalAssesment
 from sqlalchemy import insert, select
 from pydantic import BaseModel, Field
 from typing import Optional

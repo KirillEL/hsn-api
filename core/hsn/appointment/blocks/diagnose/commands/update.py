@@ -6,9 +6,11 @@ from sqlalchemy import select, update
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
+from shared.db import Transaction
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
+from shared.db.transaction import Propagation
 
 
 class HsnBlockDiagnoseUpdateContext(BaseModel):
@@ -40,8 +42,7 @@ class HsnBlockDiagnoseUpdateContext(BaseModel):
     another: Optional[str] = None
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_block_diagnose_update(context: HsnBlockDiagnoseUpdateContext):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
@@ -50,7 +51,7 @@ async def hsn_block_diagnose_update(context: HsnBlockDiagnoseUpdateContext):
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     block_diagnose_id = cursor.scalar()
     if block_diagnose_id is None:
         raise NotFoundException(message="У приема нет данного блока!")
@@ -61,7 +62,6 @@ async def hsn_block_diagnose_update(context: HsnBlockDiagnoseUpdateContext):
         .where(AppointmentDiagnoseBlockDBModel.id == block_diagnose_id)
         .returning(AppointmentDiagnoseBlockDBModel)
     )
-    cursor = await db_session.execute(query_update)
-    await db_session.commit()
+    cursor = await session.execute(query_update)
     updated_block_diagnose = cursor.scalars().first()
     return AppointmentDiagnoseBlock.model_validate(updated_block_diagnose)

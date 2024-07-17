@@ -1,4 +1,4 @@
-from .model import MedOrganization, MedOrganizationFlat
+from .schemas import MedOrganization, MedOrganizationFlat
 from .queries.list import hsn_query_med_organization_list
 from .queries.by_id import hsn_query_med_organization_by_id
 from .commands.create import CreateMedOrganizationContext, hsn_med_organization_create

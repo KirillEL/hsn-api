@@ -2,11 +2,9 @@ from sqlalchemy import select
 
 from api.decorators import HandleExceptions
 from shared.db.models.doctor import DoctorDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 
 
-@SessionContext()
-@HandleExceptions()
 async def hsn_query_doctor_list(limit: int = None, offset: int = None, pattern: str = None):
     query = select(DoctorDBModel)
 
@@ -22,5 +20,5 @@ async def hsn_query_doctor_list(limit: int = None, offset: int = None, pattern: 
     if pattern is not None:
         query = query.where(DoctorDBModel.name.contains(pattern))
 
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     return [item for item in cursor.scalars().all()]

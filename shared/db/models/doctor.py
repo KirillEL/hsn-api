@@ -17,11 +17,11 @@ class DoctorDBModel(BaseDBModel):
 
     user_id = Column(Integer, ForeignKey('public.users.id'), nullable=False, unique=True)
 
-    user = relationship("UserDBModel", back_populates="doctor", uselist=False)
+    user = relationship("UserDBModel", back_populates="doctor", uselist=False, lazy='selectin')
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=True)
 
-    cabinet = relationship("CabinetDBModel", back_populates="doctors", uselist=False)
+    cabinet = relationship("CabinetDBModel", back_populates="doctors", uselist=False, lazy='selectin')
 
     is_glav = Column(Boolean, nullable=False, server_default=text("false"))
 

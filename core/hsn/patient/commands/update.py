@@ -4,13 +4,16 @@ from sqlalchemy.orm import selectinload
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from core.hsn.patient.commands.create import convert_to_patient_response
-from core.hsn.patient.model import PatientResponse
+from core.hsn.patient.schemas import PatientResponse
 from core.hsn.patient.queries.own import GenderType
-from shared.db.db_session import db_session, SessionContext
+from shared.db import Transaction
+from shared.db.db_session import session
 from shared.db.models import ContragentDBModel
 from shared.db.models.patient import PatientDBModel
 from pydantic import BaseModel, Field
 from typing import Optional
+
+from shared.db.transaction import Propagation
 from utils import contragent_hasher
 
 
@@ -52,20 +55,19 @@ async def check_patient_exists_by_id(patient_id: int):
         select(PatientDBModel)
         .where(PatientDBModel.id == patient_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     patient = cursor.scalars().first()
     if patient is None:
         raise NotFoundException(message="Пациент с таким id не найден!")
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_update_patient_by_id(context: HsnPatientUpdateContext):
     await check_patient_exists_by_id(context.patient_id)
     patient_update_values = {key: value for key, value in context.dict().items() if
                              key in PatientDBModel.__table__.columns and value is not None}
     if patient_update_values:
-        await db_session.execute(
+        await session.execute(
             update(PatientDBModel).values(**patient_update_values, editor_id=context.user_id).where(
                 PatientDBModel.id == context.patient_id))
 
@@ -73,18 +75,17 @@ async def hsn_update_patient_by_id(context: HsnPatientUpdateContext):
         select(PatientDBModel.contragent_id)
         .where(PatientDBModel.id == context.patient_id)
     )
-    cursor = await db_session.execute(query_get_patient_contragent_id)
+    cursor = await session.execute(query_get_patient_contragent_id)
     contragent_id = cursor.scalar()
 
     contragent_update_values = {key: contragent_hasher.encrypt(value) for key, value in context.dict().items() if
                                 key in ContragentDBModel.__table__.columns and value is not None}
     if contragent_update_values:
-        await db_session.execute(update(ContragentDBModel).values(**contragent_update_values).where(
+        await session.execute(update(ContragentDBModel).values(**contragent_update_values).where(
             ContragentDBModel.id == contragent_id))
 
-    await db_session.commit()
 
-    result = await db_session.execute(select(PatientDBModel).options(selectinload(PatientDBModel.contragent)).where(
+    result = await session.execute(select(PatientDBModel).options(selectinload(PatientDBModel.contragent)).where(
         PatientDBModel.id == context.patient_id))
     updated_patient = result.scalars().first()
     if updated_patient:

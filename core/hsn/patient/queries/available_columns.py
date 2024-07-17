@@ -1,9 +1,8 @@
-from core.hsn.patient.model import PatientAvailableColumnsResponse
+from core.hsn.patient.schemas import PatientAvailableColumnsResponse
 from shared.db.models.patient import PatientDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 
 
-@SessionContext()
 async def hsn_get_patient_available_columns():
     available_patient_columns = [
         {'title': 'ID', 'value': 'id', 'disabled': True},

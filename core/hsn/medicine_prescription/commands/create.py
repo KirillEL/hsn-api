@@ -8,9 +8,11 @@ from api.decorators import HandleExceptions
 from api.exceptions import InternalServerException, NotFoundException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.medicine_prescription import MedicinePrescriptionFlat
+from shared.db import Transaction
 from shared.db.models.medicines_group import MedicinesGroupDBModel
 from shared.db.models.medicines_prescription import MedicinesPrescriptionDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
+from shared.db.transaction import Propagation
 
 
 class HsnMedicinePrescriptionCreateContext(BaseModel):
@@ -26,14 +28,13 @@ async def check_medicine_group_exists(medicine_group_id: int):
         .where(MedicinesGroupDBModel.id == medicine_group_id)
         .where(MedicinesGroupDBModel.is_deleted.is_(False))
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     med_group = cursor.scalar_one()
     if med_group is None:
         raise NotFoundException
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_medicine_prescription_create(context: HsnMedicinePrescriptionCreateContext):
     payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
     await check_medicine_group_exists(context.medicine_group_id)
@@ -45,8 +46,7 @@ async def hsn_medicine_prescription_create(context: HsnMedicinePrescriptionCreat
         )
         .returning(MedicinesPrescriptionDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
+    cursor = await session.execute(query)
     medicine_prescription_id = cursor.scalar()
 
     query_select = (
@@ -55,7 +55,7 @@ async def hsn_medicine_prescription_create(context: HsnMedicinePrescriptionCreat
         .where(MedicinesPrescriptionDBModel.id == medicine_prescription_id)
         .where(MedicinesPrescriptionDBModel.is_deleted.is_(False))
     )
-    cursor = await db_session.execute(query_select)
+    cursor = await session.execute(query_select)
 
     new_medicine_prescription = cursor.scalar_one()
     return MedicinePrescriptionFlat.model_validate(new_medicine_prescription)

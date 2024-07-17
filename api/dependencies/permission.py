@@ -22,11 +22,11 @@ class IsAuthenticated(BasePermission):
 
     async def has_permission(self, request: Request) -> bool:
         return request.user is not None
-    
+
 
 class IsAuthenticatedAdministrator(BasePermission):
     exception = UnauthorizedAdminException
-    
+
     async def has_permission(self, request: Request) -> bool:
         if request.user is None:
             return False
@@ -36,7 +36,7 @@ class IsAuthenticatedAdministrator(BasePermission):
                 return True
 
         return False
-    
+
 
 class AlowAll(BasePermission):
 

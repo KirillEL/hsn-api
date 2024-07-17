@@ -32,39 +32,14 @@ def reset_session_context(context: Token) -> None:
 
 engine = create_async_engine(config.DB_URI, echo=config.DEBUG, pool_recycle=3600)
 
-
-class RouteSession(Session):
-    def get_bind(self, mapper=None, clause=None, **kw):
-        return engine.sync_engine
-
-
 async_session_factory = sessionmaker(
+    bind=engine,
     class_=AsyncSession,
-    sync_session_class=RouteSession,
-    expire_on_commit=False
+    expire_on_commit=False,
+    autocommit=False,
+    future=True,
 )
-
-db_session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
+session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
     session_factory=async_session_factory,
-    scopefunc=get_session_context,
+    scopefunc=get_session_context
 )
-
-
-class SessionContext:
-    def __call__(self, func):
-        @wraps(func)
-        async def _session_context(*args, **kwargs):
-            session_id = str(uuid4())
-            context = set_session_context(session_id)
-            logger.debug(f'sessionContext')
-            try:
-                result = await func(*args, **kwargs)
-            except Exception as e:
-                raise e
-            finally:
-                await db_session.remove()
-                reset_session_context(context)
-
-            return result
-
-        return _session_context

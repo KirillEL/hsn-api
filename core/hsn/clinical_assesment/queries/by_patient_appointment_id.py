@@ -1,6 +1,6 @@
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel
-from ..model import ClinicalAssesment
+from ..schemas import ClinicalAssesment
 from typing import Optional
 from shared.db.models.clinical_assesment import ClinicalAssesmentDBModel
 from sqlalchemy import select

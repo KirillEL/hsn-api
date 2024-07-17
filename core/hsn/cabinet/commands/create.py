@@ -1,6 +1,6 @@
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 from pydantic import BaseModel, Field
-from ..model import Cabinet
+from ..schemas import Cabinet
 from sqlalchemy import insert, select
 from shared.db.models.cabinet import CabinetDBModel
 from shared.db.models.med_organization import MedOrganizationDBModel
@@ -20,13 +20,12 @@ async def check_med_organization_exists(med_id: int):
         select(MedOrganizationDBModel)
         .where(MedOrganizationDBModel.id == med_id)
     )
-    result = await db_session.execute(query)
+    result = await session.execute(query)
     med_organization = result.scalars().first()
     if med_organization is None:
         raise NotFoundException(message="Мед учреждение не найдено!")
 
 
-@SessionContext()
 async def hsn_cabinet_create(context: HsnCabinetCreateContext) -> Cabinet:
     await check_med_organization_exists(context.med_id)
     payload = context.model_dump(exclude={'user_id'})
@@ -39,14 +38,14 @@ async def hsn_cabinet_create(context: HsnCabinetCreateContext) -> Cabinet:
         )
         .returning(CabinetDBModel)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     new_cabinet = cursor.scalars().first()
     
     try:
-        await db_session.commit()
+        await session.commit()
         logger.debug(f"New Cabinet created: {new_cabinet.id}")
         return Cabinet.model_validate(new_cabinet)
     except Exception as e:
         logger.error(f"Error creating cabinet: {e}")
-        await db_session.rollback()
+        await session.rollback()
         raise BadRequestException(message=str(e))

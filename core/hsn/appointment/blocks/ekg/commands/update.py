@@ -6,9 +6,11 @@ from sqlalchemy import select, update
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
+from shared.db import Transaction
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
+from shared.db.transaction import Propagation
 
 
 class HsnBlockEkgUpdateContext(BaseModel):
@@ -40,8 +42,7 @@ class HsnBlockEkgUpdateContext(BaseModel):
     note: Optional[str] = None
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_block_ekg_update(context: HsnBlockEkgUpdateContext):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
@@ -50,7 +51,7 @@ async def hsn_block_ekg_update(context: HsnBlockEkgUpdateContext):
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     block_ekg_id = cursor.scalar()
     if block_ekg_id is None:
         raise NotFoundException(message="У приема нет данного блока!")
@@ -61,7 +62,6 @@ async def hsn_block_ekg_update(context: HsnBlockEkgUpdateContext):
         .where(AppointmentEkgBlockDBModel.id == block_ekg_id)
         .returning(AppointmentEkgBlockDBModel)
     )
-    cursor = await db_session.execute(query_update)
-    await db_session.commit()
+    cursor = await session.execute(query_update)
     updated_block_ekg = cursor.scalars().first()
     return AppointmentEkgBlock.model_validate(updated_block_ekg)

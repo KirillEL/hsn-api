@@ -7,9 +7,11 @@ from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from shared.db import Transaction
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
+from shared.db.transaction import Propagation
 
 
 class HsnBlockClinicalConditionUpdateContext(BaseModel):
@@ -45,8 +47,7 @@ class HsnBlockClinicalConditionUpdateContext(BaseModel):
     six_min_walk_distance: Optional[int] = None
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_block_clinical_condition_update(context: HsnBlockClinicalConditionUpdateContext):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
@@ -55,7 +56,7 @@ async def hsn_block_clinical_condition_update(context: HsnBlockClinicalCondition
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     block_clinical_condition_id = cursor.scalar()
     if block_clinical_condition_id is None:
         raise NotFoundException(message="У приема нет данного блока!")
@@ -66,7 +67,6 @@ async def hsn_block_clinical_condition_update(context: HsnBlockClinicalCondition
         .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
         .returning(AppointmentClinicalConditionBlockDBModel)
     )
-    cursor = await db_session.execute(query_update)
-    await db_session.commit()
+    cursor = await session.execute(query_update)
     updated_block = cursor.scalars().first()
     return AppointmentClinicalConditionBlock.model_validate(updated_block)

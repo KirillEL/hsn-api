@@ -8,7 +8,7 @@ def main():
         app="api.api_server:app",
         host=config.APP_HOST,
         port=config.APP_PORT,
-        reload=True,
+        reload=True if config.ENV != "prod" else False,
         workers=1,
     )
 

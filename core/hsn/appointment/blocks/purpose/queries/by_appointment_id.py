@@ -10,11 +10,9 @@ from core.hsn.appointment.blocks.purpose.commands.create import check_appointmen
 from core.hsn.appointment.blocks.purpose.model import AppointmentPurposeResponseFlat, MedicineGroupData
 from shared.db.models import MedicinesPrescriptionDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 
 
-@SessionContext()
-@HandleExceptions()
 async def hsn_get_purposes_by_appointment_id(appointment_id: int):
     results_dict = dict()
     await check_appointment_exists(appointment_id)
@@ -25,7 +23,7 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
         .where(AppointmentPurposeDBModel.appointment_id == appointment_id)
         .where(AppointmentPurposeDBModel.is_deleted.is_(False))
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     purposes = cursor.scalars().all()
     if len(purposes) == 0:
         raise NotFoundException(message="У приема нет блока назначений лекарственных препаратов")

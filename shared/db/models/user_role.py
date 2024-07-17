@@ -10,6 +10,3 @@ class UserRoleDBModel(BaseDBModel):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('public.users.id'), primary_key=True)
     role_id = Column(Integer, ForeignKey('public.roles.id'), primary_key=True)
-
-    # user = relationship('UserDBModel', back_populates='roles')
-    # role = relationship('RoleDBModel', back_populates='users')

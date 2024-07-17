@@ -4,10 +4,8 @@ from sqlalchemy import inspect
 from core.hsn.appointment.blocks.base_model import AppointmentBlockTextDateFieldsResponse, \
     AppointmentBlockTextDateLaboratoryTestFieldsResponse, BaseTextDateField
 from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
-from shared.db.db_session import SessionContext
 
 
-@SessionContext()
 async def hsn_get_block_laboratory_test_fields():
     inspector = inspect(AppointmentLaboratoryTestBlockDBModel)
     all_columns = inspector.columns.keys()

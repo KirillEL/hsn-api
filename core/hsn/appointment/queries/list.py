@@ -7,11 +7,11 @@ from sqlalchemy.orm import joinedload, contains_eager, selectinload
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, BadRequestException, ValidationException
 from core.hsn.appointment import Appointment
-from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
+from core.hsn.appointment.schemas import PatientAppointmentFlat, PatientFlatForAppointmentList
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 from pydantic import BaseModel, Field, ValidationError
 
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
@@ -25,41 +25,39 @@ class HsnAppointmentListContext(BaseModel):
     offset: Optional[int] = None
 
 
-@SessionContext()
-@HandleExceptions()
 async def hsn_appointment_list(context: HsnAppointmentListContext):
     logger.info("Получение списка приемов...")
     results = []
     query = select(AppointmentDBModel).where(AppointmentDBModel.is_deleted.is_(False),
                                              AppointmentDBModel.doctor_id == context.user_id)
 
-    query = query.outerjoin(AppointmentDBModel.block_clinic_doctor) \
-        .outerjoin(AppointmentDBModel.block_clinical_condition) \
-        .outerjoin(AppointmentDBModel.block_diagnose) \
-        .outerjoin(AppointmentDBModel.block_ekg) \
-        .outerjoin(AppointmentDBModel.block_complaint) \
-        .outerjoin(AppointmentDBModel.block_laboratory_test) \
-        .outerjoin(AppointmentDBModel.purposes) \
-        .outerjoin(AppointmentDBModel.patient) \
-        .outerjoin(PatientDBModel.contragent)
-
-    query = query.options(selectinload(AppointmentDBModel.block_clinic_doctor),
-                          selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent),
-                          selectinload(AppointmentDBModel.block_clinical_condition),
-                          selectinload(AppointmentDBModel.block_diagnose),
-                          selectinload(AppointmentDBModel.block_ekg),
-                          selectinload(AppointmentDBModel.block_complaint),
-                          selectinload(AppointmentDBModel.block_laboratory_test),
-                          selectinload(AppointmentDBModel.purposes).selectinload(
-                              AppointmentPurposeDBModel.medicine_prescription).selectinload(
-                              MedicinesPrescriptionDBModel.medicine_group))
+    # query = query.outerjoin(AppointmentDBModel.block_clinic_doctor) \
+    #     .outerjoin(AppointmentDBModel.block_clinical_condition) \
+    #     .outerjoin(AppointmentDBModel.block_diagnose) \
+    #     .outerjoin(AppointmentDBModel.block_ekg) \
+    #     .outerjoin(AppointmentDBModel.block_complaint) \
+    #     .outerjoin(AppointmentDBModel.block_laboratory_test) \
+    #     .outerjoin(AppointmentDBModel.purposes) \
+    #     .outerjoin(AppointmentDBModel.patient) \
+    #     .outerjoin(PatientDBModel.contragent)
+    #
+    # query = query.options(selectinload(AppointmentDBModel.block_clinic_doctor),
+    #                       selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent),
+    #                       selectinload(AppointmentDBModel.block_clinical_condition),
+    #                       selectinload(AppointmentDBModel.block_diagnose),
+    #                       selectinload(AppointmentDBModel.block_ekg),
+    #                       selectinload(AppointmentDBModel.block_complaint),
+    #                       selectinload(AppointmentDBModel.block_laboratory_test),
+    #                       selectinload(AppointmentDBModel.purposes).selectinload(
+    #                           AppointmentPurposeDBModel.medicine_prescription).selectinload(
+    #                           MedicinesPrescriptionDBModel.medicine_group))
 
     query_count = (
         select(func.count(AppointmentDBModel.id))
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.doctor_id == context.user_id)
     )
-    cursor_count = await db_session.execute(query_count)
+    cursor_count = await session.execute(query_count)
     count_appointments = cursor_count.scalar()
 
     if context.limit is not None:
@@ -67,13 +65,14 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
     if context.offset is not None:
         query = query.offset(context.offset)
 
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
 
     patient_appointments = cursor.unique().scalars().all()
     logger.debug(f'len_patient_appointments: {len(patient_appointments)}')
     if len(patient_appointments) == 0:
         raise NotFoundException(message="Приемы не найдены!")
     for appointment in patient_appointments:
+        logger.debug(f'appointment: {appointment.__dict__}')
         logger.debug(f'appointment: {appointment.patient.contragent.__dict__}')
         appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
         appointment.patient.contragent.last_name = contragent_hasher.decrypt(

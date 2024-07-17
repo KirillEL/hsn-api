@@ -1,7 +1,8 @@
 from api.decorators import HandleExceptions
 from api.exceptions.base import UnprocessableEntityException
-from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientResponseWithoutFullName
-from shared.db.db_session import db_session, SessionContext
+from core.hsn.patient.schemas import Contragent, PatientFlat, PatientResponse, PatientResponseWithoutFullName
+from shared.db import Transaction
+from shared.db.db_session import session
 from pydantic import BaseModel, Field, ValidationError
 from typing import Optional
 from sqlalchemy import insert, select, exc
@@ -11,7 +12,9 @@ from core.hsn.patient import Patient
 from datetime import date as tdate, datetime
 from core.user.queries.me import hsn_user_get_me
 from loguru import logger
-from utils.hash_helper import contragent_hasher
+
+from shared.db.transaction import Propagation
+from utils import contragent_hasher
 from api.exceptions import BadRequestException, ValidationException, NotFoundException, InternalServerException
 from sqlalchemy.orm import joinedload
 
@@ -127,16 +130,14 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
         .values(**hashed_payload)
         .returning(ContragentDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
+    cursor = await session.execute(query)
+    await session.commit()
     new_contragent_id = cursor.scalar()
     return new_contragent_id
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_patient_create(context: HsnPatientCreateContext):
-    logger.info(f'Начало создания пациента')
     patient_payload = context.model_dump(
         exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'user_id'})
     contragent_payload = {
@@ -147,7 +148,6 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
         'dod': context.dod if context.dod else None
     }
     new_contragent_id = await create_contragent(contragent_payload)
-    logger.info(f'контрагент создан успешно!')
 
     query = (
         insert(PatientDBModel)
@@ -159,18 +159,16 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
         )
         .returning(PatientDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
+    cursor = await session.execute(query)
     patient_id = cursor.scalar()
     query_get = (
         select(PatientDBModel)
         .options(joinedload(PatientDBModel.contragent))
         .where(PatientDBModel.id == patient_id)
     )
-    cursor = await db_session.execute(query_get)
+    cursor = await session.execute(query_get)
     patient = cursor.scalars().first()
     if not patient:
         raise NotFoundException(message="Пациент не найден!")
     patient_response = await convert_to_patient_response(patient)
-    logger.info(f'patient_response: {patient_response}')
     return PatientResponse.model_validate(patient_response)

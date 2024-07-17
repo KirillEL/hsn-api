@@ -17,6 +17,6 @@ class UserDBModel(BaseDBModel):
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
-    doctor = relationship("DoctorDBModel", back_populates="user", uselist=False)
+    doctor = relationship("DoctorDBModel", back_populates="user", uselist=False, lazy='selectin')
 
-    roles = relationship('RoleDBModel', secondary='public.user_roles', back_populates='users')
+    roles = relationship('RoleDBModel', secondary='public.user_roles', back_populates='users', lazy='selectin')

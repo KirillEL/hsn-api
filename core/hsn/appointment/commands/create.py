@@ -2,9 +2,10 @@ from sqlalchemy import insert, select
 
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
+from shared.db import Transaction
 from shared.db.models import BaseDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 from pydantic import BaseModel, Field
 from typing import Optional, TypeVar, Type
 from datetime import date as tdate
@@ -14,6 +15,7 @@ from shared.db.models.appointment.blocks.block_laboratory_test import Appointmen
 from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBModel
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
+from shared.db.transaction import Propagation
 
 DBModelType = TypeVar("DBModelType", bound=BaseDBModel)
 
@@ -37,7 +39,7 @@ async def check_block_exists(id: int, db_model: Type[DBModelType]):
         select(db_model)
         .where(db_model.id == id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     model = cursor.scalars().first()
     if model is not None:
         return model
@@ -74,8 +76,7 @@ async def check_clinical_condition_exists(block_clinical_condition_id: int):
     if model is None: raise NotFoundException(message="Clinical condition block id not found")
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_patient_appontment_create(context: HsnCreatePatientAppontmentContext):
     await check_block_clinic_doctor_exists(context.block_clinic_doctor_id)
     await check_block_diagnose_exists(context.block_diagnose_id)
@@ -92,7 +93,6 @@ async def hsn_patient_appontment_create(context: HsnCreatePatientAppontmentConte
         )
         .returning(AppointmentDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
+    cursor = await session.execute(query)
     new_appointment_id = cursor.scalar()
     return new_appointment_id

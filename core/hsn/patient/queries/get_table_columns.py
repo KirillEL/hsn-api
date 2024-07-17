@@ -3,9 +3,9 @@ from sqlalchemy import select
 
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
-from core.hsn.patient.model import PatientTableColumns, PatientTableResponse
+from core.hsn.patient.schemas import PatientTableColumns, PatientTableResponse
 from shared.db.models.patient_columns import PatientTableColumnsDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 
 default_payload = [
     {
@@ -215,18 +215,15 @@ default_payload = [
 ]
 
 
-@SessionContext()
-@HandleExceptions()
 async def hsn_patient_columns(user_id: int):
     query = (
         select(PatientTableColumnsDBModel.table_columns)
         .where(PatientTableColumnsDBModel.user_id == user_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     patient_table_columns = cursor.scalars().first()
     if not patient_table_columns:
         return default_payload
-    logger.debug(f'settings: {patient_table_columns}')
 
     patient_data_indices = {col["dataIndex"] for col in patient_table_columns}
 
@@ -254,19 +251,3 @@ async def hsn_patient_columns(user_id: int):
     logger.debug(f'sorted_payload: {sorted_payload}')
     return sorted_payload
 
-    # patient_data_indices = {col["dataIndex"] for col in patient_table_columns}
-    #
-    # filtered_payload = [
-    #     column for column in default_payload if column["dataIndex"] in patient_data_indices
-    # ]
-    #
-    # title_to_key_map = {col["dataIndex"]: i + 1 for i, col in enumerate(patient_table_columns)}
-    #
-    # for column in filtered_payload:
-    #     title = column["dataIndex"]
-    #     if title in title_to_key_map:
-    #         column["key"] = str(title_to_key_map[title])
-    #
-    # sorted_payload = sorted(filtered_payload, key=lambda x: int(x["key"]))
-    # logger.debug(f'sorted_payload: {sorted_payload}')
-    # return sorted_payload

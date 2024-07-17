@@ -12,7 +12,7 @@ from shared.db.models import ContragentDBModel
 from shared.db.models.cabinet import CabinetDBModel
 from shared.db.models.patient import PatientDBModel
 from shared.db.models.doctor import DoctorDBModel
-from shared.db.db_session import db_session, SessionContext
+from shared.db.db_session import session
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload, aliased
 
@@ -34,8 +34,6 @@ class LocationType(Enum):
     ANOTHER = "другое"
 
 
-@HandleExceptions()
-@SessionContext()
 async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None,
                                gender: str = None, full_name: str = None, location: str = None, columnKey: str = None, order: str = None):
     logger.debug(f"columnKey: {columnKey}")
@@ -94,9 +92,9 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
             query = query.order_by(desc(column_attribute))
 
     query = query.order_by(desc('id'))
-    total_count_result = await db_session.execute(query_count)
+    total_count_result = await session.execute(query_count)
     total_count = total_count_result.scalar()
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     patients = cursor.unique().scalars().all()
     if len(patients) == 0:
         raise NotFoundException(message="Пациенты не найдены!")

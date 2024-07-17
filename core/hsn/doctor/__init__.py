@@ -1,4 +1,4 @@
-from .model import Doctor
+from .schemas import Doctor
 
 
 __all__ = [

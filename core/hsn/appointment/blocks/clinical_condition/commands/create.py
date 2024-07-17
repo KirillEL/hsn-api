@@ -6,10 +6,13 @@ from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
-from shared.db.db_session import db_session, SessionContext
+from shared.db import Transaction
+from shared.db.db_session import session
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
 from pydantic import BaseModel
+
+from shared.db.transaction import Propagation
 
 
 class HsnAppointmentBlockClinicalConditionCreateContext(BaseModel):
@@ -46,8 +49,7 @@ class HsnAppointmentBlockClinicalConditionCreateContext(BaseModel):
     six_min_walk_distance: Optional[int] = None
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_appointment_block_clinical_condition_create(context: HsnAppointmentBlockClinicalConditionCreateContext):
     await check_appointment_exists(context.appointment_id)
     payload = context.model_dump(exclude={'appointment_id'})
@@ -56,7 +58,7 @@ async def hsn_appointment_block_clinical_condition_create(context: HsnAppointmen
         .values(**payload)
         .returning(AppointmentClinicalConditionBlockDBModel.id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     new_block_clinical_condition_id = cursor.scalar()
 
     query_update_appointment = (
@@ -66,7 +68,6 @@ async def hsn_appointment_block_clinical_condition_create(context: HsnAppointmen
         )
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    await db_session.execute(query_update_appointment)
+    await session.execute(query_update_appointment)
 
-    await db_session.commit()
     return new_block_clinical_condition_id

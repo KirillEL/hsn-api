@@ -5,7 +5,8 @@ from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
-from shared.db.db_session import db_session, SessionContext
+from shared.db import Transaction
+from shared.db.db_session import session
 from pydantic import BaseModel, Field
 from typing import Optional
 from sqlalchemy import insert, select, exc
@@ -13,6 +14,7 @@ from sqlalchemy import insert, select, exc
 from shared.db.models import MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
+from shared.db.transaction import Propagation
 
 
 class MedicineContext(BaseModel):
@@ -32,7 +34,7 @@ async def check_appointment_exists(appointment_id: int):
         select(AppointmentDBModel)
         .where(AppointmentDBModel.id == appointment_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     appointment = cursor.scalars().first()
     if appointment is None:
         raise NotFoundException(message="Такого приема не существует!")
@@ -43,14 +45,13 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
         select(MedicinesPrescriptionDBModel)
         .where(MedicinesPrescriptionDBModel.id == medicine_prescription_id)
     )
-    cursor = await db_session.execute(query)
+    cursor = await session.execute(query)
     medicine_prescription = cursor.scalars().first()
     if medicine_prescription is None:
         raise NotFoundException(message="Такого препарата не найдено!")
 
 
-@SessionContext()
-@HandleExceptions()
+@Transaction(propagation=Propagation.REQUIRED)
 async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateContext):
     await check_appointment_exists(context.appointment_id)
     for med_prescription in context.medicine_prescriptions:
@@ -59,7 +60,6 @@ async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateCon
     appointment_id = context.appointment_id
     created_purposes = []
     for med_prescription in context.medicine_prescriptions:
-        logger.debug(f'med_prescription: {med_prescription}')
         query = (
             insert(AppointmentPurposeDBModel)
             .values(
@@ -69,18 +69,15 @@ async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateCon
             )
             .returning(AppointmentPurposeDBModel.id)
         )
-        cursor = await db_session.execute(query)
+        cursor = await session.execute(query)
         inserted_id = cursor.scalar()
 
         select_query = select(AppointmentPurposeDBModel).options(
             joinedload(AppointmentPurposeDBModel.medicine_prescription).joinedload(
                 MedicinesPrescriptionDBModel.medicine_group)).where(
             AppointmentPurposeDBModel.id == inserted_id)
-        cursor = await db_session.execute(select_query)
+        cursor = await session.execute(select_query)
         created_purpose = cursor.scalar_one()
-        logger.debug(f'created_purpose: {created_purpose.medicine_prescription.__dict__}')
         created_purposes.append(created_purpose)
-
-    await db_session.commit()
 
     return [AppointmentPurposeFlat.model_validate(p) for p in created_purposes]

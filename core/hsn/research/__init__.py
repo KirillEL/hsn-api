@@ -1,4 +1,4 @@
-from .model import Research, ResearchFlat
+from .schemas import Research, ResearchFlat
 
 __all__ = [
     'Research',

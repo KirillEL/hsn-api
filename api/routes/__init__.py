@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
-from .public import public_router
-from .protected import protected_router
-from .admin import admin_router
+from api.routes.v1.public import public_router
+from api.routes.v1.protected import protected_router
+#from api.routes.v1.admin import admin_router
 
 
 main_router: APIRouter = APIRouter()
-main_router.include_router(admin_router)
+#main_router.include_router(admin_router)
 main_router.include_router(public_router)
 main_router.include_router(protected_router)
 

@@ -7,28 +7,18 @@ from shared.db.models import CabinetDBModel
 from shared.db.models.role import RoleDBModel
 
 
-async def test_register(ac: AsyncClient, session: AsyncSession):
-
-    query = (
-        select(CabinetDBModel)
-    )
-    cursor = await session.execute(query)
-    cabinet = cursor.scalars().all()
-    print(cabinet)
-    assert len(cabinet) > 0
-
+async def test_register(ac: AsyncClient):
     test_payload = {
-        "login": "k12345",
-        "password": "k12345",
+        "login": "bbbbbb",
+        "password": "bbbbbb",
         "name": "log3",
         "last_name": "k123",
         "patronymic": "k123",
-        "phone_number": "+79137689477",
+        "phone_number": "+79262689442",
         "is_glav": False,
         "role": "doctor",
         "cabinet_id": 1
     }
     response = await ac.post("/auth/register", json=test_payload)
-    print(response.text)
     assert response.status_code == 200
     assert response.json()["id"] is not None

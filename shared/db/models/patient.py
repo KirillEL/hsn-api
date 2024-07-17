@@ -33,11 +33,11 @@ class PatientDBModel(BaseDBModel):
 
     cabinet_id = Column(BigInteger, ForeignKey('public.cabinets.id'), nullable=False)
 
-    cabinet = relationship("CabinetDBModel", back_populates="patients")
+    cabinet = relationship("CabinetDBModel", back_populates="patients", lazy='selectin')
 
     contragent_id = Column(BigInteger, ForeignKey('public.contragents.id'), nullable=False, unique=True)
 
-    contragent = relationship("ContragentDBModel", back_populates="patient", uselist=False)
+    contragent = relationship("ContragentDBModel", back_populates="patient", uselist=False, lazy='selectin')
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

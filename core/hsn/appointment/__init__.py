@@ -1,5 +1,4 @@
-from .model import Appointment
-from .queries.by_doctor_id import hsn_patient_appointment_get_by_doctor_id
+from .schemas import Appointment
 from .commands.create import HsnCreatePatientAppontmentContext, hsn_patient_appontment_create
 from .commands.delete import HsnDeletePatientAppointmentContext, hsn_patient_appointment_delete
 from .commands.update import HsnUpdatePatientAppointmentContext, hsn_patient_appointment_update
@@ -10,7 +9,6 @@ from .queries.status import hsn_get_appointment_status
 
 __all__ = [
     'Appointment',
-    'hsn_patient_appointment_get_by_doctor_id',
     'HsnUpdatePatientAppointmentContext',
     'HsnCreatePatientAppontmentContext',
     'HsnDeletePatientAppointmentContext',

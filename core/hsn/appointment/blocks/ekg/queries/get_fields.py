@@ -3,10 +3,8 @@ from sqlalchemy import inspect
 from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse, \
     AppointmentBlockEkgBooleanFieldsResponse
 from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBModel
-from shared.db.db_session import SessionContext
 
 
-@SessionContext()
 async def hsn_get_block_ekg_fields():
     inspector = inspect(AppointmentEkgBlockDBModel)
     response = AppointmentBlockEkgBooleanFieldsResponse()
