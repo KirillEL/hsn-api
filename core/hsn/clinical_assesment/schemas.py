@@ -3,12 +3,11 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
+from core.hsn import Base
 from core.user import UserAuthor
 
 
-class ClinicalAssesment(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class ClinicalAssesment(Base):
     id: int
     has_dyspnea: Optional[bool] = False
     distance_walking_6_minutes: Optional[str] = False

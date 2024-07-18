@@ -2,10 +2,10 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
 
+from core.hsn import Base
 
-class MedicinesCatalog(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
 
+class MedicinesCatalog(Base):
     id: int
     code: float
     name: str
@@ -23,3 +23,9 @@ class MedicinesCatalog(BaseModel):
     deleted_at: Optional[datetime] = None
     deleted_by: Optional[str] = None
 
+
+class MedicineCatalogFlat(Base):
+    id: int
+    code: float
+    name: str
+    medicine_group_id: int

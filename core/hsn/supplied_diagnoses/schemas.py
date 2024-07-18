@@ -3,12 +3,11 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
+from core.hsn import Base
 from core.user import UserAuthor
 
 
-class SuppliedDiagnoses(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class SuppliedDiagnoses(Base):
     id: int
     patient_appointment_id: int
     diagnosis_id: int

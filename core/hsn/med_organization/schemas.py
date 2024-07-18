@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
+
+from core.hsn import Base
 from core.user import UserAuthor
 
 
-class MedOrganization(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class MedOrganization(Base):
     id: int
     name: str
     number: int
@@ -23,7 +23,7 @@ class MedOrganization(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
-class MedOrganizationFlat(BaseModel):
+class MedOrganizationFlat(Base):
     model_config = ConfigDict(from_attributes=True, extra='ignore')
 
     id: int

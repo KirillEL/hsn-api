@@ -2,13 +2,12 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
+from core.hsn import Base
 from core.hsn.cabinet.schemas import CabinetFlat
 from core.user import UserAuthor, User
 
 
-class DoctorFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class DoctorFlat(Base):
     id: int
     name: str
     last_name: str
@@ -23,9 +22,7 @@ class DoctorFlat(BaseModel):
     is_deleted: Optional[bool] = False
 
 
-class DoctorWithUserAndCabinetFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class DoctorWithUserAndCabinetFlat(Base):
     id: int
     name: str
     last_name: str
@@ -40,9 +37,7 @@ class DoctorWithUserAndCabinetFlat(BaseModel):
     cabinet: Optional[CabinetFlat] = None
 
 
-class Doctor(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class Doctor(Base):
     id: int
     name: str
     last_name: str
@@ -65,14 +60,11 @@ class Doctor(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
-class Role(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class Role(Base):
     name: str
 
 
-class UserAndDoctor(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class UserAndDoctor(Base):
     id: int
     login: str
     is_deleted: Optional[bool] = False

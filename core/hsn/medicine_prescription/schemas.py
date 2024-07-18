@@ -2,12 +2,11 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
+from core.hsn import Base
 from core.user import UserAuthor
 
 
-class MedicinePrescription(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class MedicinePrescription(Base):
     id: int
     medicine_group: str
     name: str
@@ -25,17 +24,14 @@ class MedicinePrescription(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
-class MedicineGroupFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class MedicineGroupFlat(Base):
     id: Optional[int] = None
     code: Optional[str] = None
     name: str
     note: Optional[str] = None
 
 
-class MedicinePrescriptionFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class MedicinePrescriptionFlat(Base):
     id: int
     medicine_group: Optional[MedicineGroupFlat] = None
     name: str

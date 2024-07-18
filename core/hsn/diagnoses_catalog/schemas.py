@@ -2,12 +2,11 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional, List
 
+from core.hsn import Base
 from core.user import UserAuthor
 
 
-class DiagnosesCatalog(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class DiagnosesCatalog(Base):
     id: int
     name: str
     note: Optional[str] = None
@@ -22,3 +21,9 @@ class DiagnosesCatalog(BaseModel):
 
     deleted_at: Optional[datetime] = None
     deleted_by: Optional[UserAuthor] = None
+
+
+class DiagnosesCatalogFlat(Base):
+    id: int
+    name: str
+    note: Optional[str] = None

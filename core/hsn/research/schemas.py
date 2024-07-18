@@ -3,12 +3,11 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from core.hsn import Base
 from core.user import UserAuthor
 
 
-class ResearchFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class ResearchFlat(Base):
     id: int
     analyses_id: int
     date: datetime
@@ -16,9 +15,7 @@ class ResearchFlat(BaseModel):
     patient_hospitalization_id: int
 
 
-class Research(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class Research(Base):
     id: int
     analyses_id: int
     date: datetime

@@ -2,28 +2,24 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
 from datetime import date as tdate
+
+from core.hsn import Base
 from core.hsn.cabinet import Cabinet
 from core.hsn.cabinet.schemas import CabinetFlat
 from core.user import UserAuthor
 from datetime import date
 
 
-class Contragent(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    phone_number: str | int  # int
+class Contragent(Base):
+    phone_number: str
     snils: str
     address: str
-    mis_number: str | int  # int
-    date_birth: str  # date
-    relative_phone_number: Optional[str | int] = None  # int
-    parent: Optional[str] = None
+    mis_number: str | int
+    date_birth: str
     date_dead: Optional[str] = None  # date
 
 
-class Patient(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class Patient(Base):
     id: int
     name: str
     last_name: str
@@ -62,9 +58,7 @@ class Patient(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
-class PatientFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class PatientFlat(Base):
     id: int
     name: str
     last_name: str
