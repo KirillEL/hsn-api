@@ -53,3 +53,7 @@ class AppointmentLaboratoryTestBlock(BaseModel):
     microalbumuria: Optional[float] = None
     microalbumuria_date: Optional[str] = None
     note: Optional[str] = None
+
+
+class AppointmentLaboratoryTestBlockResponse(AppointmentLaboratoryTestBlock):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')

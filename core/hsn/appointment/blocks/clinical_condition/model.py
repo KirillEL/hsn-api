@@ -36,3 +36,7 @@ class AppointmentClinicalConditionBlock(BaseModel):
     diastolic_bp: Optional[int] = None
     heart_rate: Optional[int] = None
     six_min_walk_distance: Optional[int] = None
+
+
+class AppointmentClinicalConditionBlockResponse(AppointmentClinicalConditionBlock):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')

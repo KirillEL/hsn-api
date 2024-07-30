@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import Field, BaseModel
 from fastapi import Request
@@ -9,6 +9,7 @@ from core.hsn.appointment.blocks.purpose import (
     HsnAppointmentPurposeCreateContext,
     hsn_appointment_purpose_create,
 )
+from core.hsn.appointment.blocks.purpose.model import AppointmentPurposeFlatResponse
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema
 
@@ -19,19 +20,19 @@ class MedicineData(BaseModel):
     note: Optional[str] = Field(None)
 
 
-class CreateAppointmentPurposeRequestBody(BaseModel):
+class CreateAppointmentPurposeRequest(BaseModel):
     appointment_id: int = Field(gt=0)
     medicine_prescriptions: list[MedicineData]
 
 
 @block_purpose_router.post(
     "/create",
-    response_model=list[AppointmentPurposeFlat],
+    response_model=List[AppointmentPurposeFlatResponse],
     responses={"400": {"model": ExceptionResponseSchema}},
     status_code=status.HTTP_201_CREATED,
 )
 async def create_appointment_purpose(
-    request: Request, body: CreateAppointmentPurposeRequestBody
+        request: Request, body: CreateAppointmentPurposeRequest
 ):
     context = HsnAppointmentPurposeCreateContext(
         user_id=request.user.id, **body.model_dump()

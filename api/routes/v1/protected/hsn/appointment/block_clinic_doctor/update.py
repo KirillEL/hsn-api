@@ -7,7 +7,7 @@ from core.hsn.appointment.blocks.clinic_doctor import (
 )
 from core.hsn.appointment.blocks.clinic_doctor.model import (
     DisabilityType,
-    LgotaDrugsType,
+    LgotaDrugsType, AppointmentClinicDoctorBlockResponse,
 )
 from core.hsn.appointment.blocks.clinical_condition import (
     HsnBlockClinicalConditionUpdateContext,
@@ -17,7 +17,7 @@ from api.exceptions import ExceptionResponseSchema
 from pydantic import BaseModel, Field
 
 
-class UpdateBlockClinicDoctorRequestBody(BaseModel):
+class UpdateBlockClinicDoctorRequest(BaseModel):
     referring_doctor: Optional[str] = Field(None, max_length=500)
     referring_clinic_organization: Optional[str] = Field(None, max_length=500)
     disability: Optional[DisabilityType] = Field(DisabilityType.NO.value)
@@ -29,11 +29,11 @@ class UpdateBlockClinicDoctorRequestBody(BaseModel):
 
 @block_clinic_doctor_router.patch(
     "/update/{appointment_id}",
-    response_model=AppointmentClinicDoctorBlock,
+    response_model=AppointmentClinicDoctorBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_block_clinic_doctor(
-    appointment_id: int, body: UpdateBlockClinicDoctorRequestBody
+        appointment_id: int, body: UpdateBlockClinicDoctorRequest
 ):
     context = HsnBlockClinicDoctorUpdateContext(
         appointment_id=appointment_id, **body.model_dump()

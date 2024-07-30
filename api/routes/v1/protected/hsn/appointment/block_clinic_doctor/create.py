@@ -16,7 +16,7 @@ from datetime import date as tdate
 from fastapi import Request
 
 
-class CreateBlockClinicDoctorRequestBody(BaseModel):
+class CreateBlockClinicDoctorRequest(BaseModel):
     appointment_id: int = Field(gt=0)
     referring_doctor: Optional[str] = Field(None, max_length=500)
     referring_clinic_organization: Optional[str] = Field(None, max_length=500)
@@ -31,7 +31,7 @@ class CreateBlockClinicDoctorRequestBody(BaseModel):
     "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_clinic_doctor(
-    request: Request, body: CreateBlockClinicDoctorRequestBody
+    request: Request, body: CreateBlockClinicDoctorRequest
 ):
     context = HsnAppointmentBlockClinicDoctorCreateContext(**body.model_dump())
     return await hsn_appointment_block_clinic_doctor_create(context)

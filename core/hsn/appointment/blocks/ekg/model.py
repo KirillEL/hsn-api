@@ -35,3 +35,7 @@ class AppointmentEkgBlock(BaseModel):
     valvular_lesions: Optional[bool] = False
     anevrizma: Optional[bool] = False
     note: Optional[str] = None
+
+
+class AppointmentEkgBlockResponse(AppointmentEkgBlock):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')

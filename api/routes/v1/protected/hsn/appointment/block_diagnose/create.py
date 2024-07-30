@@ -15,7 +15,7 @@ from typing import Optional
 from fastapi import Request
 
 
-class CreateBlockDiagnoseRequestBody(BaseModel):
+class CreateBlockDiagnoseRequest(BaseModel):
     appointment_id: int = Field(gt=0)
 
     diagnose: str = Field(max_length=1000)
@@ -56,6 +56,6 @@ class CreateBlockDiagnoseRequestBody(BaseModel):
 @block_diagnose_router.post(
     "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_diagnose(request: Request, body: CreateBlockDiagnoseRequestBody):
+async def create_block_diagnose(request: Request, body: CreateBlockDiagnoseRequest):
     context = HsnAppointmentBlockDiagnoseCreateContext(**body.model_dump())
     return await hsn_appointment_block_diagnose_create(context)

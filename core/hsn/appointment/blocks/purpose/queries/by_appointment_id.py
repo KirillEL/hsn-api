@@ -1,17 +1,11 @@
-from loguru import logger
-from sqlalchemy import select, exc
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, not_
 
-from api.decorators import HandleExceptions
-from api.exceptions import NotFoundException, InternalServerException
-from api.exceptions.base import UnprocessableEntityException
-from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
+from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from core.hsn.appointment.blocks.purpose.model import (
     AppointmentPurposeResponseFlat,
     MedicineGroupData,
 )
-from shared.db.models import MedicinesPrescriptionDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 from shared.db.db_session import session
 
@@ -21,13 +15,8 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
     await check_appointment_exists(appointment_id)
     query = (
         select(AppointmentPurposeDBModel)
-        .options(
-            selectinload(AppointmentPurposeDBModel.medicine_prescription).selectinload(
-                MedicinesPrescriptionDBModel.medicine_group
-            )
-        )
         .where(AppointmentPurposeDBModel.appointment_id == appointment_id)
-        .where(AppointmentPurposeDBModel.is_deleted.is_(False))
+        .where(not_(AppointmentPurposeDBModel.is_deleted))
     )
     cursor = await session.execute(query)
     purposes = cursor.scalars().all()
@@ -36,7 +25,7 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
             message="У приема нет блока назначений лекарственных препаратов"
         )
 
-    results = []
+    results: list[AppointmentPurposeResponseFlat] = []
     for purpose in purposes:
         final_result = AppointmentPurposeResponseFlat(
             medicine_group=purpose.medicine_prescription.medicine_group.name,

@@ -63,3 +63,7 @@ class AppointmentDiagnoseBlock(BaseModel):
     hbp_note: Optional[str] = None
 
     another: Optional[str] = None
+
+
+class AppointmentDiagnoseBlockResponse(AppointmentDiagnoseBlock):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')

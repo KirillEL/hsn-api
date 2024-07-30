@@ -1,12 +1,10 @@
 from typing import Optional
 
 from pydantic import BaseModel, Field
-
-from api.exceptions import ExceptionResponseSchema
-from core.user import UserDoctorUpdateContext, user_command_update
-from . import UserAndDoctorResponse
 from .router import user_router
-from .schemas import UserResponse
+from api.exceptions import ExceptionResponseSchema
+from core.user.commands.update import user_command_update, UserDoctorUpdateContext
+from . import UserAndDoctorResponse
 from fastapi import Request
 
 
@@ -27,6 +25,6 @@ class UpdateUserRequest(BaseModel):
     summary="Обновить информацию о себе",
 )
 async def update_user(request: Request, request_body: UpdateUserRequest):
-    user_id = request.user.id
+    user_id: int = request.user.id
     context = UserDoctorUpdateContext(user_id=user_id, **request_body.dict())
     return await user_command_update(context)

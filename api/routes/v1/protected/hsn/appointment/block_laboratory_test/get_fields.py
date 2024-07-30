@@ -1,7 +1,6 @@
 from typing import List
 
 from core.hsn.appointment.blocks.base_model import (
-    AppointmentBlockTextDateFieldsResponse,
     AppointmentBlockTextDateLaboratoryTestFieldsResponse,
 )
 from core.hsn.appointment.blocks.laboratory_test import (

@@ -1,25 +1,13 @@
 from typing import Optional
 
-from core.hsn.appointment.schemas import PatientAppointmentFlat
+from core.hsn.appointment.schemas import GetOwnPatientAppointmentsResponse, GetAppointmentListQueryParams
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema
 from core.hsn.appointment import (
-    Appointment,
     HsnAppointmentListContext,
     hsn_appointment_list,
 )
-from fastapi import Request, Depends
-from pydantic import BaseModel
-
-
-class GetAppointmentListQueryParams(BaseModel):
-    limit: Optional[int] = None
-    offset: Optional[int] = None
-
-
-class GetOwnPatientAppointmentsResponse(BaseModel):
-    data: list[PatientAppointmentFlat]
-    total: int
+from fastapi import Request, Depends, Query
 
 
 @appointment_router.get(
@@ -30,7 +18,7 @@ class GetOwnPatientAppointmentsResponse(BaseModel):
     summary="Получить список всех приемов",
 )
 async def get_appointment_list(
-    request: Request, params: GetAppointmentListQueryParams = Depends()
+        request: Request, params: GetAppointmentListQueryParams = Query(..., description="Параметры")
 ):
     context = HsnAppointmentListContext(user_id=request.user.doctor.id, **params.dict())
     return await hsn_appointment_list(context)

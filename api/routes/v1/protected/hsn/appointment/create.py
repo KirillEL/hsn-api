@@ -3,6 +3,7 @@ from core.hsn.appointment import (
     HsnCreatePatientAppontmentContext,
     hsn_patient_appontment_create,
 )
+from core.hsn.appointment.schemas import AppointmentFlatResponse
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request, status
@@ -11,7 +12,7 @@ from typing import Optional
 from datetime import date as tdate
 
 
-class AppointmentCreateRequestBody(BaseModel):
+class AppointmentCreateRequest(BaseModel):
     patient_id: int = Field(gt=0)
     date: tdate = Field(tdate.today())
     date_next: Optional[tdate] = Field(None)
@@ -25,13 +26,13 @@ class AppointmentCreateRequestBody(BaseModel):
 
 @appointment_router.post(
     "",
-    response_model=Appointment,
+    response_model=AppointmentFlatResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Создать прием пациента",
     status_code=status.HTTP_201_CREATED,
     tags=["Прием"],
 )
-async def appointment_create(request: Request, body: AppointmentCreateRequestBody):
+async def appointment_create(request: Request, body: AppointmentCreateRequest):
     context = HsnCreatePatientAppontmentContext(
         user_id=request.user.id, doctor_id=request.user.doctor.id ** body.model_dump()
     )

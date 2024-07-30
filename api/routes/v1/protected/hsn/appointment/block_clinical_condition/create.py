@@ -10,7 +10,7 @@ from typing import Optional
 from fastapi import Request
 
 
-class CreateBlockClinicalConditionRequestBody(BaseModel):
+class CreateBlockClinicalConditionRequest(BaseModel):
     appointment_id: int = Field(gt=0)
     heart_failure_om: Optional[bool] = Field(False)
     orthopnea: Optional[bool] = Field(False)
@@ -48,7 +48,7 @@ class CreateBlockClinicalConditionRequestBody(BaseModel):
     "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_clinical_condition(
-    request: Request, body: CreateBlockClinicalConditionRequestBody
+        request: Request, body: CreateBlockClinicalConditionRequest
 ):
     context = HsnAppointmentBlockClinicalConditionCreateContext(**body.model_dump())
     return await hsn_appointment_block_clinical_condition_create(context)

@@ -23,7 +23,7 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     medicine_group_id = Column(Integer, ForeignKey("public.medicines_group.id"))
 
-    medicine_group = relationship(MedicinesGroupDBModel, uselist=False)
+    medicine_group = relationship(MedicinesGroupDBModel, uselist=False, lazy='selectin')
 
     name = Column(Text, nullable=False)
     note = Column(Text)

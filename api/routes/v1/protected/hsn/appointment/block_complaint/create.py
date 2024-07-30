@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from fastapi import Request
 
 
-class CreateBlockComplaintRequestBody(BaseModel):
+class CreateBlockComplaintRequest(BaseModel):
     appointment_id: int = Field(gt=0)
     has_fatigue: bool = Field(False)
     has_dyspnea: bool = Field(False)
@@ -31,7 +31,7 @@ class CreateBlockComplaintRequestBody(BaseModel):
     "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_complaint(
-    request: Request, body: CreateBlockComplaintRequestBody
+    request: Request, body: CreateBlockComplaintRequest
 ):
     context = HsnAppointmentBlockComplaintCreateContext(**body.model_dump())
     return await hsn_appointment_block_complaint_create(context)

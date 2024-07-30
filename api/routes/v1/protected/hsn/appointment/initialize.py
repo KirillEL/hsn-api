@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator, root_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from starlette import status
 from fastapi import Request
 
@@ -13,7 +13,7 @@ from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema, ValidationException
 
 
-class AppointmentInitializeRequestBody(BaseModel):
+class AppointmentInitializeRequest(BaseModel):
     patient_id: int = Field(gt=0)
     date: Optional[str] = Field(None)
     date_next: Optional[str] = Field(None)
@@ -51,7 +51,7 @@ class AppointmentInitializeRequestBody(BaseModel):
     tags=["Прием"],
 )
 async def appointment_initialize(
-    request: Request, body: AppointmentInitializeRequestBody
+        request: Request, body: AppointmentInitializeRequest
 ):
     context = HsnInitializeAppointmentContext(
         user_id=request.user.id, doctor_id=request.user.doctor.id, **body.model_dump()

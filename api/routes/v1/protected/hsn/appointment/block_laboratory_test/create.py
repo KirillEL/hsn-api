@@ -13,7 +13,7 @@ from typing import Optional
 from fastapi import Request
 
 
-class CreateBlockLaboratoryTestRequestBody(BaseModel):
+class CreateBlockLaboratoryTestRequest(BaseModel):
     appointment_id: int = Field(gt=0)
     nt_pro_bnp: float = Field(gt=0)
     nt_pro_bnp_date: str = Field(default=datetime.today().strftime("%d.%m.%Y"))
@@ -85,10 +85,12 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
 
 
 @block_laboratory_test_router.post(
-    "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
+    "/create",
+    response_model=int,
+    responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_laboratory_test(
-    request: Request, body: CreateBlockLaboratoryTestRequestBody
+        request: Request, body: CreateBlockLaboratoryTestRequest
 ):
     context = HsnAppointmentBlockLaboratoryTestCreateContext(**body.model_dump())
     return await hsn_appointment_block_laboratory_test_create(context)

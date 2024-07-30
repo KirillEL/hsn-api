@@ -11,7 +11,7 @@ from datetime import date as tdate, datetime
 from fastapi import Request
 
 
-class CreateBlockEkgRequestBody(BaseModel):
+class CreateBlockEkgRequest(BaseModel):
     appointment_id: int = Field(gt=0)
     date_ekg: str = Field(default=datetime.today().strftime("%d.%m.%Y"))
     sinus_ritm: bool = Field(False)
@@ -52,6 +52,6 @@ class CreateBlockEkgRequestBody(BaseModel):
 @block_ekg_router.post(
     "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_ekg(request: Request, body: CreateBlockEkgRequestBody):
+async def create_block_ekg(request: Request, body: CreateBlockEkgRequest):
     context = HsnAppointmentBlockEkgCreateContext(**body.model_dump())
     return await hsn_appointment_block_ekg_create(context)

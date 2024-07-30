@@ -41,13 +41,13 @@ class Appointment(Base):
     deleted_by: Optional[UserAuthor] = None
 
 
-class PatientFlatForAppointmentList(Base):
+class FlatForAppointmentList(Base):
     name: str
     last_name: str
     patronymic: Optional[str] = None
 
 
-class PatientAppointmentFlat(Base):
+class AppointmentFlat(Base):
     id: int
     doctor_id: int
     full_name: str
@@ -63,3 +63,25 @@ class PatientAppointmentFlat(Base):
     purposes: Optional[list[AppointmentPurposeFlat]] = None
 
     status: str
+
+
+class AppointmentFlatResponse(AppointmentFlat):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+
+class AppointmentResponse(Appointment):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+
+class GetAppointmentListQueryParams(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    limit: Optional[int] = None
+    offset: Optional[int] = None
+
+
+class GetOwnPatientAppointmentsResponse(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
+    data: list[AppointmentFlat]
+    total: int

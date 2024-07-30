@@ -10,10 +10,11 @@ from core.hsn.appointment.blocks.ekg import (
     HsnBlockEkgUpdateContext,
     hsn_block_ekg_update,
 )
+from core.hsn.appointment.blocks.ekg.model import AppointmentEkgBlockResponse
 from .router import block_ekg_router
 
 
-class UpdateBlockEkgRequestBody(BaseModel):
+class UpdateBlockEkgRequest(BaseModel):
     date_ekg: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
     sinus_ritm: Optional[bool] = Field(False)
     av_blokada: Optional[bool] = Field(False)
@@ -44,10 +45,10 @@ class UpdateBlockEkgRequestBody(BaseModel):
 
 @block_ekg_router.patch(
     "/update/{appointment_id}",
-    response_model=AppointmentEkgBlock,
+    response_model=AppointmentEkgBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_block_ekg(appointment_id: int, body: UpdateBlockEkgRequestBody):
+async def update_block_ekg(appointment_id: int, body: UpdateBlockEkgRequest):
     context = HsnBlockEkgUpdateContext(
         appointment_id=appointment_id, **body.model_dump()
     )

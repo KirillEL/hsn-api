@@ -9,11 +9,12 @@ from core.hsn.appointment.blocks.laboratory_test import (
     HsnBlockLaboratoryTestUpdateContext,
     hsn_block_laboratory_test_update,
 )
+from core.hsn.appointment.blocks.laboratory_test.model import AppointmentLaboratoryTestBlockResponse
 from .router import block_laboratory_test_router
 from api.exceptions import ExceptionResponseSchema, ValidationException
 
 
-class UpdateBlockLaboratoryTestRequestBody(BaseModel):
+class UpdateBlockLaboratoryTestRequest(BaseModel):
     nt_pro_bnp: Optional[float] = Field(None, gt=0)
     nt_pro_bnp_date: Optional[str] = Field(None)
     hbalc: Optional[float] = Field(None)
@@ -90,11 +91,11 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
 
 @block_laboratory_test_router.patch(
     "/update/{appointment_id}",
-    response_model=AppointmentLaboratoryTestBlock,
+    response_model=AppointmentLaboratoryTestBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_block_laboratory_test(
-    appointment_id: int, body: UpdateBlockLaboratoryTestRequestBody
+        appointment_id: int, body: UpdateBlockLaboratoryTestRequest
 ):
     context = HsnBlockLaboratoryTestUpdateContext(
         appointment_id=appointment_id, **body.model_dump()

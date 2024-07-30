@@ -9,5 +9,5 @@ __all__ = [
     "UserAuthor",
     "user_command_create",
     "UserDoctorCreateContext",
-    "hsn_user_get_me",
+    "hsn_user_get_me"
 ]

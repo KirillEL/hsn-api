@@ -16,7 +16,7 @@ class BlockComplaintCreateWithConditionResponse(BaseModel):
     block_clinical_condition_id: int
 
 
-class CreateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
+class CreateBlockComplaintAndClinicalConditionRequest(BaseModel):
     appointment_id: int = Field(gt=0)
     has_fatigue: bool = Field(False)
     has_dyspnea: bool = Field(False)
@@ -69,7 +69,7 @@ class CreateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_block_complaint_and_clinical_condition(
-    request: Request, body: CreateBlockComplaintAndClinicalConditionRequestBody
+    request: Request, body: CreateBlockComplaintAndClinicalConditionRequest
 ):
     context = HsnBlockComplaintAndClinicalCondtionCreateContext(**body.model_dump())
     return await hsn_block_complaint_and_clinical_condition_create(context)

@@ -20,6 +20,10 @@ class AppointmentComplaintBlock(BaseModel):
     note: Optional[str] = None
 
 
+class AppointmentComplaintBlockResponse(AppointmentComplaintBlock):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+
 class AppointmentBlockBooleanFieldsResponse(BaseModel):
     name: str
     displayName: str

@@ -49,6 +49,10 @@ class AppointmentPurposeFlat(Base):
     medicine_prescription: MedicinePrescriptionFlat
 
 
+class AppointmentPurposeFlatResponse(AppointmentPurposeFlat):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+
 class MedicineGroupData(Base):
     model_config = ConfigDict(from_attributes=True, extra="ignore")
 

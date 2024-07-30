@@ -7,11 +7,12 @@ from core.hsn.appointment.blocks.complaint import (
     HsnBlockComplaintUpdateContext,
     hsn_block_complaint_update,
 )
+from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintBlockResponse
 from .router import block_complaint_router
 from pydantic import BaseModel, Field
 
 
-class UpdateBlockComplaintRequestBody(BaseModel):
+class UpdateBlockComplaintRequest(BaseModel):
     has_fatigue: Optional[bool] = Field(False)
     has_dyspnea: Optional[bool] = Field(False)
     has_swelling_legs: Optional[bool] = Field(False)
@@ -28,11 +29,11 @@ class UpdateBlockComplaintRequestBody(BaseModel):
 
 @block_complaint_router.patch(
     "/update/{appointment_id}",
-    response_model=AppointmentComplaintBlock,
+    response_model=AppointmentComplaintBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_block_complaint(
-    appointment_id: int, body: UpdateBlockComplaintRequestBody
+    appointment_id: int, body: UpdateBlockComplaintRequest
 ):
     context = HsnBlockComplaintUpdateContext(
         appointment_id=appointment_id, **body.model_dump()

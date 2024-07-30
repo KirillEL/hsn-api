@@ -1,4 +1,4 @@
 from fastapi import APIRouter
 
 
-block_ekg_router = APIRouter(prefix="/block/ekg", tags=["Block ekg"])
+block_ekg_router = APIRouter(prefix="/block/ekg", tags=["Блок ЭКГ"])

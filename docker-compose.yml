@@ -1,17 +1,6 @@
 version: '3.7'
 
 services:
-  hsn_nginx:
-    build:
-      context: .nginx/
-      dockerfile: Dockerfile
-    container_name: hsn_nginx
-    ports:
-      - "1111:1111"
-    restart: on-failure
-    networks:
-      - hsn_network
-
   hsn_api:
     build:
       context: .
@@ -31,21 +20,6 @@ services:
       - database
     volumes:
       - '.:/app'
-
-  hsn_admin:
-    build:
-      context: hsn_admin/
-      dockerfile: ../.docker/admin/Dockerfile
-    container_name: hsn_admin
-    hostname: hsn_admin
-    networks:
-      - hsn_network
-    depends_on:
-      - hsn_api
-    restart: always
-    volumes:
-      - "./hsn_admin:/admin"
-      - "/admin/node_modules"
 
   database:
     image: postgres

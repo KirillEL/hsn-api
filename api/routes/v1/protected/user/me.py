@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from core.hsn.doctor.schemas import Role
 from core.user.queries.me import hsn_user_get_me
@@ -18,6 +18,7 @@ class DoctorResponse(BaseModel):
 
 
 class UserAndDoctorResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
     id: int
     login: str
     roles: list[Role]

@@ -17,7 +17,7 @@ from api.exceptions import ExceptionResponseSchema
 from pydantic import BaseModel, Field
 
 
-class UpdateBlockDiagnoseRequestBody(BaseModel):
+class UpdateBlockDiagnoseRequest(BaseModel):
     diagnose: Optional[str] = Field(None, max_length=1000)
     classification_func_classes: Optional[ClassificationFuncClassesType] = Field(
         ClassificationFuncClassesType.FIRST.value
@@ -59,7 +59,7 @@ class UpdateBlockDiagnoseRequestBody(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_block_diagnose(
-    appointment_id: int, body: UpdateBlockDiagnoseRequestBody
+    appointment_id: int, body: UpdateBlockDiagnoseRequest
 ):
     context = HsnBlockDiagnoseUpdateContext(
         appointment_id=appointment_id, **body.model_dump()

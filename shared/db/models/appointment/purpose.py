@@ -30,7 +30,7 @@ class AppointmentPurposeDBModel(BaseDBModel):
     medicine_prescription_id = Column(
         Integer, ForeignKey("public.medicine_prescriptions.id"), nullable=False
     )
-    medicine_prescription = relationship(MedicinesPrescriptionDBModel, uselist=False)
+    medicine_prescription = relationship(MedicinesPrescriptionDBModel, lazy='selectin', uselist=False)
     dosa = Column(String(100), nullable=False)
     note = Column(Text)
 

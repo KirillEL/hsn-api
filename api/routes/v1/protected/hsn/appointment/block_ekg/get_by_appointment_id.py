@@ -3,12 +3,13 @@ from core.hsn.appointment.blocks.ekg import (
     AppointmentEkgBlock,
     hsn_get_block_ekg_by_appointment_id,
 )
+from core.hsn.appointment.blocks.ekg.model import AppointmentEkgBlockResponse
 from .router import block_ekg_router
 
 
 @block_ekg_router.get(
     "/{appointment_id}",
-    response_model=AppointmentEkgBlock,
+    response_model=AppointmentEkgBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def get_block_ekg_by_appointment_id(appointment_id: int):

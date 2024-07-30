@@ -25,11 +25,11 @@ def init_cors(_app: FastAPI) -> None:
     )
 
 
-def init_routers(application: FastAPI) -> None:
-    application.include_router(main_router)
+def init_routers(_app: FastAPI) -> None:
+    _app.include_router(main_router)
 
 
-def on_auth_error(request: Request, exc: Exception):
+def on_auth_error(request: Request, exc: Exception) -> JSONResponse:
     status_code, error_code, message = 401, None, str(exc)
     if isinstance(exc, CustomException):
         status_code = int(exc.code)
@@ -46,9 +46,11 @@ def init_middlewares(_app: FastAPI) -> None:
     _app.add_middleware(SQLAlchemyMiddleware)
 
 
-def init_listeners(app: FastAPI) -> None:
-    @app.exception_handler(CustomException)
-    async def custom_exception_handler(request: Request, exc: CustomException):
+def init_listeners(_app: FastAPI) -> None:
+    @_app.exception_handler(CustomException)
+    async def custom_exception_handler(
+        request: Request, exc: CustomException
+    ) -> JSONResponse:
         return JSONResponse(
             status_code=exc.code,
             content={"error_code": exc.error_code, "message": exc.message},
@@ -64,7 +66,7 @@ async def lifespan(_app: FastAPI) -> None:
 
 
 def init_application() -> FastAPI:
-    application = FastAPI(
+    _app = FastAPI(
         title="HSN",
         description="HSN_API",
         version="1.0.0",
@@ -73,12 +75,12 @@ def init_application() -> FastAPI:
         lifespan=lifespan,
     )
 
-    init_cors(_app=application)
-    init_middlewares(_app=application)
-    init_listeners(application)
-    init_routers(application)
+    init_cors(_app)
+    init_middlewares(_app)
+    init_listeners(_app)
+    init_routers(_app)
 
-    return application
+    return _app
 
 
 app: FastAPI = init_application()

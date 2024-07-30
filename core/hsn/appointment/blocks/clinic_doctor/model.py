@@ -29,3 +29,7 @@ class AppointmentClinicDoctorBlock(BaseModel):
     has_hospitalization: bool
     count_hospitalization: Optional[int] = None
     last_hospitalization_date: Optional[tdate] = None
+
+
+class AppointmentClinicDoctorBlockResponse(AppointmentClinicDoctorBlock):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
