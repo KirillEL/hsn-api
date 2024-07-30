@@ -4,21 +4,23 @@ from pydantic import BaseModel, ConfigDict
 
 
 class ClassificationFuncClassesType(Enum):
-    FIRST = '1'
-    SECOND = '2'
-    THIRD = '3'
-    FOURTH = '4'
+    FIRST = "1"
+    SECOND = "2"
+    THIRD = "3"
+    FOURTH = "4"
+
 
 class ClassificationAdjacentReleaseType(Enum):
-    LOW = 'низкая'
-    MED = 'умеренно-сниженная'
-    HIGH = 'сохранная'
+    LOW = "низкая"
+    MED = "умеренно-сниженная"
+    HIGH = "сохранная"
+
 
 class ClassificationNcStageType(Enum):
-    I = '1'
-    IIa = '2а'
-    IIb = '2б'
-    III = '3'
+    I = "1"
+    IIa = "2а"
+    IIb = "2б"
+    III = "3"
 
 
 class AppointmentDiagnoseBlock(BaseModel):

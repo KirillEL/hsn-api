@@ -24,10 +24,7 @@ class HsnInitializeAppointmentContext(BaseModel):
 
 
 async def check_patient_exists(patient_id: int):
-    query = (
-        select(PatientDBModel)
-        .where(PatientDBModel.id == patient_id)
-    )
+    query = select(PatientDBModel).where(PatientDBModel.id == patient_id)
     cursor = await session.execute(query)
     patient = cursor.scalars().first()
     if patient is None:
@@ -36,14 +33,11 @@ async def check_patient_exists(patient_id: int):
 
 @Transaction(propagation=Propagation.REQUIRED)
 async def hsn_appointment_initialize(context: HsnInitializeAppointmentContext):
-    payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
+    payload = context.model_dump(exclude={"user_id"}, exclude_none=True)
     await check_patient_exists(context.patient_id)
     query = (
         insert(AppointmentDBModel)
-        .values(
-            **payload,
-            author_id=context.user_id
-        )
+        .values(**payload, author_id=context.user_id)
         .returning(AppointmentDBModel.id)
     )
     cursor = await session.execute(query)

@@ -9,18 +9,18 @@ from shared.db.db_session import session
 
 default_payload = [
     {
-        "title": 'ID',
-        "dataIndex": 'id',
-        "key": '1',
+        "title": "ID",
+        "dataIndex": "id",
+        "key": "1",
         "dataType": "string",
         "canBeNull": False,
         "sorter": True,
         "width": 200,
     },
     {
-        "title": 'ФИО',
-        "dataIndex": 'full_name',
-        "key": '2',
+        "title": "ФИО",
+        "dataIndex": "full_name",
+        "key": "2",
         "dataType": "string",
         "canBeNull": False,
         "filter": "searchTableFilter",
@@ -28,22 +28,19 @@ default_payload = [
         "width": 200,
     },
     {
-        "title": 'Пол',
-        "dataIndex": 'gender',
-        "key": '3',
+        "title": "Пол",
+        "dataIndex": "gender",
+        "key": "3",
         "dataType": "string",
         "canBeNull": False,
         "sorter": False,
-        "filter": [
-            {"text": 'М', "value": 'М'},
-            {"text": 'Ж', "value": 'Ж'}
-        ],
+        "filter": [{"text": "М", "value": "М"}, {"text": "Ж", "value": "Ж"}],
         "width": 70,
     },
     {
-        "title": 'Возраст',
-        "dataIndex": 'age',
-        "key": '4',
+        "title": "Возраст",
+        "dataIndex": "age",
+        "key": "4",
         "dataType": "string",
         "canBeNull": False,
         "filter": "intervalTableFilter",
@@ -51,9 +48,9 @@ default_payload = [
         "width": 110,
     },
     {
-        "title": 'Дата рождения',
-        "dataIndex": 'birth_date',
-        "key": '5',
+        "title": "Дата рождения",
+        "dataIndex": "birth_date",
+        "key": "5",
         "dataType": "date",
         "canBeNull": False,
         "filter": "dateTableFilter",
@@ -61,9 +58,9 @@ default_payload = [
         "width": 130,
     },
     {
-        "title": 'Дата смерти',
-        "dataIndex": 'dod',
-        "key": '6',
+        "title": "Дата смерти",
+        "dataIndex": "dod",
+        "key": "6",
         "dataType": "date",
         "canBeNull": True,
         "filter": "dateTableFilter",
@@ -71,68 +68,68 @@ default_payload = [
         "width": 150,
     },
     {
-        "title": 'Место жительства',
-        "dataIndex": 'location',
-        "key": '7',
+        "title": "Место жительства",
+        "dataIndex": "location",
+        "key": "7",
         "dataType": "string",
         "canBeNull": False,
         "filter": [
-            {"text": 'НСО', "value": 'НСО'},
-            {"text": 'Новосиюирск', "value": 'Новосибирск'},
-            {"text": 'другое', "value": 'другое'}
+            {"text": "НСО", "value": "НСО"},
+            {"text": "Новосиюирск", "value": "Новосибирск"},
+            {"text": "другое", "value": "другое"},
         ],
         "sorter": False,
         "width": 130,
     },
     {
-        "title": 'Район',
-        "dataIndex": 'district',
-        "key": '8',
+        "title": "Район",
+        "dataIndex": "district",
+        "key": "8",
         "dataType": "string",
         "canBeNull": False,
         "sorter": False,
         "width": 130,
     },
     {
-        "title": 'Адрес',
-        "dataIndex": 'address',
-        "key": '9',
+        "title": "Адрес",
+        "dataIndex": "address",
+        "key": "9",
         "dataType": "address",
         "canBeNull": False,
         "sorter": False,
         "width": 300,
     },
     {
-        "title": 'Телефон',
-        "dataIndex": 'phone',
-        "key": '10',
+        "title": "Телефон",
+        "dataIndex": "phone",
+        "key": "10",
         "dataType": "phone",
         "canBeNull": False,
         "sorter": False,
         "width": 120,
     },
     {
-        "title": 'Поликлиника',
-        "dataIndex": 'clinic',
-        "key": '11',
+        "title": "Поликлиника",
+        "dataIndex": "clinic",
+        "key": "11",
         "dataType": "string",
         "canBeNull": False,
         "sorter": False,
         "width": 150,
     },
     {
-        "title": 'Примечание',
-        "dataIndex": 'patient_note',
-        "key": '12',
+        "title": "Примечание",
+        "dataIndex": "patient_note",
+        "key": "12",
         "dataType": "string",
         "canBeNull": True,
         "sorter": False,
         "width": 150,
     },
     {
-        "title": 'Направивший врач',
-        "dataIndex": 'referring_doctor',
-        "key": '13',
+        "title": "Направивший врач",
+        "dataIndex": "referring_doctor",
+        "key": "13",
         "dataType": "string",
         "canBeNull": True,
         "filter": "searchTableFilter",
@@ -140,9 +137,9 @@ default_payload = [
         "width": 200,
     },
     {
-        "title": 'Направившая мед. организация',
-        "dataIndex": 'referring_clinic_organization',
-        "key": '14',
+        "title": "Направившая мед. организация",
+        "dataIndex": "referring_clinic_organization",
+        "key": "14",
         "dataType": "string",
         "canBeNull": True,
         "filter": "searchTableFilter",
@@ -150,52 +147,49 @@ default_payload = [
         "width": 160,
     },
     {
-        "title": 'Категория инвалидности',
-        "dataIndex": 'disability',
-        "key": '15',
+        "title": "Категория инвалидности",
+        "dataIndex": "disability",
+        "key": "15",
         "dataType": "string",
         "canBeNull": False,
         "filter": [
-            {"text": 'нет', "value": 'нет'},
-            {"text": 'I', "value": 'I'},
-            {"text": 'II', "value": 'II'},
-            {"text": 'III', "value": 'III'},
-            {"text": 'отказ', "value": 'отказ'}
+            {"text": "нет", "value": "нет"},
+            {"text": "I", "value": "I"},
+            {"text": "II", "value": "II"},
+            {"text": "III", "value": "III"},
+            {"text": "отказ", "value": "отказ"},
         ],
         "sorter": False,
         "width": 160,
     },
     {
-        "title": 'Льготное обеспечение препаратами',
-        "dataIndex": 'lgota_drugs',
-        "key": '16',
+        "title": "Льготное обеспечение препаратами",
+        "dataIndex": "lgota_drugs",
+        "key": "16",
         "dataType": "string",
         "canBeNull": False,
         "filter": [
-            {"text": 'нет', "value": 'нет'},
-            {"text": 'да', "value": 'да'},
-            {"text": 'ССЗ', "value": 'ССЗ'}
+            {"text": "нет", "value": "нет"},
+            {"text": "да", "value": "да"},
+            {"text": "ССЗ", "value": "ССЗ"},
         ],
         "sorter": False,
         "width": 130,
     },
     {
-        "title": 'Госпитализации',
-        "dataIndex": 'has_hospitalization',
-        "key": '17',
+        "title": "Госпитализации",
+        "dataIndex": "has_hospitalization",
+        "key": "17",
         "dataType": "boolean",
         "canBeNull": False,
-        "filter": [
-            {"text": 'Да', "value": 'true'},
-            {"text": 'Нет', "value": 'false'}
-        ],
+        "filter": [{"text": "Да", "value": "true"}, {"text": "Нет", "value": "false"}],
         "sorter": False,
         "width": 140,
     },
     {
-        "title": 'Количество госпитализаций',
-        "dataIndex": 'count_hospitalization',
-        "key": '18',
+        "title": "Количество госпитализаций",
+        "dataIndex": "count_hospitalization",
+        "key": "18",
         "dataType": "string",
         "canBeNull": True,
         "filter": "searchTableFilter",
@@ -203,22 +197,21 @@ default_payload = [
         "width": 150,
     },
     {
-        "title": 'Дата последней госпитализации',
-        "dataIndex": 'last_hospitalization_date',
-        "key": '19',
+        "title": "Дата последней госпитализации",
+        "dataIndex": "last_hospitalization_date",
+        "key": "19",
         "dataType": "date",
         "canBeNull": True,
         "filter": "dateTableFilter",
         "sorter": True,
         "width": 180,
-    }
+    },
 ]
 
 
 async def hsn_patient_columns(user_id: int):
-    query = (
-        select(PatientTableColumnsDBModel.table_columns)
-        .where(PatientTableColumnsDBModel.user_id == user_id)
+    query = select(PatientTableColumnsDBModel.table_columns).where(
+        PatientTableColumnsDBModel.user_id == user_id
     )
     cursor = await session.execute(query)
     patient_table_columns = cursor.scalars().first()
@@ -237,10 +230,14 @@ async def hsn_patient_columns(user_id: int):
                     del column["hidden"]
 
     filtered_payload = [
-        column for column in default_payload if column["dataIndex"] in patient_data_indices
+        column
+        for column in default_payload
+        if column["dataIndex"] in patient_data_indices
     ]
 
-    title_to_key_map = {col["dataIndex"]: i + 1 for i, col in enumerate(patient_table_columns)}
+    title_to_key_map = {
+        col["dataIndex"]: i + 1 for i, col in enumerate(patient_table_columns)
+    }
 
     for column in filtered_payload:
         title = column["dataIndex"]
@@ -248,6 +245,5 @@ async def hsn_patient_columns(user_id: int):
             column["key"] = str(title_to_key_map[title])
 
     sorted_payload = sorted(filtered_payload, key=lambda x: int(x["key"]))
-    logger.debug(f'sorted_payload: {sorted_payload}')
+    logger.debug(f"sorted_payload: {sorted_payload}")
     return sorted_payload
-

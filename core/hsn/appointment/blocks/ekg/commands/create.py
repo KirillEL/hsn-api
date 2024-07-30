@@ -5,7 +5,9 @@ from typing import Optional
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
-from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
+from core.hsn.appointment.blocks.clinic_doctor.commands.create import (
+    check_appointment_exists,
+)
 from shared.db import Transaction
 from shared.db.db_session import session
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -46,9 +48,11 @@ class HsnAppointmentBlockEkgCreateContext(BaseModel):
 
 
 @Transaction(propagation=Propagation.REQUIRED)
-async def hsn_appointment_block_ekg_create(context: HsnAppointmentBlockEkgCreateContext):
+async def hsn_appointment_block_ekg_create(
+    context: HsnAppointmentBlockEkgCreateContext,
+):
     await check_appointment_exists(context.appointment_id)
-    payload = context.model_dump(exclude={'appointment_id'})
+    payload = context.model_dump(exclude={"appointment_id"})
     query = (
         insert(AppointmentEkgBlockDBModel)
         .values(**payload)
@@ -59,9 +63,7 @@ async def hsn_appointment_block_ekg_create(context: HsnAppointmentBlockEkgCreate
 
     query_update_appointment = (
         update(AppointmentDBModel)
-        .values(
-            block_ekg_id=new_block_ekg_id
-        )
+        .values(block_ekg_id=new_block_ekg_id)
         .where(AppointmentDBModel.id == context.appointment_id)
     )
     await session.execute(query_update_appointment)

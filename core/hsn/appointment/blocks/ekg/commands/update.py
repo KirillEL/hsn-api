@@ -44,7 +44,7 @@ class HsnBlockEkgUpdateContext(BaseModel):
 
 @Transaction(propagation=Propagation.REQUIRED)
 async def hsn_block_ekg_update(context: HsnBlockEkgUpdateContext):
-    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+    payload = context.model_dump(exclude={"appointment_id"}, exclude_none=True)
 
     query = (
         select(AppointmentDBModel.block_ekg_id)

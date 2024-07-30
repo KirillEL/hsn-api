@@ -11,7 +11,6 @@ class AppointmentBlockBooleanTextFieldsResponse(BaseModel):
     textName: str
 
 
-
 class BaseTextDateField(BaseModel):
     textName: str
     displayName: str

@@ -1,7 +1,3 @@
 from fastapi import APIRouter
 
-patient_router = APIRouter(
-	prefix="/patients",
-	tags=["Пациенты"]
-)
-
+patient_router = APIRouter(prefix="/patients", tags=["Пациенты"])

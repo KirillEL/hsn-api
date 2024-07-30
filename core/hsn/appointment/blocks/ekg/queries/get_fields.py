@@ -1,7 +1,9 @@
 from sqlalchemy import inspect
 
-from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse, \
-    AppointmentBlockEkgBooleanFieldsResponse
+from core.hsn.appointment.blocks.complaint.model import (
+    AppointmentBlockBooleanFieldsResponse,
+    AppointmentBlockEkgBooleanFieldsResponse,
+)
 from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBModel
 
 
@@ -10,17 +12,34 @@ async def hsn_get_block_ekg_fields():
     response = AppointmentBlockEkgBooleanFieldsResponse()
 
     ekg_fields = {
-        "sinus_ritm", "av_blokada", "hypertrofia_lg", "ritm_eks",
-        "av_uzlovaya_tahikardia", "superventrikulyrnaya_tahikardia",
-        "zheludochnaya_tahikardia", "fabrilycia_predcerdiy", "trepetanie_predcerdiy"
+        "sinus_ritm",
+        "av_blokada",
+        "hypertrofia_lg",
+        "ritm_eks",
+        "av_uzlovaya_tahikardia",
+        "superventrikulyrnaya_tahikardia",
+        "zheludochnaya_tahikardia",
+        "fabrilycia_predcerdiy",
+        "trepetanie_predcerdiy",
     }
     echo_ekg_fields = {
-        "local_hypokines", "difusal_hypokines", "distol_disfunction",
-        "valvular_lesions", "anevrizma"
+        "local_hypokines",
+        "difusal_hypokines",
+        "distol_disfunction",
+        "valvular_lesions",
+        "anevrizma",
     }
 
     echo_ekg_integer_fields = {
-        "fv", "sdla", "lp", "pp", "kdr_lg", "ksr_lg", "kdo_lg", "mgp", "zslg"
+        "fv",
+        "sdla",
+        "lp",
+        "pp",
+        "kdr_lg",
+        "ksr_lg",
+        "kdo_lg",
+        "mgp",
+        "zslg",
     }
 
     display_names = {
@@ -46,7 +65,7 @@ async def hsn_get_block_ekg_fields():
         "ksr_lg": "КСР ЛЖ",
         "kdo_lg": "КДО ЛЖ",
         "mgp": "МЖП",
-        "zslg": "ЗСЛЖ"
+        "zslg": "ЗСЛЖ",
     }
 
     exclude_fields = {"id", "date_ekg", "another_changes", "date_echo_ekg", "note"}
@@ -55,8 +74,7 @@ async def hsn_get_block_ekg_fields():
         field_name = column.name
         if field_name not in exclude_fields:
             field_response = AppointmentBlockBooleanFieldsResponse(
-                name=field_name,
-                displayName=display_names.get(field_name, "")
+                name=field_name, displayName=display_names.get(field_name, "")
             )
             if field_name in ekg_fields:
                 response.ekg.append(field_response)

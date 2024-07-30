@@ -46,8 +46,8 @@ class HsnClinicalAssesmentUpdateContext(BaseModel):
 
 @SessionContext()
 async def hsn_clinical_assesment_update(context: HsnClinicalAssesmentUpdateContext):
-    payload = context.model_dump(exclude={'user_id'})
-    payload['author_id'] = context.user_id
+    payload = context.model_dump(exclude={"user_id"})
+    payload["author_id"] = context.user_id
 
     query = (
         update(ClinicalAssesmentDBModel)
@@ -61,4 +61,3 @@ async def hsn_clinical_assesment_update(context: HsnClinicalAssesmentUpdateConte
 
     await db_session.commit()
     return ClinicalAssesment.model_validate(res[0])
-

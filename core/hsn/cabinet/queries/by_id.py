@@ -8,10 +8,7 @@ from api.exceptions import NotFoundException
 
 
 async def hsn_query_cabinet_by_id(cabinet_id: int) -> Optional[Cabinet]:
-    query = (
-        select(CabinetDBModel)
-        .where(CabinetDBModel.id == cabinet_id)
-    )
+    query = select(CabinetDBModel).where(CabinetDBModel.id == cabinet_id)
 
     if hasattr(CabinetDBModel, "is_deleted"):
         query = query.where(CabinetDBModel.is_deleted.is_(False))
@@ -21,6 +18,3 @@ async def hsn_query_cabinet_by_id(cabinet_id: int) -> Optional[Cabinet]:
     if cabinet is None:
         raise NotFoundException(message="кабинет не найден!")
     return Cabinet.model_validate(cabinet[0])
-
-
-

@@ -4,7 +4,9 @@ from typing import Optional
 
 from core.hsn import Base
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+)
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock

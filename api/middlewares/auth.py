@@ -10,14 +10,12 @@ import jwt
 from typing import Optional, Tuple
 from starlette.authentication import AuthenticationBackend
 from starlette.middleware.authentication import (
-    AuthenticationMiddleware as BaseAuthenticationMiddleware
+    AuthenticationMiddleware as BaseAuthenticationMiddleware,
 )
 
 
 class AuthBackend(AuthenticationBackend):
-    async def authenticate(
-        self, conn: HTTPConnection
-    ) -> Tuple[bool, Optional[User]]:
+    async def authenticate(self, conn: HTTPConnection) -> Tuple[bool, Optional[User]]:
         curr_user = None
         authorization: str = conn.headers.get("Authorization")
         if not authorization:

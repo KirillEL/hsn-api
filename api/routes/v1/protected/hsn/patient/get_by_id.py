@@ -8,7 +8,7 @@ from fastapi import Request
 @patient_router.get(
     "/{patient_id}",
     response_model=PatientResponseWithoutFullName,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def get_patient_by_id(request: Request, patient_id: int):
     return await hsn_get_patient_by_id(request.user.id, patient_id)

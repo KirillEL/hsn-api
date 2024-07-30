@@ -9,12 +9,22 @@ from shared.db.db_session import session
 from pydantic import BaseModel, Field
 from typing import Optional, TypeVar, Type
 from datetime import date as tdate
-from shared.db.models.appointment.blocks.block_clinic_doctor import AppointmentBlockClinicDoctorDBModel
-from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
-from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
+from shared.db.models.appointment.blocks.block_clinic_doctor import (
+    AppointmentBlockClinicDoctorDBModel,
+)
+from shared.db.models.appointment.blocks.block_diagnose import (
+    AppointmentDiagnoseBlockDBModel,
+)
+from shared.db.models.appointment.blocks.block_laboratory_test import (
+    AppointmentLaboratoryTestBlockDBModel,
+)
 from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBModel
-from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
-from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
+from shared.db.models.appointment.blocks.block_complaint import (
+    AppointmentComplaintBlockDBModel,
+)
+from shared.db.models.appointment.blocks.block_clinical_condition import (
+    AppointmentClinicalConditionBlockDBModel,
+)
 from shared.db.transaction import Propagation
 
 DBModelType = TypeVar("DBModelType", bound=BaseDBModel)
@@ -35,10 +45,7 @@ class HsnCreatePatientAppontmentContext(BaseModel):
 
 
 async def check_block_exists(id: int, db_model: Type[DBModelType]):
-    query = (
-        select(db_model)
-        .where(db_model.id == id)
-    )
+    query = select(db_model).where(db_model.id == id)
     cursor = await session.execute(query)
     model = cursor.scalars().first()
     if model is not None:
@@ -47,33 +54,47 @@ async def check_block_exists(id: int, db_model: Type[DBModelType]):
 
 
 async def check_block_clinic_doctor_exists(block_clinic_doctor_id: int):
-    model = await check_block_exists(block_clinic_doctor_id, AppointmentBlockClinicDoctorDBModel)
-    if model is None: raise NotFoundException(message="Clinic doctor block id not found")
+    model = await check_block_exists(
+        block_clinic_doctor_id, AppointmentBlockClinicDoctorDBModel
+    )
+    if model is None:
+        raise NotFoundException(message="Clinic doctor block id not found")
 
 
 async def check_block_diagnose_exists(block_diagnose_id: int):
     model = await check_block_exists(block_diagnose_id, AppointmentDiagnoseBlockDBModel)
-    if model is None: raise NotFoundException(message="Diagnose block id not found")
+    if model is None:
+        raise NotFoundException(message="Diagnose block id not found")
 
 
 async def check_block_laboratory_test_exists(block_laboratory_test_id: int):
-    model = await check_block_exists(block_laboratory_test_id, AppointmentLaboratoryTestBlockDBModel)
-    if model is None: raise NotFoundException(message="Laboratory block id not found")
+    model = await check_block_exists(
+        block_laboratory_test_id, AppointmentLaboratoryTestBlockDBModel
+    )
+    if model is None:
+        raise NotFoundException(message="Laboratory block id not found")
 
 
 async def check_block_ekg_exists(block_ekg_id: int):
     model = await check_block_exists(block_ekg_id, AppointmentEkgBlockDBModel)
-    if model is None: raise NotFoundException(message="Ekg block id not found")
+    if model is None:
+        raise NotFoundException(message="Ekg block id not found")
 
 
 async def check_block_complaint_exists(block_complaint_id: int):
-    model = await check_block_exists(block_complaint_id, AppointmentComplaintBlockDBModel)
-    if model is None: raise NotFoundException(message="Complaint block id not found")
+    model = await check_block_exists(
+        block_complaint_id, AppointmentComplaintBlockDBModel
+    )
+    if model is None:
+        raise NotFoundException(message="Complaint block id not found")
 
 
 async def check_clinical_condition_exists(block_clinical_condition_id: int):
-    model = await check_block_exists(block_clinical_condition_id, AppointmentClinicalConditionBlockDBModel)
-    if model is None: raise NotFoundException(message="Clinical condition block id not found")
+    model = await check_block_exists(
+        block_clinical_condition_id, AppointmentClinicalConditionBlockDBModel
+    )
+    if model is None:
+        raise NotFoundException(message="Clinical condition block id not found")
 
 
 @Transaction(propagation=Propagation.REQUIRED)
@@ -84,13 +105,10 @@ async def hsn_patient_appontment_create(context: HsnCreatePatientAppontmentConte
     await check_block_ekg_exists(context.block_ekg_id)
     await check_block_complaint_exists(context.block_complaint_id)
     await check_clinical_condition_exists(context.block_clinical_condition_id)
-    payload = context.model_dump(exclude={'user_id'})
+    payload = context.model_dump(exclude={"user_id"})
     query = (
         insert(AppointmentDBModel)
-        .values(
-            author_id=context.user_id,
-            **payload
-        )
+        .values(author_id=context.user_id, **payload)
         .returning(AppointmentDBModel.id)
     )
     cursor = await session.execute(query)

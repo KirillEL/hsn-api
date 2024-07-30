@@ -4,8 +4,8 @@ from sqlalchemy.orm import relationship
 
 
 class BloodChemistryDBModel(BaseDBModel):
-    __tablename__ = 'blood_chemistries'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "blood_chemistries"
+    __table_args__ = {"schema": "public"}
 
     id = Column(Integer, primary_key=True, nullable=False)
 
@@ -29,5 +29,3 @@ class BloodChemistryDBModel(BaseDBModel):
     skf_date = Column(DateTime(timezone=False))
     kreatin = Column(Float)
     kreatin_date = Column(DateTime(timezone=False))
-
-

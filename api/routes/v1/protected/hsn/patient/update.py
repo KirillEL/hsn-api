@@ -41,9 +41,16 @@ class UpdatePatientRequestBody(BaseModel):
             try:
                 parsed_date = datetime.strptime(v, "%d.%m.%Y")
             except ValueError:
-                raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
-            if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
-                raise ValidationException(message="Дата последней госпитализации не должна быть позже чем текущая дата")
+                raise ValidationException(
+                    message="Дата должна быть в формате ДД.ММ.ГГГГ"
+                )
+            if (
+                cls.__fields__.get("last_hospitalization_date")
+                and parsed_date > datetime.now()
+            ):
+                raise ValidationException(
+                    message="Дата последней госпитализации не должна быть позже чем текущая дата"
+                )
         return v
 
     @field_validator("phone")
@@ -58,7 +65,7 @@ class UpdatePatientRequestBody(BaseModel):
         birth_date = datetime.strptime(self.birth_date, "%d.%m.%Y")
         current_date = datetime.now()
         age = (current_date - birth_date).days / 365.25
-        logger.debug(f'age: {age}')
+        logger.debug(f"age: {age}")
         if age < 0:
             raise ValidationException(message="Дата рождения не должна быть в будущем.")
         if age > 110:
@@ -69,12 +76,12 @@ class UpdatePatientRequestBody(BaseModel):
 @patient_router.patch(
     "/{patient_id}",
     response_model=PatientResponse,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_patient_by_id(request: Request, patient_id: int, body: UpdatePatientRequestBody):
+async def update_patient_by_id(
+    request: Request, patient_id: int, body: UpdatePatientRequestBody
+):
     context = HsnPatientUpdateContext(
-        user_id=request.user.id,
-        patient_id=patient_id,
-        **body.model_dump()
+        user_id=request.user.id, patient_id=patient_id, **body.model_dump()
     )
     return await hsn_update_patient_by_id(context)

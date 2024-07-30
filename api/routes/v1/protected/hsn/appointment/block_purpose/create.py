@@ -4,8 +4,11 @@ from pydantic import Field, BaseModel
 from fastapi import Request
 from starlette import status
 
-from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat, HsnAppointmentPurposeCreateContext, \
-    hsn_appointment_purpose_create
+from core.hsn.appointment.blocks.purpose import (
+    AppointmentPurposeFlat,
+    HsnAppointmentPurposeCreateContext,
+    hsn_appointment_purpose_create,
+)
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema
 
@@ -25,11 +28,12 @@ class CreateAppointmentPurposeRequestBody(BaseModel):
     "/create",
     response_model=list[AppointmentPurposeFlat],
     responses={"400": {"model": ExceptionResponseSchema}},
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
-async def create_appointment_purpose(request: Request, body: CreateAppointmentPurposeRequestBody):
+async def create_appointment_purpose(
+    request: Request, body: CreateAppointmentPurposeRequestBody
+):
     context = HsnAppointmentPurposeCreateContext(
-        user_id=request.user.id,
-        **body.model_dump()
+        user_id=request.user.id, **body.model_dump()
     )
     return await hsn_appointment_purpose_create(context)

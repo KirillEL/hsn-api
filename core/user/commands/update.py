@@ -26,11 +26,8 @@ class UserDoctorUpdateContext(BaseModel):
 @Transaction(propagation=Propagation.REQUIRED)
 async def user_command_update(context: UserDoctorUpdateContext):
     payload = context.model_dump(exclude_none=True)
-    logger.debug(f'payload: {payload}')
-    query_get_user = (
-        select(UserDBModel)
-        .where(UserDBModel.id == context.user_id)
-    )
+    logger.debug(f"payload: {payload}")
+    query_get_user = select(UserDBModel).where(UserDBModel.id == context.user_id)
     cursor = await session.execute(query_get_user)
     user = cursor.scalars().first()
     if not user:
@@ -62,4 +59,3 @@ async def user_command_update(context: UserDoctorUpdateContext):
         doctor.cabinet_id = context.cabinet_id
 
     return UserAndDoctor.model_validate(user)
-

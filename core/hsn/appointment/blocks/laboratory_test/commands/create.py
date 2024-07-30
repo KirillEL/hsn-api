@@ -5,15 +5,21 @@ from sqlalchemy import insert, update, exc
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
-from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
+from core.hsn.appointment.blocks.clinic_doctor.commands.create import (
+    check_appointment_exists,
+)
 from shared.db import Transaction
 from shared.db.db_session import session
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
+from shared.db.models.appointment.blocks.block_laboratory_test import (
+    AppointmentLaboratoryTestBlockDBModel,
+)
 from pydantic import BaseModel
 from typing import Optional
 
-from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
+from shared.db.models.appointment.blocks.block_laboratory_test import (
+    AppointmentLaboratoryTestBlockDBModel,
+)
 from shared.db.transaction import Propagation
 
 
@@ -63,9 +69,11 @@ class HsnAppointmentBlockLaboratoryTestCreateContext(BaseModel):
 
 
 @Transaction(propagation=Propagation.REQUIRED)
-async def hsn_appointment_block_laboratory_test_create(context: HsnAppointmentBlockLaboratoryTestCreateContext):
+async def hsn_appointment_block_laboratory_test_create(
+    context: HsnAppointmentBlockLaboratoryTestCreateContext,
+):
     await check_appointment_exists(context.appointment_id)
-    payload = context.model_dump(exclude={'appointment_id'})
+    payload = context.model_dump(exclude={"appointment_id"})
     query = (
         insert(AppointmentLaboratoryTestBlockDBModel)
         .values(**payload)
@@ -76,9 +84,7 @@ async def hsn_appointment_block_laboratory_test_create(context: HsnAppointmentBl
 
     query_update_appointment = (
         update(AppointmentDBModel)
-        .values(
-            block_laboratory_test_id=new_block_laboratory_test_id
-        )
+        .values(block_laboratory_test_id=new_block_laboratory_test_id)
         .where(AppointmentDBModel.id == context.appointment_id)
     )
     await session.execute(query_update_appointment)

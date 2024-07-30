@@ -8,7 +8,9 @@ from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from shared.db import Transaction
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_clinic_doctor import AppointmentBlockClinicDoctorDBModel
+from shared.db.models.appointment.blocks.block_clinic_doctor import (
+    AppointmentBlockClinicDoctorDBModel,
+)
 from shared.db.db_session import session
 from shared.db.transaction import Propagation
 
@@ -26,7 +28,7 @@ class HsnBlockClinicDoctorUpdateContext(BaseModel):
 
 @Transaction(propagation=Propagation.REQUIRED)
 async def hsn_block_clinic_doctor_update(context: HsnBlockClinicDoctorUpdateContext):
-    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+    payload = context.model_dump(exclude={"appointment_id"}, exclude_none=True)
 
     query = (
         select(AppointmentDBModel.block_clinic_doctor_id)

@@ -26,7 +26,9 @@ class HsnAppointmentPurposeUpdateContext(BaseModel):
 
 @Transaction(propagation=Propagation.REQUIRED)
 async def hsn_appointment_purpose_update(context: HsnAppointmentPurposeUpdateContext):
-    payload = context.model_dump(exclude={'user_id', 'appointment_id'}, exclude_none=True)
+    payload = context.model_dump(
+        exclude={"user_id", "appointment_id"}, exclude_none=True
+    )
 
     query = (
         select(AppointmentPurposeDBModel.id)
@@ -41,10 +43,7 @@ async def hsn_appointment_purpose_update(context: HsnAppointmentPurposeUpdateCon
 
     query_update = (
         update(AppointmentPurposeDBModel)
-        .values(
-            editor_id=context.user_id,
-            **payload
-        )
+        .values(editor_id=context.user_id, **payload)
         .where(AppointmentPurposeDBModel.is_deleted.is_(False))
         .where(AppointmentPurposeDBModel.id == purpose_id)
     )

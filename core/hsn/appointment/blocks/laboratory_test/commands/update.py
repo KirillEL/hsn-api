@@ -8,7 +8,9 @@ from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
 from shared.db import Transaction
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
+from shared.db.models.appointment.blocks.block_laboratory_test import (
+    AppointmentLaboratoryTestBlockDBModel,
+)
 from shared.db.db_session import session
 from shared.db.transaction import Propagation
 
@@ -55,8 +57,10 @@ class HsnBlockLaboratoryTestUpdateContext(BaseModel):
 
 
 @Transaction(propagation=Propagation.REQUIRED)
-async def hsn_block_laboratory_test_update(context: HsnBlockLaboratoryTestUpdateContext):
-    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+async def hsn_block_laboratory_test_update(
+    context: HsnBlockLaboratoryTestUpdateContext,
+):
+    payload = context.model_dump(exclude={"appointment_id"}, exclude_none=True)
 
     query = (
         select(AppointmentDBModel.block_laboratory_test_id)

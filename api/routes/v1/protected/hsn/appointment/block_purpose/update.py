@@ -1,5 +1,8 @@
-from core.hsn.appointment.blocks.purpose import HsnAppointmentPurposeUpdateContext, hsn_appointment_purpose_update, \
-    AppointmentPurposeFlat
+from core.hsn.appointment.blocks.purpose import (
+    HsnAppointmentPurposeUpdateContext,
+    hsn_appointment_purpose_update,
+    AppointmentPurposeFlat,
+)
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema
 from pydantic import BaseModel, Field
@@ -16,12 +19,12 @@ class UpdateBlockPurposeRequestBody(BaseModel):
 @block_purpose_router.patch(
     "/update/{appointment_id}",
     response_model=AppointmentPurposeFlat,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_block_purpose(request: Request, appointment_id: int, body: UpdateBlockPurposeRequestBody):
+async def update_block_purpose(
+    request: Request, appointment_id: int, body: UpdateBlockPurposeRequestBody
+):
     context = HsnAppointmentPurposeUpdateContext(
-        user_id=request.user.id,
-        appointment_id=appointment_id,
-        **body.model_dump()
+        user_id=request.user.id, appointment_id=appointment_id, **body.model_dump()
     )
     return await hsn_appointment_purpose_update(context)

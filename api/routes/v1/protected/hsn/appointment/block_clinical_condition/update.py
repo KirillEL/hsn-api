@@ -2,8 +2,11 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock, \
-    HsnBlockClinicalConditionUpdateContext, hsn_block_clinical_condition_update
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+    HsnBlockClinicalConditionUpdateContext,
+    hsn_block_clinical_condition_update,
+)
 from .router import block_clinical_condition_router
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request
@@ -45,12 +48,12 @@ class UpdateBlockClinicalConditionRequestBody(BaseModel):
 @block_clinical_condition_router.patch(
     "/update/{appointment_id}",
     response_model=AppointmentClinicalConditionBlock,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_block_clinical_condition(request: Request, appointment_id: int,
-                                          body: UpdateBlockClinicalConditionRequestBody):
+async def update_block_clinical_condition(
+    request: Request, appointment_id: int, body: UpdateBlockClinicalConditionRequestBody
+):
     context = HsnBlockClinicalConditionUpdateContext(
-        appointment_id=appointment_id,
-        **body.model_dump()
+        appointment_id=appointment_id, **body.model_dump()
     )
     return await hsn_block_clinical_condition_update(context)

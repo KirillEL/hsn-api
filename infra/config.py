@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 class Config(BaseSettings):
-    model_config = ConfigDict(extra='ignore')
+    model_config = ConfigDict(extra="ignore")
 
     ENV: Optional[str] = "development"
     DEBUG: Optional[bool] = True
@@ -44,7 +44,7 @@ def get_config(env_file):
     env = os.getenv("ENV", "local")
     config_type = {
         "local": LocalConfig(_env_file=env_file),
-        "prod": ProductionConfig(_env_file=env_file)
+        "prod": ProductionConfig(_env_file=env_file),
     }
     return config_type[env]
 

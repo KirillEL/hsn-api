@@ -5,7 +5,11 @@ from fastapi import Request
 from pydantic import BaseModel, Field
 
 from api.exceptions import ExceptionResponseSchema
-from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock, HsnBlockEkgUpdateContext, hsn_block_ekg_update
+from core.hsn.appointment.blocks.ekg import (
+    AppointmentEkgBlock,
+    HsnBlockEkgUpdateContext,
+    hsn_block_ekg_update,
+)
 from .router import block_ekg_router
 
 
@@ -41,12 +45,10 @@ class UpdateBlockEkgRequestBody(BaseModel):
 @block_ekg_router.patch(
     "/update/{appointment_id}",
     response_model=AppointmentEkgBlock,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_block_ekg(appointment_id: int, body: UpdateBlockEkgRequestBody):
     context = HsnBlockEkgUpdateContext(
-        appointment_id=appointment_id,
-        **body.model_dump()
+        appointment_id=appointment_id, **body.model_dump()
     )
     return await hsn_block_ekg_update(context)
-

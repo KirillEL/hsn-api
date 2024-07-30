@@ -5,10 +5,12 @@ from sqlalchemy import select, desc, func
 from core.hsn.cabinet.schemas import Cabinet
 
 
-async def hsn_query_cabinet_list(limit: int = None, offset: int = None, pattern: str = None):
+async def hsn_query_cabinet_list(
+    limit: int = None, offset: int = None, pattern: str = None
+):
     query = select(CabinetDBModel)
 
-    if hasattr(CabinetDBModel, 'is_deleted'):
+    if hasattr(CabinetDBModel, "is_deleted"):
         query = query.where(CabinetDBModel.is_deleted.is_(False))
 
     if pattern is not None:

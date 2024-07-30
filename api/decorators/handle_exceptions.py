@@ -4,7 +4,11 @@ from loguru import logger
 from sqlalchemy import exc
 from pydantic import ValidationError
 
-from api.exceptions import NotFoundException, ValidationException, InternalServerException
+from api.exceptions import (
+    NotFoundException,
+    ValidationException,
+    InternalServerException,
+)
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.db_session import session
 
@@ -14,7 +18,7 @@ class HandleExceptions:
         @wraps(func)
         async def wrapper(*args, **kwargs):
             try:
-                logger.debug(f'HandleExceptions')
+                logger.debug(f"HandleExceptions")
                 return await func(*args, **kwargs)
             except NotFoundException as ne:
                 raise ne
@@ -26,7 +30,7 @@ class HandleExceptions:
                 raise UnprocessableEntityException(message=str(sqle))
             except Exception as e:
                 await session.rollback()
-                logger.error(f'exception: {str(e)}')
+                logger.error(f"exception: {str(e)}")
                 raise e
 
         return wrapper

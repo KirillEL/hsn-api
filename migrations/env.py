@@ -9,6 +9,7 @@ from shared.db.models.BASE import BaseDBModel
 from shared.db.models import *
 from infra import config as infra_config
 from sqlalchemy.ext.asyncio import create_async_engine
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

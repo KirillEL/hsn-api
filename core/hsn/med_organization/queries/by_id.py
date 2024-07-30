@@ -8,12 +8,11 @@ from api.exceptions import NotFoundException
 
 
 async def hsn_query_med_organization_by_id(med_organization_id: int):
-    query = (
-        select(MedOrganizationDBModel)
-        .where(MedOrganizationDBModel.id == med_organization_id)
+    query = select(MedOrganizationDBModel).where(
+        MedOrganizationDBModel.id == med_organization_id
     )
 
-    if hasattr(MedOrganizationDBModel, 'is_deleted'):
+    if hasattr(MedOrganizationDBModel, "is_deleted"):
         query = query.where(MedOrganizationDBModel.is_deleted.is_(False))
 
     cursor = await session.execute(query)

@@ -7,7 +7,7 @@ from core.user import UserAuthor
 
 
 class MedicinesGroup(Base):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     id: int
     code: str
@@ -26,7 +26,7 @@ class MedicinesGroup(Base):
 
 
 class MedicineGroupFlat(Base):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     id: int
     code: str

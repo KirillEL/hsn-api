@@ -3,8 +3,8 @@ from sqlalchemy import Column, Integer, String, DateTime, text, ForeignKey, Floa
 
 
 class GeneralUrineAnalyseDBModel(BaseDBModel):
-    __tablename__ = 'general_urine_analyses'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "general_urine_analyses"
+    __table_args__ = {"schema": "public"}
 
     id = Column(Integer, primary_key=True, nullable=False)
     protein = Column(Float)

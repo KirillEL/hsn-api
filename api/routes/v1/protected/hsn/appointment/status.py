@@ -10,7 +10,7 @@ from fastapi import Request
     response_model=AppointmentStatus,
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Узнать статус приема по его id",
-    tags=["Прием"]
+    tags=["Прием"],
 )
 async def get_appointment_status(request: Request, patient_appointment_id: int):
     doctor_id: int = request.user.doctor.id

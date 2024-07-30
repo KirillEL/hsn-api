@@ -4,12 +4,18 @@ from sqlalchemy import update, select
 
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
-from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
+from core.hsn.appointment.blocks.complaint.model import (
+    AppointmentComplaintWithClinicalCondition,
+)
 from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from shared.db import Transaction
 from shared.db.db_session import session
-from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
-from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
+from shared.db.models.appointment.blocks.block_complaint import (
+    AppointmentComplaintBlockDBModel,
+)
+from shared.db.models.appointment.blocks.block_clinical_condition import (
+    AppointmentClinicalConditionBlockDBModel,
+)
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from pydantic import BaseModel, Field
 
@@ -61,58 +67,90 @@ class HsnBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
 
     def create_payloads(self) -> Dict[str, Dict[str, Any]]:
         symptoms_keys = [
-            'has_fatigue', 'has_dyspnea', 'has_swelling_legs', 'has_weakness',
-            'has_orthopnea', 'has_heartbeat', 'note'
+            "has_fatigue",
+            "has_dyspnea",
+            "has_swelling_legs",
+            "has_weakness",
+            "has_orthopnea",
+            "has_heartbeat",
+            "note",
         ]
         clinical_conditions_keys = [
-            'heart_failure_om', 'orthopnea', 'paroxysmal_nocturnal_dyspnea',
-            'reduced_exercise_tolerance', 'weakness_fatigue', 'peripheral_edema',
-            'ascites', 'hydrothorax', 'hydropericardium', 'night_cough',
-            'weight_gain_over_2kg', 'weight_loss', 'depression', 'third_heart_sound',
-            'apical_impulse_displacement_left', 'moist_rales_in_lungs',
-            'heart_murmurs', 'tachycardia', 'irregular_pulse', 'tachypnea',
-            'hepatomegaly', 'other_symptoms', 'height', 'weight', 'bmi', 'systolic_bp',
-            'diastolic_bp', 'heart_rate', 'six_min_walk_distance'
+            "heart_failure_om",
+            "orthopnea",
+            "paroxysmal_nocturnal_dyspnea",
+            "reduced_exercise_tolerance",
+            "weakness_fatigue",
+            "peripheral_edema",
+            "ascites",
+            "hydrothorax",
+            "hydropericardium",
+            "night_cough",
+            "weight_gain_over_2kg",
+            "weight_loss",
+            "depression",
+            "third_heart_sound",
+            "apical_impulse_displacement_left",
+            "moist_rales_in_lungs",
+            "heart_murmurs",
+            "tachycardia",
+            "irregular_pulse",
+            "tachypnea",
+            "hepatomegaly",
+            "other_symptoms",
+            "height",
+            "weight",
+            "bmi",
+            "systolic_bp",
+            "diastolic_bp",
+            "heart_rate",
+            "six_min_walk_distance",
         ]
 
         symptoms_payload = {
-            key: getattr(self, key) for key in symptoms_keys if getattr(self, key) is not None
+            key: getattr(self, key)
+            for key in symptoms_keys
+            if getattr(self, key) is not None
         }
         clinical_conditions_payload = {
-            key: getattr(self, key) for key in clinical_conditions_keys if getattr(self, key) is not None
+            key: getattr(self, key)
+            for key in clinical_conditions_keys
+            if getattr(self, key) is not None
         }
 
         return {
             "block_complaint": symptoms_payload,
-            "block_clinical_condition": clinical_conditions_payload
+            "block_clinical_condition": clinical_conditions_payload,
         }
 
 
 @Transaction(propagation=Propagation.REQUIRED)
-async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockComplaintAndClinicalConditionUpdateContext):
+async def hsn_block_complaint_and_clinical_condition_update(
+    context: HsnBlockComplaintAndClinicalConditionUpdateContext,
+):
     user_id = context.user_id
     appointment_id = context.appointment_id
     payloads = context.create_payloads()
     await check_appointment_exists(appointment_id)
 
     # 1
-    query_get_block_complaint_id = (
-        select(AppointmentDBModel.block_complaint_id)
-        .where(AppointmentDBModel.id == appointment_id)
+    query_get_block_complaint_id = select(AppointmentDBModel.block_complaint_id).where(
+        AppointmentDBModel.id == appointment_id
     )
     cursor = await session.execute(query_get_block_complaint_id)
     block_complaint_id = cursor.scalar()
     if block_complaint_id is None:
         raise NotFoundException(message="У приема не привязан еще блок жалоб!")
 
-    query_get_block_clinical_condition_id = (
-        select(AppointmentDBModel.block_clinical_condition_id)
-        .where(AppointmentDBModel.id == appointment_id)
-    )
+    query_get_block_clinical_condition_id = select(
+        AppointmentDBModel.block_clinical_condition_id
+    ).where(AppointmentDBModel.id == appointment_id)
     cursor = await session.execute(query_get_block_clinical_condition_id)
     block_clinical_condition_id = cursor.scalar()
     if block_clinical_condition_id is None:
-        raise NotFoundException(message="У приема не привязан еще блок клинического состояния!")
+        raise NotFoundException(
+            message="У приема не привязан еще блок клинического состояния!"
+        )
 
     query_update_block_complaint = (
         update(AppointmentComplaintBlockDBModel)
@@ -126,7 +164,9 @@ async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockCom
     query_update_block_clinical_condition = (
         update(AppointmentClinicalConditionBlockDBModel)
         .values(payloads["block_clinical_condition"])
-        .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
+        .where(
+            AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id
+        )
         .returning(AppointmentClinicalConditionBlockDBModel)
     )
     cursor = await session.execute(query_update_block_clinical_condition)
@@ -134,7 +174,6 @@ async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockCom
 
     response = AppointmentComplaintWithClinicalCondition(
         block_complaint=updated_block_complaint,
-        block_clinical_condition=updated_block_clinical_condition
+        block_clinical_condition=updated_block_clinical_condition,
     )
     return AppointmentComplaintWithClinicalCondition.model_validate(response)
-

@@ -16,7 +16,7 @@ class AuthRequest(BaseModel):
     "",
     response_model=AuthLoginResponse,
     responses={"404": {"model": ExceptionResponseSchema}},
-    summary="Вход в аккаунт"
+    summary="Вход в аккаунт",
 )
 async def login_user(req: AuthRequest):
     user = await user_query_login(req.login, req.password)

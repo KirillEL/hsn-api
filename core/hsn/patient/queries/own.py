@@ -34,17 +34,26 @@ class LocationType(Enum):
     ANOTHER = "другое"
 
 
-async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None,
-                               gender: str = None, full_name: str = None, location: str = None, columnKey: str = None, order: str = None):
+async def hsn_get_own_patients(
+    current_user_id: int,
+    limit: int = None,
+    offset: int = None,
+    gender: str = None,
+    full_name: str = None,
+    location: str = None,
+    columnKey: str = None,
+    order: str = None,
+):
     logger.debug(f"columnKey: {columnKey}")
 
     contragent_alias = aliased(ContragentDBModel)
 
     query = (
         select(PatientDBModel)
-        .options(joinedload(PatientDBModel.cabinet)
-                 .joinedload(CabinetDBModel.doctors)
-                 , joinedload(PatientDBModel.contragent))
+        .options(
+            joinedload(PatientDBModel.cabinet).joinedload(CabinetDBModel.doctors),
+            joinedload(PatientDBModel.contragent),
+        )
         .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
         .where(DoctorDBModel.user_id == current_user_id)
     )
@@ -62,7 +71,7 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
     if offset:
         query = query.offset(offset)
 
-    logger.debug(f'gender: {gender}')
+    logger.debug(f"gender: {gender}")
     if gender:
         query = query.where(PatientDBModel.gender == gender[0])
 
@@ -76,22 +85,27 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         else:
             query = query.order_by(desc(column_attribute))
 
-    if columnKey == 'full_name':
-        full_name_expr = func.concat(contragent_alias.last_name, ' ', contragent_alias.name, ' ',
-                                     contragent_alias.patronymic)
+    if columnKey == "full_name":
+        full_name_expr = func.concat(
+            contragent_alias.last_name,
+            " ",
+            contragent_alias.name,
+            " ",
+            contragent_alias.patronymic,
+        )
         if order == "ascend":
             query = query.order_by(asc(full_name_expr))
         else:
             query = query.order_by(desc(full_name_expr))
 
-    if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
+    if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != "id":
         column_attribute = getattr(ContragentDBModel, columnKey)
         if order == "ascend":
             query = query.order_by(asc(column_attribute))
         else:
             query = query.order_by(desc(column_attribute))
 
-    query = query.order_by(desc('id'))
+    query = query.order_by(desc("id"))
     total_count_result = await session.execute(query_count)
     total_count = total_count_result.scalar()
     cursor = await session.execute(query)
@@ -105,17 +119,17 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
 
     total_count = len(converted_patients)
 
-    if columnKey == 'age':
+    if columnKey == "age":
         converted_patients.sort(key=lambda x: x.age, reverse=(order != "ascend"))
 
     if full_name:
-        filtered_patients = [patient for patient in converted_patients
-                             if full_name[0].lower() in patient.full_name.lower()]
+        filtered_patients = [
+            patient
+            for patient in converted_patients
+            if full_name[0].lower() in patient.full_name.lower()
+        ]
         total_count = len(filtered_patients)
     else:
         filtered_patients = converted_patients
 
-    return {
-        "data": filtered_patients,
-        "total": total_count
-    }
+    return {"data": filtered_patients, "total": total_count}

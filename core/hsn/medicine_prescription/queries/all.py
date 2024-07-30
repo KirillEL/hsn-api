@@ -16,4 +16,6 @@ async def hsn_medicine_prescription_all(limit: int = None, offset: int = None):
     cursor = await session.execute(query)
     medicine_prescriptions = cursor.scalars().all()
 
-    return [MedicinePrescriptionFlat.model_validate(m_p) for m_p in medicine_prescriptions]
+    return [
+        MedicinePrescriptionFlat.model_validate(m_p) for m_p in medicine_prescriptions
+    ]

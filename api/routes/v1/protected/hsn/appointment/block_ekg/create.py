@@ -1,7 +1,10 @@
 from .router import block_ekg_router
 from api.exceptions import ExceptionResponseSchema, ValidationException
-from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock, hsn_appointment_block_ekg_create, \
-    HsnAppointmentBlockEkgCreateContext
+from core.hsn.appointment.blocks.ekg import (
+    AppointmentEkgBlock,
+    hsn_appointment_block_ekg_create,
+    HsnAppointmentBlockEkgCreateContext,
+)
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import date as tdate, datetime
@@ -37,7 +40,7 @@ class CreateBlockEkgRequestBody(BaseModel):
     anevrizma: bool = Field(False)
     note: Optional[str] = Field(None, max_length=1000)
 
-    @field_validator('date_ekg', 'date_echo_ekg')
+    @field_validator("date_ekg", "date_echo_ekg")
     def check_date_format(cls, value):
         try:
             datetime.strptime(value, "%d.%m.%Y")
@@ -47,9 +50,7 @@ class CreateBlockEkgRequestBody(BaseModel):
 
 
 @block_ekg_router.post(
-    "/create",
-    response_model=int,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_ekg(request: Request, body: CreateBlockEkgRequestBody):
     context = HsnAppointmentBlockEkgCreateContext(**body.model_dump())

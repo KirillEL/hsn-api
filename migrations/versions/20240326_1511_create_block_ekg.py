@@ -5,6 +5,7 @@ Revises: 9fdc325aed89
 Create Date: 2024-03-26 15:11:01.073681
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,13 +13,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'bf13a3cfcbc5'
-down_revision: Union[str, None] = '72e38a033c20'
+revision: str = "bf13a3cfcbc5"
+down_revision: Union[str, None] = "72e38a033c20"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+
 def upgrade():
-    op.execute("""
+    op.execute(
+        """
     CREATE TABLE public.appointment_block_ekgs (
         id SERIAL PRIMARY KEY,
         date_ekg TEXT NOT NULL,
@@ -49,9 +52,13 @@ def upgrade():
         anevrizma BOOLEAN NOT NULL DEFAULT false,
         note TEXT
     );
-    """)
+    """
+    )
+
 
 def downgrade():
-    op.execute("""
+    op.execute(
+        """
     DROP TABLE public.appointment_block_ekgs;
-    """)
+    """
+    )

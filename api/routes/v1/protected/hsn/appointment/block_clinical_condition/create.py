@@ -1,10 +1,14 @@
 from .router import block_clinical_condition_router
 from api.exceptions import ExceptionResponseSchema
 from pydantic import BaseModel, Field
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock, \
-    hsn_appointment_block_clinical_condition_create, HsnAppointmentBlockClinicalConditionCreateContext
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+    hsn_appointment_block_clinical_condition_create,
+    HsnAppointmentBlockClinicalConditionCreateContext,
+)
 from typing import Optional
 from fastapi import Request
+
 
 class CreateBlockClinicalConditionRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
@@ -41,10 +45,10 @@ class CreateBlockClinicalConditionRequestBody(BaseModel):
 
 
 @block_clinical_condition_router.post(
-    "/create",
-    response_model=int,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_clinical_condition(request: Request, body:CreateBlockClinicalConditionRequestBody):
+async def create_block_clinical_condition(
+    request: Request, body: CreateBlockClinicalConditionRequestBody
+):
     context = HsnAppointmentBlockClinicalConditionCreateContext(**body.model_dump())
     return await hsn_appointment_block_clinical_condition_create(context)

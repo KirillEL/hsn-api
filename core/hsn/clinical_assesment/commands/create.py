@@ -43,27 +43,28 @@ class HsnClinicalAssesmentCreateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_clinical_assesment_create(context: HsnClinicalAssesmentCreateContext) -> ClinicalAssesment:
-    payload = context.model_dump(exclude={'user_id'})
-    payload['author_id'] = context.user_id
+async def hsn_clinical_assesment_create(
+    context: HsnClinicalAssesmentCreateContext,
+) -> ClinicalAssesment:
+    payload = context.model_dump(exclude={"user_id"})
+    payload["author_id"] = context.user_id
 
-    query_check_appointment_id = (
-        select(ClinicalAssesmentDBModel)
-        .where(ClinicalAssesmentDBModel.patient_appointment_id == context.patient_appointment_id)
+    query_check_appointment_id = select(ClinicalAssesmentDBModel).where(
+        ClinicalAssesmentDBModel.patient_appointment_id
+        == context.patient_appointment_id
     )
     cursor_1 = await db_session.execute(query_check_appointment_id)
     res = cursor_1.first()
 
-    query_check_hositalization_id = (
-        select(ClinicalAssesmentDBModel)
-        .where(ClinicalAssesmentDBModel.patient_hospitalization_id == context.patient_hospitalization_id)
+    query_check_hositalization_id = select(ClinicalAssesmentDBModel).where(
+        ClinicalAssesmentDBModel.patient_hospitalization_id
+        == context.patient_hospitalization_id
     )
     cursor_2 = await db_session.execute(query_check_hositalization_id)
     res_2 = cursor_2.first()
 
-    query_check_patient_id = (
-        select(ClinicalAssesmentDBModel)
-        .where(ClinicalAssesmentDBModel.patient_id == context.patient_id)
+    query_check_patient_id = select(ClinicalAssesmentDBModel).where(
+        ClinicalAssesmentDBModel.patient_id == context.patient_id
     )
     cursor_3 = await db_session.execute(query_check_patient_id)
     res_3 = cursor_3.first()
@@ -79,5 +80,3 @@ async def hsn_clinical_assesment_create(context: HsnClinicalAssesmentCreateConte
     cursor = await db_session.execute(query)
     clinical_assesment = cursor.first()[0]
     return ClinicalAssesment.model_validate(clinical_assesment)
-
-

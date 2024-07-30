@@ -3,8 +3,8 @@ from sqlalchemy import Column, Text, String, Float, ForeignKey, text, Integer, D
 
 
 class HormonalBloodAnalyseDBModel(BaseDBModel):
-    __tablename__ = 'hormonal_blood_analyses'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "hormonal_blood_analyses"
+    __table_args__ = {"schema": "public"}
 
     id = Column(Integer, primary_key=True, nullable=False)
     nt_pro_bnp = Column(Float)

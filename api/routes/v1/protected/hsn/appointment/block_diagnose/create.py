@@ -1,9 +1,15 @@
-from core.hsn.appointment.blocks.diagnose.model import ClassificationFuncClassesType, ClassificationAdjacentReleaseType, \
-    ClassificationNcStageType
+from core.hsn.appointment.blocks.diagnose.model import (
+    ClassificationFuncClassesType,
+    ClassificationAdjacentReleaseType,
+    ClassificationNcStageType,
+)
 from .router import block_diagnose_router
 from api.exceptions import ExceptionResponseSchema
-from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, hsn_appointment_block_diagnose_create, \
-    HsnAppointmentBlockDiagnoseCreateContext
+from core.hsn.appointment.blocks.diagnose import (
+    AppointmentDiagnoseBlock,
+    hsn_appointment_block_diagnose_create,
+    HsnAppointmentBlockDiagnoseCreateContext,
+)
 from pydantic import BaseModel, Field
 from typing import Optional
 from fastapi import Request
@@ -13,9 +19,15 @@ class CreateBlockDiagnoseRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
 
     diagnose: str = Field(max_length=1000)
-    classification_func_classes: ClassificationFuncClassesType = Field(ClassificationFuncClassesType.FIRST.value)
-    classification_adjacent_release: ClassificationAdjacentReleaseType = Field(ClassificationAdjacentReleaseType.LOW.value)
-    classification_nc_stage: ClassificationNcStageType = Field(ClassificationNcStageType.I.value)
+    classification_func_classes: ClassificationFuncClassesType = Field(
+        ClassificationFuncClassesType.FIRST.value
+    )
+    classification_adjacent_release: ClassificationAdjacentReleaseType = Field(
+        ClassificationAdjacentReleaseType.LOW.value
+    )
+    classification_nc_stage: ClassificationNcStageType = Field(
+        ClassificationNcStageType.I.value
+    )
 
     cardiomyopathy: bool = Field(False)
     cardiomyopathy_note: Optional[str] = Field(None, max_length=1000)
@@ -42,9 +54,7 @@ class CreateBlockDiagnoseRequestBody(BaseModel):
 
 
 @block_diagnose_router.post(
-    "/create",
-    response_model=int,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_diagnose(request: Request, body: CreateBlockDiagnoseRequestBody):
     context = HsnAppointmentBlockDiagnoseCreateContext(**body.model_dump())

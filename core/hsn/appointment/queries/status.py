@@ -5,7 +5,10 @@ from api.decorators import HandleExceptions
 from api.exceptions import InternalServerException, NotFoundException
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.db_session import session
-from shared.db.models.appointment.appointment import AppointmentDBModel, AppointmentStatus
+from shared.db.models.appointment.appointment import (
+    AppointmentDBModel,
+    AppointmentStatus,
+)
 
 
 async def hsn_get_appointment_status(doctor_id: int, patient_appointment_id: int):

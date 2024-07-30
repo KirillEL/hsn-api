@@ -6,8 +6,8 @@ from sqlalchemy.orm import relationship
 
 
 class UserDBModel(BaseDBModel):
-    __tablename__ = 'users'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "users"
+    __table_args__ = {"schema": "public"}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     login = Column(String(255), nullable=False, unique=True)
@@ -17,6 +17,13 @@ class UserDBModel(BaseDBModel):
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 
-    doctor = relationship("DoctorDBModel", back_populates="user", uselist=False, lazy='selectin')
+    doctor = relationship(
+        "DoctorDBModel", back_populates="user", uselist=False, lazy="selectin"
+    )
 
-    roles = relationship('RoleDBModel', secondary='public.user_roles', back_populates='users', lazy='selectin')
+    roles = relationship(
+        "RoleDBModel",
+        secondary="public.user_roles",
+        back_populates="users",
+        lazy="selectin",
+    )

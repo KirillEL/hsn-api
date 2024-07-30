@@ -4,8 +4,11 @@ from typing import Optional
 from fastapi import Request
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 
-from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
-    HsnBlockLaboratoryTestUpdateContext, hsn_block_laboratory_test_update
+from core.hsn.appointment.blocks.laboratory_test import (
+    AppointmentLaboratoryTestBlock,
+    HsnBlockLaboratoryTestUpdateContext,
+    hsn_block_laboratory_test_update,
+)
 from .router import block_laboratory_test_router
 from api.exceptions import ExceptionResponseSchema, ValidationException
 
@@ -49,39 +52,51 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
     microalbumuria_date: Optional[str] = Field(None)
     note: Optional[str] = Field(None, max_length=1000)
 
-    @field_validator('hbalc')
+    @field_validator("hbalc")
     def check_hbalc_value(cls, value):
         if value is not None and value <= 0:
             raise ValidationException(message="Hbalc должно быть больше 0")
 
-
-    @field_validator('nt_pro_bnp_date', 'hbalc_date', 'eritrocit_date',
-                     'hemoglobin_date', 'tg_date', 'lpvp_date', 'lpnp_date',
-                     'general_hc_date', 'natriy_date', 'kaliy_date', 'glukoza_date',
-                     'mochevaya_kislota_date', 'skf_date', 'kreatinin_date', 'protein_date', 'urine_eritrocit_date',
-                     'urine_leycocit_date',
-                     'microalbumuria_date')
+    @field_validator(
+        "nt_pro_bnp_date",
+        "hbalc_date",
+        "eritrocit_date",
+        "hemoglobin_date",
+        "tg_date",
+        "lpvp_date",
+        "lpnp_date",
+        "general_hc_date",
+        "natriy_date",
+        "kaliy_date",
+        "glukoza_date",
+        "mochevaya_kislota_date",
+        "skf_date",
+        "kreatinin_date",
+        "protein_date",
+        "urine_eritrocit_date",
+        "urine_leycocit_date",
+        "microalbumuria_date",
+    )
     def check_date_format(cls, value):
         try:
             parsed_date = datetime.strptime(value, "%d.%m.%Y")
             if parsed_date > datetime.now():
-                raise ValidationException(message="Даты не могут быть позже текущего дня")
+                raise ValidationException(
+                    message="Даты не могут быть позже текущего дня"
+                )
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
-
-
-
-
 
 
 @block_laboratory_test_router.patch(
     "/update/{appointment_id}",
     response_model=AppointmentLaboratoryTestBlock,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_block_laboratory_test(appointment_id: int, body: UpdateBlockLaboratoryTestRequestBody):
+async def update_block_laboratory_test(
+    appointment_id: int, body: UpdateBlockLaboratoryTestRequestBody
+):
     context = HsnBlockLaboratoryTestUpdateContext(
-        appointment_id=appointment_id,
-        **body.model_dump()
+        appointment_id=appointment_id, **body.model_dump()
     )
     return await hsn_block_laboratory_test_update(context)

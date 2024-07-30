@@ -16,8 +16,8 @@ async def user_query_by_id(user_id: int) -> Optional[UserFlat]:
     cursor = await session.execute(query)
 
     result = cursor.scalars().first()
-    
+
     if result is None:
         return None
-    
+
     return UserFlat.model_validate(result)

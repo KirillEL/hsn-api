@@ -6,6 +6,4 @@ from .create_with_condition import *
 from .update_with_condition import *
 from .router import block_complaint_router
 
-__all__ = [
-    'block_complaint_router'
-]
+__all__ = ["block_complaint_router"]

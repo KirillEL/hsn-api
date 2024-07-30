@@ -8,7 +8,7 @@ def admin_required(func):
     async def wrapper(*args, **kwargs):
         request = None
 
-        request = kwargs.get('request')
+        request = kwargs.get("request")
 
         if not request:
             raise HTTPException(status_code=400, detail="Request Object not found")
@@ -16,7 +16,7 @@ def admin_required(func):
         user_roles = request.user.roles
         is_admin = False
         for role in user_roles:
-            if role.name == 'admin':
+            if role.name == "admin":
                 is_admin = True
                 break
 

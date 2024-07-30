@@ -1,6 +1,11 @@
-from core.hsn.appointment.blocks.base_model import AppointmentBlockBooleanTextFieldsResponse
-from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
+from core.hsn.appointment.blocks.base_model import (
+    AppointmentBlockBooleanTextFieldsResponse,
+)
+from shared.db.models.appointment.blocks.block_diagnose import (
+    AppointmentDiagnoseBlockDBModel,
+)
 from sqlalchemy import inspect
+
 
 async def hsn_get_block_diagnose_fields():
     inspector = inspect(AppointmentDiagnoseBlockDBModel)
@@ -26,7 +31,7 @@ async def hsn_get_block_diagnose_fields():
         "onmk_tia": "ОНМК / ТИА",
         "onmk_tia_note": "ОНМК / ТИА примечание",
         "hbp": "ХБП",
-        "hbp_note": "ХБП примечание"
+        "hbp_note": "ХБП примечание",
     }
 
     exclude_fields = {
@@ -35,7 +40,7 @@ async def hsn_get_block_diagnose_fields():
         "classification_func_classes",
         "classification_adjacent_release",
         "classification_nc_stage",
-        "another"
+        "another",
     }
 
     columns_list = list(inspector.columns.values())
@@ -44,12 +49,18 @@ async def hsn_get_block_diagnose_fields():
             field_name = column.name
             if field_name not in exclude_fields:
                 displayName = display_names.get(field_name, "")
-                textName = f"{field_name}_note" if field_name + "_note" in display_names else ""
+                textName = (
+                    f"{field_name}_note"
+                    if field_name + "_note" in display_names
+                    else ""
+                )
 
-                field_responses.append(AppointmentBlockBooleanTextFieldsResponse(
-                    booleanName=field_name,
-                    displayName=displayName,
-                    textName=textName
-                ))
+                field_responses.append(
+                    AppointmentBlockBooleanTextFieldsResponse(
+                        booleanName=field_name,
+                        displayName=displayName,
+                        textName=textName,
+                    )
+                )
 
     return field_responses

@@ -3,8 +3,8 @@ from shared.db.models.BASE import BaseDBModel
 
 
 class AppointmentEkgBlockDBModel(BaseDBModel):
-    __tablename__ = 'appointment_block_ekgs'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "appointment_block_ekgs"
+    __table_args__ = {"schema": "public"}
 
     id = Column(Integer, primary_key=True, nullable=False)
     date_ekg = Column(Text, nullable=False)
@@ -12,11 +12,21 @@ class AppointmentEkgBlockDBModel(BaseDBModel):
     av_blokada = Column(Boolean, nullable=False, server_default=text("false"))
     hypertrofia_lg = Column(Boolean, nullable=False, server_default=text("false"))
     ritm_eks = Column(Boolean, nullable=False, server_default=text("false"))
-    av_uzlovaya_tahikardia = Column(Boolean, nullable=False, server_default=text("false"))
-    superventrikulyrnaya_tahikardia = Column(Boolean, nullable=False, server_default=text("false"))
-    zheludochnaya_tahikardia = Column(Boolean, nullable=False, server_default=text("false"))
-    fabrilycia_predcerdiy = Column(Boolean, nullable=False, server_default=text("false"))
-    trepetanie_predcerdiy = Column(Boolean, nullable=False, server_default=text("false"))
+    av_uzlovaya_tahikardia = Column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+    superventrikulyrnaya_tahikardia = Column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+    zheludochnaya_tahikardia = Column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+    fabrilycia_predcerdiy = Column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+    trepetanie_predcerdiy = Column(
+        Boolean, nullable=False, server_default=text("false")
+    )
     another_changes = Column(Text)
 
     date_echo_ekg = Column(Text, nullable=False)
@@ -35,4 +45,3 @@ class AppointmentEkgBlockDBModel(BaseDBModel):
     valvular_lesions = Column(Boolean, nullable=False, server_default=text("false"))
     anevrizma = Column(Boolean, nullable=False, server_default=text("false"))
     note = Column(Text)
-    

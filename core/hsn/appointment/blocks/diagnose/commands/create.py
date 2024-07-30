@@ -5,11 +5,15 @@ from sqlalchemy import insert, update, exc
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
-from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
+from core.hsn.appointment.blocks.clinic_doctor.commands.create import (
+    check_appointment_exists,
+)
 from shared.db import Transaction
 from shared.db.db_session import session
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
+from shared.db.models.appointment.blocks.block_diagnose import (
+    AppointmentDiagnoseBlockDBModel,
+)
 from pydantic import BaseModel
 
 from shared.db.transaction import Propagation
@@ -56,9 +60,11 @@ class HsnAppointmentBlockDiagnoseCreateContext(BaseModel):
 
 
 @Transaction(propagation=Propagation.REQUIRED)
-async def hsn_appointment_block_diagnose_create(context: HsnAppointmentBlockDiagnoseCreateContext):
+async def hsn_appointment_block_diagnose_create(
+    context: HsnAppointmentBlockDiagnoseCreateContext,
+):
     await check_appointment_exists(context.appointment_id)
-    payload = context.model_dump(exclude={'appointment_id'})
+    payload = context.model_dump(exclude={"appointment_id"})
     query = (
         insert(AppointmentDiagnoseBlockDBModel)
         .values(**payload)
@@ -69,9 +75,7 @@ async def hsn_appointment_block_diagnose_create(context: HsnAppointmentBlockDiag
 
     query_update_appointment = (
         update(AppointmentDBModel)
-        .values(
-            block_diagnose_id=new_block_diagnose_id
-        )
+        .values(block_diagnose_id=new_block_diagnose_id)
         .where(AppointmentDBModel.id == context.appointment_id)
     )
     await session.execute(query_update_appointment)

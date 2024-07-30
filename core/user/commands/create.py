@@ -1,7 +1,11 @@
 from typing import Optional
 
 from loguru import logger
-from api.exceptions.base import InternalServerException, NotFoundException, ValidationException
+from api.exceptions.base import (
+    InternalServerException,
+    NotFoundException,
+    ValidationException,
+)
 from sqlalchemy.orm import joinedload
 
 from shared.db import Transaction
@@ -35,9 +39,8 @@ class UserDoctorCreateContext(BaseModel):
 @Transaction(propagation=Propagation.REQUIRED_NEW)
 async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor:
     try:
-        query_check_cabinet = (
-            select(CabinetDBModel)
-            .where(CabinetDBModel.id == context.cabinet_id)
+        query_check_cabinet = select(CabinetDBModel).where(
+            CabinetDBModel.id == context.cabinet_id
         )
         cursor = await session.execute(query_check_cabinet)
         cab_exists = cursor.scalars().first()
@@ -47,18 +50,14 @@ async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor
         hashed_password: str = PasswordHasher.hash_password(context.password)
         query_insert_user = (
             insert(UserDBModel)
-            .values(
-                login=context.login,
-                password=hashed_password
-            )
+            .values(login=context.login, password=hashed_password)
             .returning(UserDBModel)
         )
         cursor = await session.execute(query_insert_user)
         new_user = cursor.scalars().first()
 
-        query_get_role_id = (
-            select(RoleDBModel.id)
-            .where(RoleDBModel.name == context.role)
+        query_get_role_id = select(RoleDBModel.id).where(
+            RoleDBModel.name == context.role
         )
         cursor_get_role_id = await session.execute(query_get_role_id)
         role_id = cursor_get_role_id.scalar()
@@ -67,32 +66,23 @@ async def user_command_create(context: UserDoctorCreateContext) -> UserAndDoctor
 
         query_insert_to_user_role = (
             insert(UserRoleDBModel)
-            .values(
-                user_id=new_user.id,
-                role_id=role_id
-            )
+            .values(user_id=new_user.id, role_id=role_id)
             .returning(UserRoleDBModel.user_id)
         )
         await session.execute(query_insert_to_user_role)
-        doctor_insert_query = (
-            insert(DoctorDBModel)
-            .values(
-                name=context.name,
-                last_name=context.last_name,
-                patronymic=context.patronymic,
-                phone_number=context.phone_number,
-                user_id=new_user.id,
-                cabinet_id=context.cabinet_id,
-                is_glav=context.is_glav,
-                author_id=new_user.id if context.user_id is None else context.user_id
-            )
+        doctor_insert_query = insert(DoctorDBModel).values(
+            name=context.name,
+            last_name=context.last_name,
+            patronymic=context.patronymic,
+            phone_number=context.phone_number,
+            user_id=new_user.id,
+            cabinet_id=context.cabinet_id,
+            is_glav=context.is_glav,
+            author_id=new_user.id if context.user_id is None else context.user_id,
         )
         await session.execute(doctor_insert_query)
 
-        query_get_target_user = (
-            select(UserDBModel)
-            .where(UserDBModel.id == new_user.id)
-        )
+        query_get_target_user = select(UserDBModel).where(UserDBModel.id == new_user.id)
         cursor = await session.execute(query_get_target_user)
         user_with_details = cursor.scalars().first()
         return UserAndDoctor.model_validate(user_with_details)

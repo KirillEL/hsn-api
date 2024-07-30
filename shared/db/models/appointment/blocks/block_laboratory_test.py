@@ -3,8 +3,8 @@ from shared.db.models.BASE import BaseDBModel
 
 
 class AppointmentLaboratoryTestBlockDBModel(BaseDBModel):
-    __tablename__ = 'appointment_block_laboratory_tests'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "appointment_block_laboratory_tests"
+    __table_args__ = {"schema": "public"}
 
     id = Column(Integer, primary_key=True, nullable=False)
 

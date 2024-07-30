@@ -8,7 +8,11 @@ from api.routes import main_router
 from api.exceptions import CustomException
 from .dependencies import Logging
 from .middlewares import AuthMiddleware, AuthBackend, SQLAlchemyMiddleware
-from utils.on_startup import hsn_create_admin, hsn_create_role_doctor, create_med_prescriptions
+from utils.on_startup import (
+    hsn_create_admin,
+    hsn_create_role_doctor,
+    create_med_prescriptions,
+)
 
 
 def init_cors(_app: FastAPI) -> None:
@@ -17,7 +21,7 @@ def init_cors(_app: FastAPI) -> None:
         allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
-        allow_headers=["*"]
+        allow_headers=["*"],
     )
 
 
@@ -33,17 +37,12 @@ def on_auth_error(request: Request, exc: Exception):
         message = exc.message
 
     return JSONResponse(
-        status_code=status_code,
-        content={"error_code": error_code, "message": message}
+        status_code=status_code, content={"error_code": error_code, "message": message}
     )
 
 
 def init_middlewares(_app: FastAPI) -> None:
-    _app.add_middleware(
-        AuthMiddleware,
-        backend=AuthBackend(),
-        on_error=on_auth_error
-    )
+    _app.add_middleware(AuthMiddleware, backend=AuthBackend(), on_error=on_auth_error)
     _app.add_middleware(SQLAlchemyMiddleware)
 
 
@@ -52,7 +51,7 @@ def init_listeners(app: FastAPI) -> None:
     async def custom_exception_handler(request: Request, exc: CustomException):
         return JSONResponse(
             status_code=exc.code,
-            content={"error_code": exc.error_code, "message": exc.message}
+            content={"error_code": exc.error_code, "message": exc.message},
         )
 
 

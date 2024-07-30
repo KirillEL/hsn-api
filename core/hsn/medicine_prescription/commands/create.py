@@ -35,15 +35,14 @@ async def check_medicine_group_exists(medicine_group_id: int):
 
 
 @Transaction(propagation=Propagation.REQUIRED)
-async def hsn_medicine_prescription_create(context: HsnMedicinePrescriptionCreateContext):
-    payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
+async def hsn_medicine_prescription_create(
+    context: HsnMedicinePrescriptionCreateContext,
+):
+    payload = context.model_dump(exclude={"user_id"}, exclude_none=True)
     await check_medicine_group_exists(context.medicine_group_id)
     query = (
         insert(MedicinesPrescriptionDBModel)
-        .values(
-            author_id=context.user_id,
-            **payload
-        )
+        .values(author_id=context.user_id, **payload)
         .returning(MedicinesPrescriptionDBModel.id)
     )
     cursor = await session.execute(query)

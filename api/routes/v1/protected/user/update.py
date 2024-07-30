@@ -24,12 +24,9 @@ class UpdateUserRequest(BaseModel):
     "",
     response_model=UserAndDoctorResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
-    summary="Обновить информацию о себе"
+    summary="Обновить информацию о себе",
 )
 async def update_user(request: Request, request_body: UpdateUserRequest):
     user_id = request.user.id
-    context = UserDoctorUpdateContext(
-        user_id=user_id,
-        **request_body.dict()
-    )
+    context = UserDoctorUpdateContext(user_id=user_id, **request_body.dict())
     return await user_command_update(context)

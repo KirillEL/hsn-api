@@ -1,6 +1,3 @@
 from fastapi import APIRouter
 
-auth_verify_router = APIRouter(
-    prefix="/verify",
-    tags=["Верификация"]
-)
+auth_verify_router = APIRouter(prefix="/verify", tags=["Верификация"])

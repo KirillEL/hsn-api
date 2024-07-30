@@ -8,11 +8,11 @@ from api.exceptions import NotFoundException
 
 
 @SessionContext()
-async def hsn_clinical_assesment_get_by_patient_appointment_id(patient_appointment_id: int) -> Optional[
-    ClinicalAssesment]:
-    query = (
-        select(ClinicalAssesmentDBModel)
-        .where(ClinicalAssesmentDBModel.patient_appointment_id == patient_appointment_id)
+async def hsn_clinical_assesment_get_by_patient_appointment_id(
+    patient_appointment_id: int,
+) -> Optional[ClinicalAssesment]:
+    query = select(ClinicalAssesmentDBModel).where(
+        ClinicalAssesmentDBModel.patient_appointment_id == patient_appointment_id
     )
     cursor = await db_session.execute(query)
     res = cursor.first()

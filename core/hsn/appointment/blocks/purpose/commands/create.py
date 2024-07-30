@@ -30,10 +30,7 @@ class HsnAppointmentPurposeCreateContext(BaseModel):
 
 
 async def check_appointment_exists(appointment_id: int):
-    query = (
-        select(AppointmentDBModel)
-        .where(AppointmentDBModel.id == appointment_id)
-    )
+    query = select(AppointmentDBModel).where(AppointmentDBModel.id == appointment_id)
     cursor = await session.execute(query)
     appointment = cursor.scalars().first()
     if appointment is None:
@@ -41,9 +38,8 @@ async def check_appointment_exists(appointment_id: int):
 
 
 async def check_medicine_prescription_exists(medicine_prescription_id: int):
-    query = (
-        select(MedicinesPrescriptionDBModel)
-        .where(MedicinesPrescriptionDBModel.id == medicine_prescription_id)
+    query = select(MedicinesPrescriptionDBModel).where(
+        MedicinesPrescriptionDBModel.id == medicine_prescription_id
     )
     cursor = await session.execute(query)
     medicine_prescription = cursor.scalars().first()
@@ -55,8 +51,10 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
 async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateContext):
     await check_appointment_exists(context.appointment_id)
     for med_prescription in context.medicine_prescriptions:
-        await check_medicine_prescription_exists(med_prescription.medicine_prescription_id)
-    payload = context.model_dump(exclude={'user_id'})
+        await check_medicine_prescription_exists(
+            med_prescription.medicine_prescription_id
+        )
+    payload = context.model_dump(exclude={"user_id"})
     appointment_id = context.appointment_id
     created_purposes = []
     for med_prescription in context.medicine_prescriptions:
@@ -72,10 +70,15 @@ async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateCon
         cursor = await session.execute(query)
         inserted_id = cursor.scalar()
 
-        select_query = select(AppointmentPurposeDBModel).options(
-            joinedload(AppointmentPurposeDBModel.medicine_prescription).joinedload(
-                MedicinesPrescriptionDBModel.medicine_group)).where(
-            AppointmentPurposeDBModel.id == inserted_id)
+        select_query = (
+            select(AppointmentPurposeDBModel)
+            .options(
+                joinedload(AppointmentPurposeDBModel.medicine_prescription).joinedload(
+                    MedicinesPrescriptionDBModel.medicine_group
+                )
+            )
+            .where(AppointmentPurposeDBModel.id == inserted_id)
+        )
         cursor = await session.execute(select_query)
         created_purpose = cursor.scalar_one()
         created_purposes.append(created_purpose)

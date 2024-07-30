@@ -3,8 +3,10 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from fastapi import Request
 
-from core.hsn.appointment.blocks.complaint import hsn_block_complaint_and_clinical_condition_create, \
-    HsnBlockComplaintAndClinicalCondtionCreateContext
+from core.hsn.appointment.blocks.complaint import (
+    hsn_block_complaint_and_clinical_condition_create,
+    HsnBlockComplaintAndClinicalCondtionCreateContext,
+)
 from .router import block_complaint_router
 from api.exceptions import ExceptionResponseSchema
 
@@ -22,7 +24,12 @@ class CreateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     has_weakness: bool = Field(False)
     has_orthopnea: bool = Field(False)
     has_heartbeat: bool = Field(True)
-    note: str = Field(None, max_length=1000, examples=["Your note here"], description="Optional note, can be omitted.")
+    note: str = Field(
+        None,
+        max_length=1000,
+        examples=["Your note here"],
+        description="Optional note, can be omitted.",
+    )
 
     heart_failure_om: Optional[bool] = Field(False)
     orthopnea: Optional[bool] = Field(False)
@@ -59,12 +66,10 @@ class CreateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
 @block_complaint_router.post(
     "/create_with_condition",
     response_model=BlockComplaintCreateWithConditionResponse,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def create_block_complaint_and_clinical_condition(request: Request,
-                                                        body: CreateBlockComplaintAndClinicalConditionRequestBody):
-    context = HsnBlockComplaintAndClinicalCondtionCreateContext(
-        **body.model_dump()
-    )
+async def create_block_complaint_and_clinical_condition(
+    request: Request, body: CreateBlockComplaintAndClinicalConditionRequestBody
+):
+    context = HsnBlockComplaintAndClinicalCondtionCreateContext(**body.model_dump())
     return await hsn_block_complaint_and_clinical_condition_create(context)
-

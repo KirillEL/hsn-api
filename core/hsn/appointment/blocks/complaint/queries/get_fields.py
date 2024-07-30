@@ -1,8 +1,12 @@
 from loguru import logger
 from sqlalchemy import inspect
 
-from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse
-from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
+from core.hsn.appointment.blocks.complaint.model import (
+    AppointmentBlockBooleanFieldsResponse,
+)
+from shared.db.models.appointment.blocks.block_complaint import (
+    AppointmentComplaintBlockDBModel,
+)
 
 
 async def hsn_get_block_complaint_fields():
@@ -16,15 +20,14 @@ async def hsn_get_block_complaint_fields():
         "has_weakness": "Слабость",
         "has_orthopnea": "Ортопноэ",
         "has_heartbeat": "Учащенное сердцебиение",
-        "note": ""
+        "note": "",
     }
 
     for column in inspector.columns.values():
         field_name = column.name
         if field_name != "id" and field_name != "note":
             field_response = AppointmentBlockBooleanFieldsResponse(
-                name=field_name,
-                displayName=display_names.get(field_name, "")
+                name=field_name, displayName=display_names.get(field_name, "")
             )
             field_responses.append(field_response)
 

@@ -10,7 +10,7 @@ from fastapi import Request, status
     response_model=PatientAppointmentFlat,
     responses={"400": {"model": ExceptionResponseSchema}},
     tags=["Прием"],
-    summary="Получение приема по id"
+    summary="Получение приема по id",
 )
 async def get_appointment_by_id(request: Request, appointment_id: int):
     doctor_id: int = request.user.doctor.id

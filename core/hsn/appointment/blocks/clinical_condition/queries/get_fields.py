@@ -1,5 +1,9 @@
-from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse
-from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
+from core.hsn.appointment.blocks.complaint.model import (
+    AppointmentBlockBooleanFieldsResponse,
+)
+from shared.db.models.appointment.blocks.block_clinical_condition import (
+    AppointmentClinicalConditionBlockDBModel,
+)
 from sqlalchemy import inspect
 
 
@@ -28,7 +32,7 @@ async def hsn_get_block_clinical_condition_fields():
         "tachycardia": "Тахикардия",
         "irregular_pulse": "Нерегулярный пульс",
         "tachypnea": "Тахипное (ЧДД более 16/мин)",
-        "hepatomegaly": "Гепатомегалия"
+        "hepatomegaly": "Гепатомегалия",
     }
 
     exclude_fields = {
@@ -40,15 +44,14 @@ async def hsn_get_block_clinical_condition_fields():
         "systolic_bp",
         "diastolic_bp",
         "heart_rate",
-        "six_min_walk_distance"
+        "six_min_walk_distance",
     }
 
     for column in inspector.columns.values():
         field_name = column.name
         if field_name not in exclude_fields:
             field_response = AppointmentBlockBooleanFieldsResponse(
-                name=field_name,
-                displayName=display_names.get(field_name, "")
+                name=field_name, displayName=display_names.get(field_name, "")
             )
             field_responses.append(field_response)
 

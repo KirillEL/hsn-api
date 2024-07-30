@@ -2,11 +2,16 @@ from datetime import datetime
 
 from .router import block_laboratory_test_router
 from api.exceptions import ExceptionResponseSchema, ValidationException
-from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, hsn_appointment_block_laboratory_test_create, HsnAppointmentBlockLaboratoryTestCreateContext
+from core.hsn.appointment.blocks.laboratory_test import (
+    AppointmentLaboratoryTestBlock,
+    hsn_appointment_block_laboratory_test_create,
+    HsnAppointmentBlockLaboratoryTestCreateContext,
+)
 from pydantic import BaseModel, Field, field_validator
 from datetime import date as tdate
 from typing import Optional
 from fastapi import Request
+
 
 class CreateBlockLaboratoryTestRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
@@ -48,26 +53,42 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
     microalbumuria_date: str = Field(default=datetime.today().strftime("%d.%m.%Y"))
     note: Optional[str] = Field(None, max_length=1000)
 
-    @field_validator('nt_pro_bnp_date', 'hbalc_date', 'eritrocit_date',
-                     'hemoglobin_date', 'tg_date', 'lpvp_date', 'lpnp_date',
-                     'general_hc_date', 'natriy_date', 'kaliy_date', 'glukoza_date',
-                     'mochevaya_kislota_date', 'skf_date', 'kreatinin_date', 'protein_date', 'urine_eritrocit_date',
-                     'urine_leycocit_date',
-                     'microalbumuria_date')
+    @field_validator(
+        "nt_pro_bnp_date",
+        "hbalc_date",
+        "eritrocit_date",
+        "hemoglobin_date",
+        "tg_date",
+        "lpvp_date",
+        "lpnp_date",
+        "general_hc_date",
+        "natriy_date",
+        "kaliy_date",
+        "glukoza_date",
+        "mochevaya_kislota_date",
+        "skf_date",
+        "kreatinin_date",
+        "protein_date",
+        "urine_eritrocit_date",
+        "urine_leycocit_date",
+        "microalbumuria_date",
+    )
     def check_date_format(cls, value):
         try:
             parsed_date = datetime.strptime(value, "%d.%m.%Y")
             if parsed_date > datetime.now():
-                raise ValidationException(message="Даты не могут быть позднее текущего дня")
+                raise ValidationException(
+                    message="Даты не могут быть позднее текущего дня"
+                )
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
 
 
 @block_laboratory_test_router.post(
-    "/create",
-    response_model=int,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_laboratory_test(request: Request, body: CreateBlockLaboratoryTestRequestBody):
+async def create_block_laboratory_test(
+    request: Request, body: CreateBlockLaboratoryTestRequestBody
+):
     context = HsnAppointmentBlockLaboratoryTestCreateContext(**body.model_dump())
     return await hsn_appointment_block_laboratory_test_create(context)

@@ -1,4 +1,8 @@
-from core.hsn.appointment import Appointment, HsnCreatePatientAppontmentContext, hsn_patient_appontment_create
+from core.hsn.appointment import (
+    Appointment,
+    HsnCreatePatientAppontmentContext,
+    hsn_patient_appontment_create,
+)
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request, status
@@ -25,12 +29,10 @@ class AppointmentCreateRequestBody(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Создать прием пациента",
     status_code=status.HTTP_201_CREATED,
-    tags=["Прием"]
+    tags=["Прием"],
 )
 async def appointment_create(request: Request, body: AppointmentCreateRequestBody):
     context = HsnCreatePatientAppontmentContext(
-        user_id=request.user.id,
-        doctor_id=request.user.doctor.id
-                  ** body.model_dump()
+        user_id=request.user.id, doctor_id=request.user.doctor.id ** body.model_dump()
     )
     return await hsn_patient_appontment_create(context)

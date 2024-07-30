@@ -128,7 +128,9 @@ class TableColumns(BaseModel):
 
 
 class PatientTableColumns(BaseModel):
-    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True, extra='ignore')
+    model_config = ConfigDict(
+        from_attributes=True, arbitrary_types_allowed=True, extra="ignore"
+    )
 
     id: int
     user_id: int
@@ -136,6 +138,6 @@ class PatientTableColumns(BaseModel):
 
 
 class PatientTableResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
     id: int
     table_columns: list[TableColumns]

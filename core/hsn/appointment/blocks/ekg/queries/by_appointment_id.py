@@ -18,9 +18,8 @@ async def hsn_get_block_ekg_by_appointment_id(appointment_id: int):
     if block_ekg_id is None:
         raise NotFoundException(message="У приема нет данного блока!")
 
-    query_get_block = (
-        select(AppointmentEkgBlockDBModel)
-        .where(AppointmentEkgBlockDBModel.id == block_ekg_id)
+    query_get_block = select(AppointmentEkgBlockDBModel).where(
+        AppointmentEkgBlockDBModel.id == block_ekg_id
     )
     cursor = await session.execute(query_get_block)
     block_ekg = cursor.scalars().first()

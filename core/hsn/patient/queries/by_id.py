@@ -7,7 +7,11 @@ from pydantic import BaseModel, ValidationError
 from core.hsn.patient.schemas import Patient, PatientResponse
 from sqlalchemy import select, exc
 from sqlalchemy.orm import joinedload
-from api.exceptions import NotFoundException, ValidationException, InternalServerException
+from api.exceptions import (
+    NotFoundException,
+    ValidationException,
+    InternalServerException,
+)
 from loguru import logger
 
 from ..commands.create import convert_to_patient_response
@@ -19,9 +23,10 @@ from shared.db.models.contragent import ContragentDBModel
 async def hsn_get_patient_by_id(current_user_id: int, patient_id: int):
     query = (
         select(PatientDBModel)
-        .options(joinedload(PatientDBModel.cabinet)
-                 .joinedload(CabinetDBModel.doctors)
-                 , joinedload(PatientDBModel.contragent))
+        .options(
+            joinedload(PatientDBModel.cabinet).joinedload(CabinetDBModel.doctors),
+            joinedload(PatientDBModel.contragent),
+        )
         .where(DoctorDBModel.user_id == current_user_id)
         .where(PatientDBModel.id == patient_id)
     )

@@ -2,7 +2,9 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+)
 
 
 class AppointmentComplaintBlock(BaseModel):

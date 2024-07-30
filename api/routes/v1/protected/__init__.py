@@ -6,8 +6,9 @@ from api.dependencies import PermissionDependency, IsAuthenticated
 from .hsn.medicine_prescription import medicine_prescription_router
 from .hsn.cabinet import cabinet_router
 
-protected_router: APIRouter = APIRouter(prefix="/api/v1",
-                                        dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+protected_router: APIRouter = APIRouter(
+    prefix="/api/v1", dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
+)
 
 protected_router.include_router(user_router, tags=["Пользователь"])
 protected_router.include_router(cabinet_router)

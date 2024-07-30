@@ -2,10 +2,16 @@ from typing import Optional
 
 from fastapi import Request
 
-from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, HsnBlockDiagnoseUpdateContext, \
-    hsn_block_diagnose_update
-from core.hsn.appointment.blocks.diagnose.model import ClassificationFuncClassesType, ClassificationAdjacentReleaseType, \
-    ClassificationNcStageType
+from core.hsn.appointment.blocks.diagnose import (
+    AppointmentDiagnoseBlock,
+    HsnBlockDiagnoseUpdateContext,
+    hsn_block_diagnose_update,
+)
+from core.hsn.appointment.blocks.diagnose.model import (
+    ClassificationFuncClassesType,
+    ClassificationAdjacentReleaseType,
+    ClassificationNcStageType,
+)
 from .router import block_diagnose_router
 from api.exceptions import ExceptionResponseSchema
 from pydantic import BaseModel, Field
@@ -14,10 +20,14 @@ from pydantic import BaseModel, Field
 class UpdateBlockDiagnoseRequestBody(BaseModel):
     diagnose: Optional[str] = Field(None, max_length=1000)
     classification_func_classes: Optional[ClassificationFuncClassesType] = Field(
-        ClassificationFuncClassesType.FIRST.value)
-    classification_adjacent_release: Optional[ClassificationAdjacentReleaseType] = Field(
-        ClassificationAdjacentReleaseType.LOW.value)
-    classification_nc_stage: Optional[ClassificationNcStageType] = Field(ClassificationNcStageType.I.value)
+        ClassificationFuncClassesType.FIRST.value
+    )
+    classification_adjacent_release: Optional[ClassificationAdjacentReleaseType] = (
+        Field(ClassificationAdjacentReleaseType.LOW.value)
+    )
+    classification_nc_stage: Optional[ClassificationNcStageType] = Field(
+        ClassificationNcStageType.I.value
+    )
 
     cardiomyopathy: Optional[bool] = Field(False)
     cardiomyopathy_note: Optional[str] = Field(None, max_length=1000)
@@ -46,11 +56,12 @@ class UpdateBlockDiagnoseRequestBody(BaseModel):
 @block_diagnose_router.patch(
     "/update/{appointment_id}",
     response_model=AppointmentDiagnoseBlock,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_block_diagnose(appointment_id: int, body: UpdateBlockDiagnoseRequestBody):
+async def update_block_diagnose(
+    appointment_id: int, body: UpdateBlockDiagnoseRequestBody
+):
     context = HsnBlockDiagnoseUpdateContext(
-        appointment_id=appointment_id,
-        **body.model_dump()
+        appointment_id=appointment_id, **body.model_dump()
     )
     return await hsn_block_diagnose_update(context)

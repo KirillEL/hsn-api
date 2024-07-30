@@ -5,6 +5,7 @@ Revises: 3834df9dfd04
 Create Date: 2024-04-10 20:27:49.520989
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,14 +13,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b11844181666'
-down_revision: Union[str, None] = '3834df9dfd04'
+revision: str = "b11844181666"
+down_revision: Union[str, None] = "3834df9dfd04"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute('''
+    op.execute(
+        """
     CREATE OR REPLACE FUNCTION base.check_appointment_completion()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -35,18 +37,22 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-    ''')
+    """
+    )
 
-    op.execute('''
+    op.execute(
+        """
     CREATE TRIGGER trigger_check_appointment_completion
 BEFORE INSERT OR UPDATE ON public.appointments
 FOR EACH ROW EXECUTE FUNCTION base.check_appointment_completion();
-    ''')
+    """
+    )
 
 
 def downgrade() -> None:
-    op.execute('DROP TRIGGER IF EXISTS trigger_check_appointment_completion ON public.appointments;')
+    op.execute(
+        "DROP TRIGGER IF EXISTS trigger_check_appointment_completion ON public.appointments;"
+    )
 
     # Удаление функции
-    op.execute('DROP FUNCTION IF EXISTS base.check_appointment_completion();')
-
+    op.execute("DROP FUNCTION IF EXISTS base.check_appointment_completion();")

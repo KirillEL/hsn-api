@@ -5,7 +5,12 @@ import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from loguru import logger
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncConnection, AsyncTransaction
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    create_async_engine,
+    AsyncConnection,
+    AsyncTransaction,
+)
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from dotenv import load_dotenv
@@ -24,7 +29,9 @@ DB_PASSWORD = os.environ.get("DB_PASSWORD")
 TEST_USER = os.getenv("TEST_USER")
 TEST_PASSWORD = os.getenv("TEST_PASSWORD")
 
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = (
+    f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}"
+)
 
 test_engine = create_async_engine(DATABASE_URL, poolclass=NullPool)
 
@@ -40,9 +47,8 @@ test_async_session_factory = sessionmaker(
 #         yield async_session
 
 
-
 # SETUP
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def event_loop(request):
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -80,7 +86,7 @@ async def test_session(
 
 @pytest.fixture()
 async def ac(
-        connection: AsyncConnection, transaction: AsyncTransaction
+    connection: AsyncConnection, transaction: AsyncTransaction
 ) -> AsyncGenerator[AsyncClient, None]:
     async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
         async_session = AsyncSession(

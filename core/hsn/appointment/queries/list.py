@@ -7,7 +7,10 @@ from sqlalchemy.orm import joinedload, contains_eager, selectinload
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, BadRequestException, ValidationException
 from core.hsn.appointment import Appointment
-from core.hsn.appointment.schemas import PatientAppointmentFlat, PatientFlatForAppointmentList
+from core.hsn.appointment.schemas import (
+    PatientAppointmentFlat,
+    PatientFlatForAppointmentList,
+)
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -28,8 +31,10 @@ class HsnAppointmentListContext(BaseModel):
 async def hsn_appointment_list(context: HsnAppointmentListContext):
     logger.info("Получение списка приемов...")
     results = []
-    query = select(AppointmentDBModel).where(AppointmentDBModel.is_deleted.is_(False),
-                                             AppointmentDBModel.doctor_id == context.user_id)
+    query = select(AppointmentDBModel).where(
+        AppointmentDBModel.is_deleted.is_(False),
+        AppointmentDBModel.doctor_id == context.user_id,
+    )
 
     # query = query.outerjoin(AppointmentDBModel.block_clinic_doctor) \
     #     .outerjoin(AppointmentDBModel.block_clinical_condition) \
@@ -68,23 +73,27 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
     cursor = await session.execute(query)
 
     patient_appointments = cursor.unique().scalars().all()
-    logger.debug(f'len_patient_appointments: {len(patient_appointments)}')
+    logger.debug(f"len_patient_appointments: {len(patient_appointments)}")
     if len(patient_appointments) == 0:
         raise NotFoundException(message="Приемы не найдены!")
     for appointment in patient_appointments:
-        logger.debug(f'appointment: {appointment.__dict__}')
-        logger.debug(f'appointment: {appointment.patient.contragent.__dict__}')
-        appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
+        logger.debug(f"appointment: {appointment.__dict__}")
+        logger.debug(f"appointment: {appointment.patient.contragent.__dict__}")
+        appointment.patient.contragent.name = contragent_hasher.decrypt(
+            appointment.patient.contragent.name
+        )
         appointment.patient.contragent.last_name = contragent_hasher.decrypt(
-            appointment.patient.contragent.last_name)
+            appointment.patient.contragent.last_name
+        )
         if appointment.patient.contragent.patronymic:
             appointment.patient.contragent.patronymic = contragent_hasher.decrypt(
-                appointment.patient.contragent.patronymic)
+                appointment.patient.contragent.patronymic
+            )
 
         patient_info = PatientFlatForAppointmentList(
             name=appointment.patient.contragent.name,
             last_name=appointment.patient.contragent.last_name,
-            patronymic=appointment.patient.contragent.patronymic
+            patronymic=appointment.patient.contragent.patronymic,
         )
 
         appointment_flat = PatientAppointmentFlat(
@@ -100,11 +109,8 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
             block_complaint=appointment.block_complaint,
             block_clinical_condition=appointment.block_clinical_condition,
             purposes=appointment.purposes,
-            status=appointment.status
+            status=appointment.status,
         )
         results.append(appointment_flat)
 
-    return {
-        "data": results,
-        "total": count_appointments
-    }
+    return {"data": results, "total": count_appointments}

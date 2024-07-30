@@ -6,10 +6,14 @@ from sqlalchemy import select, update
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+)
 from shared.db import Transaction
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
+from shared.db.models.appointment.blocks.block_clinical_condition import (
+    AppointmentClinicalConditionBlockDBModel,
+)
 from shared.db.db_session import session
 from shared.db.transaction import Propagation
 
@@ -48,8 +52,10 @@ class HsnBlockClinicalConditionUpdateContext(BaseModel):
 
 
 @Transaction(propagation=Propagation.REQUIRED)
-async def hsn_block_clinical_condition_update(context: HsnBlockClinicalConditionUpdateContext):
-    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+async def hsn_block_clinical_condition_update(
+    context: HsnBlockClinicalConditionUpdateContext,
+):
+    payload = context.model_dump(exclude={"appointment_id"}, exclude_none=True)
 
     query = (
         select(AppointmentDBModel.block_clinical_condition_id)
@@ -64,7 +70,9 @@ async def hsn_block_clinical_condition_update(context: HsnBlockClinicalCondition
     query_update = (
         update(AppointmentClinicalConditionBlockDBModel)
         .values(**payload)
-        .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
+        .where(
+            AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id
+        )
         .returning(AppointmentClinicalConditionBlockDBModel)
     )
     cursor = await session.execute(query_update)

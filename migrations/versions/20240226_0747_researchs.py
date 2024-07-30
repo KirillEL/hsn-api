@@ -5,6 +5,7 @@ Revises: 462667f47011
 Create Date: 2024-02-26 07:47:52.028567
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,14 +13,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '006f92681953'
-down_revision: Union[str, None] = 'f3f9d47b1f01'
+revision: str = "006f92681953"
+down_revision: Union[str, None] = "f3f9d47b1f01"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute('''
+    op.execute(
+        """
     create table public.researchs (
     id serial constraint research_pk primary key,
     analise_id integer not null constraint research_analise_fk
@@ -41,26 +43,31 @@ def upgrade() -> None:
     deleted_at   timestamp with time zone,
     deleted_by   integer
     );
-    ''')
+    """
+    )
 
-    op.execute('''
+    op.execute(
+        """
             create trigger research_updated_at_trg
             before update
             on public.researchs
             for each row
             execute procedure base.set_updated_at();
-            ''')
+            """
+    )
 
-    op.execute('''
+    op.execute(
+        """
                 create trigger research_deleted_at_trg
                 before update
                 on public.researchs
                 for each row
                 execute procedure base.set_deleted_at();
-                ''')
+                """
+    )
 
 
 def downgrade() -> None:
-    op.execute('drop trigger research_updated_at_trg on public.researchs;')
-    op.execute('drop trigger research_deleted_at_trg on public.researchs;')
-    op.execute('drop table public.researchs;')
+    op.execute("drop trigger research_updated_at_trg on public.researchs;")
+    op.execute("drop trigger research_deleted_at_trg on public.researchs;")
+    op.execute("drop table public.researchs;")

@@ -14,11 +14,12 @@ class CreatePatientTableColumnsRequest(BaseModel):
     "/table/columns",
     response_model=PatientTableColumns,
     responses={"400": {"model": ExceptionResponseSchema}},
-    summary="Создать настройки для таблицы пациентов"
+    summary="Создать настройки для таблицы пациентов",
 )
-async def create_patient_table_columns(request: Request, payload: CreatePatientTableColumnsRequest):
+async def create_patient_table_columns(
+    request: Request, payload: CreatePatientTableColumnsRequest
+):
     context = HsnPatientColumnsCreateContext(
-        user_id=request.user.id,
-        table_columns=payload.table_columns
+        user_id=request.user.id, table_columns=payload.table_columns
     )
     return await hsn_patient_columns_create(context)

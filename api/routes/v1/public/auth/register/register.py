@@ -33,7 +33,7 @@ class UserCreateRequest(BaseModel):
     "",
     response_model=UserAndDoctor,
     responses={"400": {"model": ExceptionResponseSchema}},
-    summary="Регистрация пользователя"
+    summary="Регистрация пользователя",
 )
 async def register_user(req_body: UserCreateRequest):
     context = UserDoctorCreateContext(
@@ -45,6 +45,6 @@ async def register_user(req_body: UserCreateRequest):
         phone_number=req_body.phone_number,
         is_glav=req_body.is_glav,
         role=req_body.role,
-        cabinet_id=req_body.cabinet_id
+        cabinet_id=req_body.cabinet_id,
     )
     return await user_command_create(context)

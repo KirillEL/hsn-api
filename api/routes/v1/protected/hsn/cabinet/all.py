@@ -8,7 +8,7 @@ from api.exceptions import ExceptionResponseSchema
     "",
     response_model=list[CabinetFlatResponse],
     responses={"400": {"model": ExceptionResponseSchema}},
-    summary="Получить список доступных кабинетов"
+    summary="Получить список доступных кабинетов",
 )
 async def get_cabinets(limit: int = None, offset: int = None, pattern: str = None):
     return await hsn_query_cabinet_list(limit, offset, pattern)
