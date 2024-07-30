@@ -7,11 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: psf/black@stable
+      - uses: cytopia/docker-black@0.8
         with:
-          options: "--check --verbose"
-          src: "./src"
-          jupyter: true
-          version: "21.5b1"
+          path: "."
+          
 
           
