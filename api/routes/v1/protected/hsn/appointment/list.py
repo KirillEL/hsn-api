@@ -18,7 +18,7 @@ from fastapi import Request, Depends, Query
     summary="Получить список всех приемов",
 )
 async def get_appointment_list(
-        request: Request, params: GetAppointmentListQueryParams = Query(..., description="Параметры")
+        request: Request, params: GetAppointmentListQueryParams = Depends()
 ):
     context = HsnAppointmentListContext(user_id=request.user.doctor.id, **params.dict())
     return await hsn_appointment_list(context)

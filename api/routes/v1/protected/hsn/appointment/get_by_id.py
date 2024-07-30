@@ -1,5 +1,5 @@
 from core.hsn.appointment import hsn_appointment_by_id
-from core.hsn.appointment.schemas import PatientAppointmentFlatResponse
+from core.hsn.appointment.schemas import AppointmentFlatResponse
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request
@@ -7,7 +7,7 @@ from fastapi import Request
 
 @appointment_router.get(
     "/{appointment_id}",
-    response_model=PatientAppointmentFlatResponse,
+    response_model=AppointmentFlatResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
     tags=["Прием"],
     summary="Получение приема по id",

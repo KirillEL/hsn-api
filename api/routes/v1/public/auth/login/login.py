@@ -1,8 +1,8 @@
+from core.user.queries.login import user_query_login
 from .router import auth_login_router
 from ..schemas import AuthLoginResponse
 from api.exceptions import ExceptionResponseSchema
 from pydantic import BaseModel, Field
-from core.user.queries import user_query_login
 from utils import JWTHelper
 from api.exceptions import UserNotFoundException
 

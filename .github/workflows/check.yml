@@ -1,4 +1,0 @@
-name: Check
-on: push
-jobs:
-  

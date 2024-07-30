@@ -8,8 +8,8 @@ from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, BadRequestException, ValidationException
 from core.hsn.appointment import Appointment
 from core.hsn.appointment.schemas import (
-    PatientAppointmentFlat,
-    PatientFlatForAppointmentList,
+    AppointmentFlat,
+    FlatForAppointmentList,
 )
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
@@ -90,13 +90,13 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
                 appointment.patient.contragent.patronymic
             )
 
-        patient_info = PatientFlatForAppointmentList(
+        patient_info = FlatForAppointmentList(
             name=appointment.patient.contragent.name,
             last_name=appointment.patient.contragent.last_name,
             patronymic=appointment.patient.contragent.patronymic,
         )
 
-        appointment_flat = PatientAppointmentFlat(
+        appointment_flat = AppointmentFlat(
             id=appointment.id,
             full_name=f'{patient_info.name} {patient_info.last_name} {patient_info.patronymic if patient_info.patronymic is not None else ""}'.rstrip(),
             doctor_id=appointment.doctor_id,

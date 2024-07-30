@@ -11,8 +11,8 @@ from api.exceptions import (
     InternalServerException,
 )
 from core.hsn.appointment.schemas import (
-    PatientAppointmentFlat,
-    PatientFlatForAppointmentList,
+    AppointmentFlat,
+    FlatForAppointmentList,
 )
 from shared.db.models import PatientDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -33,7 +33,7 @@ async def build_patient_info(appointment: RowMapping):
             appointment.patient.contragent.patronymic
         )
 
-    patient_info = PatientFlatForAppointmentList(
+    patient_info = FlatForAppointmentList(
         name=appointment.patient.contragent.name,
         last_name=appointment.patient.contragent.last_name,
         patronymic=appointment.patient.contragent.patronymic,
@@ -57,7 +57,7 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
     full_name = "{} {} {}".format(
         patient_info.last_name, patient_info.name, patient_info.patronymic
     )
-    appointment_flat = PatientAppointmentFlat(
+    appointment_flat = AppointmentFlat(
         id=appointment.id,
         full_name=full_name,
         doctor_id=appointment.doctor_id,
@@ -72,4 +72,4 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
         purposes=appointment.purposes,
         status=appointment.status,
     )
-    return PatientAppointmentFlat.model_validate(appointment_flat)
+    return AppointmentFlat.model_validate(appointment_flat)
