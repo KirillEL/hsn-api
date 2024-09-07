@@ -37,9 +37,8 @@ class LocationType(Enum):
 @HandleExceptions()
 @SessionContext()
 async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None,
-                               gender: str = None, full_name: str = None, location: str = None, columnKey: str = None, order: str = None):
-    logger.debug(f"columnKey: {columnKey}")
-
+                               gender: str = None, full_name: str = None, location: str = None, columnKey: str = None,
+                               order: str = None):
     contragent_alias = aliased(ContragentDBModel)
 
     query = (
@@ -50,21 +49,18 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
         .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
         .where(DoctorDBModel.user_id == current_user_id)
     )
-    logger.debug(f"Query: {query}")
     query_count = (
         select(func.count(PatientDBModel.id))
         .join(PatientDBModel.cabinet)
         .join(CabinetDBModel.doctors)
         .where(DoctorDBModel.user_id == current_user_id)
     )
-    logger.debug(f"Query_count: {query_count}")
     if limit:
         query = query.limit(limit)
 
     if offset:
         query = query.offset(offset)
 
-    logger.debug(f'gender: {gender}')
     if gender:
         query = query.where(PatientDBModel.gender == gender[0])
 
@@ -99,7 +95,10 @@ async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: 
     cursor = await db_session.execute(query)
     patients = cursor.unique().scalars().all()
     if len(patients) == 0:
-        raise NotFoundException(message="Пациенты не найдены!")
+        return {
+            "data": [],
+            "total": 0
+        }
     converted_patients = []
     for patient in patients:
         conv_patient = await convert_to_patient_response(patient)
