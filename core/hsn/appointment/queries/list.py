@@ -28,7 +28,6 @@ class HsnAppointmentListContext(BaseModel):
 @SessionContext()
 @HandleExceptions()
 async def hsn_appointment_list(context: HsnAppointmentListContext):
-    logger.info("Получение списка приемов...")
     results = []
     query = select(AppointmentDBModel).where(AppointmentDBModel.is_deleted.is_(False),
                                              AppointmentDBModel.doctor_id == context.user_id)
@@ -70,9 +69,11 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
     cursor = await db_session.execute(query)
 
     patient_appointments = cursor.unique().scalars().all()
-    logger.debug(f'len_patient_appointments: {len(patient_appointments)}')
     if len(patient_appointments) == 0:
-        raise NotFoundException(message="Приемы не найдены!")
+        return {
+            "data": [],
+            "total": 0
+        }
     for appointment in patient_appointments:
         logger.debug(f'appointment: {appointment.patient.contragent.__dict__}')
         appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
