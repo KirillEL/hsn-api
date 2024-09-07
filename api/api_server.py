@@ -40,7 +40,7 @@ def init_middlewares() -> List[Middleware]:
         Middleware(
             CORSMiddleware,
             allow_origins=["http://localhost:5174", "http://hsn_admin:5174",
-                           "http://localhost:1111", "http://localhost:3000", "http://62.109.31.151:3000"],
+                           "http://localhost:1111", "http://localhost:3000", "http://5.35.99.226:3000"],
             allow_credentials=True,
             allow_methods=["PUT", "POST", "GET", "DELETE", "OPTIONS", "PATCH"],
             allow_headers=["*"]
