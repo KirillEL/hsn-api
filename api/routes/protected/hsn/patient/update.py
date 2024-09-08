@@ -76,7 +76,7 @@ async def update_patient_by_id(request: Request, patient_id: int, body: UpdatePa
         raise DoctorNotAssignedException
 
     context = HsnPatientUpdateContext(
-        user_id=request.user.id,
+        doctor_id=request.user.doctor.id,
         patient_id=patient_id,
         **body.model_dump()
     )

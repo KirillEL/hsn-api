@@ -18,21 +18,17 @@ from shared.db.models.contragent import ContragentDBModel
 
 @SessionContext()
 @HandleExceptions()
-async def hsn_get_patient_by_id(current_user_id: int, patient_id: int):
+async def hsn_get_patient_by_id(doctor_id: int, patient_id: int):
     query = (
-        select(PatientDBModel, PatientDBModel.author_id)
+        select(PatientDBModel)
         .options(joinedload(PatientDBModel.cabinet)
                  .joinedload(CabinetDBModel.doctors)
                  , joinedload(PatientDBModel.contragent))
-        .where(DoctorDBModel.user_id == current_user_id)
+        .where(DoctorDBModel.id == doctor_id)
         .where(PatientDBModel.id == patient_id)
     )
     cursor = await db_session.execute(query)
-    patient, author_id = cursor.first()
-    logger.debug(f'author_id: {author_id}')
-    logger.debug(f'current_user_id: {current_user_id}')
-    if author_id != current_user_id:
-        raise NotFoundException
+    patient = cursor.scalars().first()
 
     if not patient:
         raise NotFoundException(message="Пациент с таким id не найден!")

@@ -9,15 +9,19 @@ from sqlalchemy import select
 
 @SessionContext()
 @HandleExceptions()
-async def hsn_get_block_ekg_by_appointment_id(appointment_id: int):
+async def hsn_get_block_ekg_by_appointment_id(doctor_id: int, appointment_id: int):
     query = (
-        select(AppointmentDBModel.block_ekg_id)
+        select(AppointmentDBModel.block_ekg_id, AppointmentDBModel.doctor_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == appointment_id)
     )
     cursor = await db_session.execute(query)
-    block_ekg_id = cursor.scalar()
-    if block_ekg_id is None:
+    block_ekg_id, appointment_doctor_id = cursor.first()
+
+    if appointment_doctor_id != doctor_id:
+        raise NotFoundException
+
+    if not block_ekg_id:
         raise NotFoundException(message="У приема нет данного блока!")
 
     query_get_block = (

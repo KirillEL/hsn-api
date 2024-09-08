@@ -17,7 +17,7 @@ from sqlalchemy.orm import joinedload
 
 
 class HsnPatientCreateContext(BaseModel):
-    user_id: int = Field(gt=0)
+    doctor_id: int = Field(gt=0)
     cabinet_id: int = Field(gt=0)
 
     name: str
@@ -139,7 +139,7 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
 async def hsn_patient_create(context: HsnPatientCreateContext):
     logger.info(f'Начало создания пациента')
     patient_payload = context.model_dump(
-        exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'user_id'})
+        exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'doctor_id'})
     contragent_payload = {
         'name': context.name,
         'last_name': context.last_name,
@@ -153,7 +153,7 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
     query = (
         insert(PatientDBModel)
         .values(
-            author_id=context.user_id,
+            author_id=context.doctor_id,
             cabinet_id=context.cabinet_id,
             **patient_payload,
             contragent_id=new_contragent_id
@@ -173,5 +173,4 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
     if not patient:
         raise NotFoundException(message="Пациент не найден!")
     patient_response = await convert_to_patient_response(patient)
-    logger.info(f'patient_response: {patient_response}')
     return PatientResponse.model_validate(patient_response)

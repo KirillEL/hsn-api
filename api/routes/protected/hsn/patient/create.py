@@ -78,6 +78,6 @@ async def patient_create(request: Request, body: CreatePatientRequestBody):
     context = HsnPatientCreateContext(
         **body.dict(),
         cabinet_id=request.user.doctor.cabinet_id,
-        user_id=request.user.doctor.id)
+        doctor_id=request.user.doctor.id)
     new_patient = await hsn_patient_create(context)
     return new_patient

@@ -19,7 +19,7 @@ from utils import contragent_hasher
 
 
 class HsnAppointmentListContext(BaseModel):
-    user_id: int = Field(gt=0)
+    doctor_id: int = Field(gt=0)
 
     limit: Optional[int] = None
     offset: Optional[int] = None
@@ -30,7 +30,7 @@ class HsnAppointmentListContext(BaseModel):
 async def hsn_appointment_list(context: HsnAppointmentListContext):
     results = []
     query = select(AppointmentDBModel).where(AppointmentDBModel.is_deleted.is_(False),
-                                             AppointmentDBModel.doctor_id == context.user_id)
+                                             AppointmentDBModel.doctor_id == context.doctor_id)
 
     query = query.outerjoin(AppointmentDBModel.block_clinic_doctor) \
         .outerjoin(AppointmentDBModel.block_clinical_condition) \
@@ -56,7 +56,7 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
     query_count = (
         select(func.count(AppointmentDBModel.id))
         .where(AppointmentDBModel.is_deleted.is_(False))
-        .where(AppointmentDBModel.doctor_id == context.user_id)
+        .where(AppointmentDBModel.doctor_id == context.doctor_id)
     )
     cursor_count = await db_session.execute(query_count)
     count_appointments = cursor_count.scalar()

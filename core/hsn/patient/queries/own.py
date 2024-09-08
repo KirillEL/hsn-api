@@ -36,7 +36,7 @@ class LocationType(Enum):
 
 @HandleExceptions()
 @SessionContext()
-async def hsn_get_own_patients(current_user_id: int,
+async def hsn_get_own_patients(doctor_id: int,
                                limit: int = None,
                                offset: int = None,
                                gender: str = None,
@@ -52,13 +52,13 @@ async def hsn_get_own_patients(current_user_id: int,
         .options(selectinload(PatientDBModel.cabinet).selectinload(CabinetDBModel.doctors),
                  selectinload(PatientDBModel.contragent))
         .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
-        .where(DoctorDBModel.user_id == current_user_id)
+        .where(DoctorDBModel.id == doctor_id)
     )
 
     query_count = (
         select(func.count(PatientDBModel.id))
         .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
-        .where(DoctorDBModel.user_id == current_user_id)
+        .where(DoctorDBModel.id == doctor_id)
     )
 
     if gender:

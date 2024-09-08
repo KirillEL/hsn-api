@@ -15,7 +15,7 @@ from utils import contragent_hasher
 
 
 class HsnPatientUpdateContext(BaseModel):
-    user_id: int = Field(gt=0)
+    doctor_id: int = Field(gt=0)
     patient_id: int = Field(gt=0)
 
     name: Optional[str] = None
@@ -66,7 +66,7 @@ async def hsn_update_patient_by_id(context: HsnPatientUpdateContext):
                              key in PatientDBModel.__table__.columns and value is not None}
     if patient_update_values:
         await db_session.execute(
-            update(PatientDBModel).values(**patient_update_values, editor_id=context.user_id).where(
+            update(PatientDBModel).values(**patient_update_values, editor_id=context.doctor_id).where(
                 PatientDBModel.id == context.patient_id))
 
     query_get_patient_contragent_id = (
@@ -89,4 +89,4 @@ async def hsn_update_patient_by_id(context: HsnPatientUpdateContext):
     updated_patient = result.scalars().first()
     if updated_patient:
         converted_patient = await convert_to_patient_response(updated_patient)
-        return PatientResponse.parse_obj(converted_patient)
+        return PatientResponse.model_validate(converted_patient)

@@ -11,7 +11,6 @@ from shared.db.models.appointment.appointment import AppointmentDBModel, Appoint
 @SessionContext()
 @HandleExceptions()
 async def hsn_get_appointment_status(doctor_id: int, patient_appointment_id: int):
-    logger.info(f'hsn_get_appointment_status...')
     query = (
         select(AppointmentDBModel)
         .where(AppointmentDBModel.id == patient_appointment_id)
@@ -21,5 +20,4 @@ async def hsn_get_appointment_status(doctor_id: int, patient_appointment_id: int
     appointment = cursor.scalars().first()
     if not appointment:
         raise NotFoundException(message="Прием не найден!")
-    logger.info(f'status: {appointment.status}')
     return appointment.status

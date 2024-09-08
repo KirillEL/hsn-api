@@ -35,13 +35,12 @@ async def check_patient_exists(patient_id: int):
 @HandleExceptions()
 async def hsn_appointment_initialize(context: HsnInitializeAppointmentContext):
     payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
-    logger.info(f'start initialize patient_appointment...')
     await check_patient_exists(context.patient_id)
     query = (
         insert(AppointmentDBModel)
         .values(
             **payload,
-            author_id=context.user_id
+            author_id=context.doctor_id
         )
         .returning(AppointmentDBModel.id)
     )

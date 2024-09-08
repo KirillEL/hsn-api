@@ -20,8 +20,8 @@ DBModelType = TypeVar("DBModelType", bound=BaseDBModel)
 
 class HsnCreatePatientAppontmentContext(BaseModel):
     user_id: int = Field(gt=0)
-    doctor_id: int
-    patient_id: int
+    doctor_id: int = Field(gt=0)
+    patient_id: int = Field(gt=0)
     date: tdate
     date_next: Optional[tdate] = None
     block_clinic_doctor_id: int
@@ -87,7 +87,7 @@ async def hsn_patient_appontment_create(context: HsnCreatePatientAppontmentConte
     query = (
         insert(AppointmentDBModel)
         .values(
-            author_id=context.user_id,
+            author_id=context.doctor_id,
             **payload
         )
         .returning(AppointmentDBModel.id)
