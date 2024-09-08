@@ -116,9 +116,10 @@ async def convert_to_patient_response(patient,
 
 async def create_contragent(contragent_payload: dict[str, any]) -> int:
     hashed_payload = {
-        'name': contragent_hasher.encrypt(contragent_payload['name']),
-        'last_name': contragent_hasher.encrypt(contragent_payload['last_name']),
-        'patronymic': contragent_hasher.encrypt(contragent_payload['patronymic']),
+        'name': contragent_hasher.encrypt(str(contragent_payload['name'])),
+        'last_name': contragent_hasher.encrypt(str(contragent_payload['last_name'])),
+        'patronymic': contragent_hasher.encrypt(
+            str(contragent_payload['patronymic']) if contragent_payload['patronymic'] else None),
         'birth_date': contragent_hasher.encrypt(str(contragent_payload['birth_date'])),
         'dod': contragent_hasher.encrypt(str(contragent_payload['dod'])) if contragent_payload['dod'] else None
     }

@@ -48,5 +48,4 @@ async def hsn_appointment_initialize(context: HsnInitializeAppointmentContext):
     cursor = await db_session.execute(query)
     await db_session.commit()
     new_patient_appointment_id = cursor.scalar()
-    logger.info(f'patient_appointment_model_id: {new_patient_appointment_id}')
     return new_patient_appointment_id
