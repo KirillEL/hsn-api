@@ -1,7 +1,7 @@
 from core.hsn.appointment import Appointment, hsn_appointment_by_id
 from core.hsn.appointment.model import PatientAppointmentFlat
 from .router import appointment_router
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request, status
 
 
@@ -13,5 +13,8 @@ from fastapi import Request, status
     summary="Получение приема по id"
 )
 async def get_appointment_by_id(request: Request, appointment_id: int):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     doctor_id: int = request.user.doctor.id
     return await hsn_appointment_by_id(doctor_id, appointment_id)

@@ -3,6 +3,7 @@ from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlo
     hsn_get_block_clinic_doctor_by_appointment_id
 from core.hsn.appointment.blocks.clinical_condition import hsn_get_block_clinical_condition_by_appointment_id
 from .router import block_clinic_doctor_router
+from fastapi import Request
 
 
 @block_clinic_doctor_router.get(
@@ -10,5 +11,5 @@ from .router import block_clinic_doctor_router
     response_model=AppointmentClinicDoctorBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def get_block_clinic_doctor_by_appointment_id(appointment_id: int):
-    return await hsn_get_block_clinic_doctor_by_appointment_id(appointment_id)
+async def get_block_clinic_doctor_by_appointment_id(request: Request, appointment_id: int):
+    return await hsn_get_block_clinic_doctor_by_appointment_id(appointment_id, request.user.id)

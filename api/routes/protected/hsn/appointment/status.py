@@ -1,7 +1,7 @@
 from core.hsn.appointment import hsn_get_appointment_status
 from shared.db.models.appointment.appointment import AppointmentStatus
 from .router import appointment_router
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request
 
 
@@ -13,5 +13,8 @@ from fastapi import Request
     tags=["Прием"]
 )
 async def get_appointment_status(request: Request, patient_appointment_id: int):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     doctor_id: int = request.user.doctor.id
-    return await hsn_get_appointment_status(doctor_id,patient_appointment_id)
+    return await hsn_get_appointment_status(doctor_id, patient_appointment_id)

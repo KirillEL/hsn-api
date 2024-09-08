@@ -1,12 +1,14 @@
 from typing import Optional
 
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType, LgotaDrugsType
 from .router import block_clinic_doctor_router
-from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock, hsn_appointment_block_clinic_doctor_create, HsnAppointmentBlockClinicDoctorCreateContext
+from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock, \
+    hsn_appointment_block_clinic_doctor_create, HsnAppointmentBlockClinicDoctorCreateContext
 from pydantic import BaseModel, Field
 from datetime import date as tdate
 from fastapi import Request
+
 
 class CreateBlockClinicDoctorRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
@@ -25,5 +27,8 @@ class CreateBlockClinicDoctorRequestBody(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_clinic_doctor(request: Request, body: CreateBlockClinicDoctorRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnAppointmentBlockClinicDoctorCreateContext(**body.model_dump())
     return await hsn_appointment_block_clinic_doctor_create(context)

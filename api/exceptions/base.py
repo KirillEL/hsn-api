@@ -68,3 +68,15 @@ class BlockAlreadyExistsException(CustomException):
     code = HTTPStatus.CONFLICT
     error_code = HTTPStatus.CONFLICT
     message = ""
+
+
+class DoctorNotAssignedException(CustomException):
+    code = HTTPStatus.FORBIDDEN
+    error_code = HTTPStatus.FORBIDDEN
+    message = "Пользователю не назначен врач"
+
+
+class AppointmentNotBelongsToUserException(CustomException):
+    code = HTTPStatus.FORBIDDEN
+    error_code = HTTPStatus.FORBIDDEN
+    message = "Прием вам не принадлежит"

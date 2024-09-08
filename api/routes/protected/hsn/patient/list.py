@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, parse_obj_as
 from core.hsn.patient.model import Patient, PatientFlat, PatientResponse, PatientResponseWithoutFullName
 from core.hsn.patient.queries.own import hsn_get_own_patients, GenderType
 from .router import patient_router
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 
 
 class Filter(BaseModel):
@@ -61,6 +61,9 @@ async def get_own_patients(
         columnKey=columnKey,
         order=order
     )
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     return await hsn_get_own_patients(
         request.user.id,
         limit=params.limit,

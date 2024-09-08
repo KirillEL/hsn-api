@@ -7,7 +7,7 @@ from fastapi import Request
 
 from core.hsn.appointment import HsnInitializeAppointmentContext, hsn_appointment_initialize
 from .router import appointment_router
-from api.exceptions import ExceptionResponseSchema, ValidationException
+from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
 
 
 class AppointmentInitializeRequestBody(BaseModel):
@@ -46,6 +46,9 @@ class AppointmentInitializeRequestBody(BaseModel):
     tags=["Прием"]
 )
 async def appointment_initialize(request: Request, body: AppointmentInitializeRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnInitializeAppointmentContext(
         user_id=request.user.id,
         doctor_id=request.user.doctor.id,

@@ -4,7 +4,7 @@ from typing import Dict
 
 from sqlalchemy import desc, asc, func, text
 from loguru import logger
-
+from ..helper import apply_ordering
 from api.decorators import HandleExceptions
 from api.exceptions.base import NotFoundException
 from core.hsn.patient.commands.create import convert_to_patient_response
@@ -14,7 +14,7 @@ from shared.db.models.patient import PatientDBModel
 from shared.db.models.doctor import DoctorDBModel
 from shared.db.db_session import db_session, SessionContext
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload, aliased
+from sqlalchemy.orm import joinedload, aliased, selectinload
 
 
 class GenderType(str, Enum):
@@ -36,87 +36,64 @@ class LocationType(Enum):
 
 @HandleExceptions()
 @SessionContext()
-async def hsn_get_own_patients(current_user_id: int, limit: int = None, offset: int = None,
-                               gender: str = None, full_name: str = None, location: str = None, columnKey: str = None,
+async def hsn_get_own_patients(current_user_id: int,
+                               limit: int = None,
+                               offset: int = None,
+                               gender: str = None,
+                               full_name: str = None,
+                               location: str = None,
+                               columnKey: str = None,
                                order: str = None):
     contragent_alias = aliased(ContragentDBModel)
 
+    # Основной запрос
     query = (
         select(PatientDBModel)
-        .options(joinedload(PatientDBModel.cabinet)
-                 .joinedload(CabinetDBModel.doctors)
-                 , joinedload(PatientDBModel.contragent))
+        .options(selectinload(PatientDBModel.cabinet).selectinload(CabinetDBModel.doctors),
+                 selectinload(PatientDBModel.contragent))
         .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
         .where(DoctorDBModel.user_id == current_user_id)
     )
+
     query_count = (
         select(func.count(PatientDBModel.id))
-        .join(PatientDBModel.cabinet)
-        .join(CabinetDBModel.doctors)
+        .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
         .where(DoctorDBModel.user_id == current_user_id)
     )
+
+    if gender:
+        query = query.where(PatientDBModel.gender == gender[0])
+        query_count = query_count.where(PatientDBModel.gender == gender[0])
+
+    if location:
+        query = query.where(PatientDBModel.location == location[0])
+        query_count = query_count.where(PatientDBModel.location == location[0])
+
+    if full_name:
+        full_name_expr = func.concat(contragent_alias.last_name, ' ', contragent_alias.name, ' ',
+                                     contragent_alias.patronymic)
+        query = query.where(full_name_expr.ilike(f'%{full_name[0]}%'))
+        query_count = query_count.where(full_name_expr.ilike(f'%{full_name[0]}%'))
+
+    query = apply_ordering(query, PatientDBModel, columnKey, order)
+    if columnKey == 'full_name':
+        query = apply_ordering(query, full_name_expr, columnKey, order)
+
     if limit:
         query = query.limit(limit)
 
     if offset:
         query = query.offset(offset)
 
-    if gender:
-        query = query.where(PatientDBModel.gender == gender[0])
-
-    if location:
-        query = query.where(PatientDBModel.location == location[0])
-
-    if columnKey and hasattr(PatientDBModel, columnKey):
-        column_attribute = getattr(PatientDBModel, columnKey)
-        if order == "ascend":
-            query = query.order_by(asc(column_attribute))
-        else:
-            query = query.order_by(desc(column_attribute))
-
-    if columnKey == 'full_name':
-        full_name_expr = func.concat(contragent_alias.last_name, ' ', contragent_alias.name, ' ',
-                                     contragent_alias.patronymic)
-        if order == "ascend":
-            query = query.order_by(asc(full_name_expr))
-        else:
-            query = query.order_by(desc(full_name_expr))
-
-    if columnKey and hasattr(ContragentDBModel, columnKey) and columnKey != 'id':
-        column_attribute = getattr(ContragentDBModel, columnKey)
-        if order == "ascend":
-            query = query.order_by(asc(column_attribute))
-        else:
-            query = query.order_by(desc(column_attribute))
-
-    query = query.order_by(desc('id'))
     total_count_result = await db_session.execute(query_count)
     total_count = total_count_result.scalar()
+
     cursor = await db_session.execute(query)
     patients = cursor.unique().scalars().all()
-    if len(patients) == 0:
-        return {
-            "data": [],
-            "total": 0
-        }
-    converted_patients = []
-    for patient in patients:
-        conv_patient = await convert_to_patient_response(patient)
-        converted_patients.append(conv_patient)
 
-    total_count = len(converted_patients)
-
-    if columnKey == 'age':
-        converted_patients.sort(key=lambda x: x.age, reverse=(order != "ascend"))
-
-    if full_name:
-        filtered_patients = [patient for patient in converted_patients
-                             if full_name[0].lower() in patient.full_name.lower()]
-        total_count = len(filtered_patients)
-    else:
-        filtered_patients = converted_patients
+    converted_patients = [await convert_to_patient_response(patient) for patient in patients]
 
     return {
-        "data": filtered_patients,
+        "data": converted_patients,
         "total": total_count
     }

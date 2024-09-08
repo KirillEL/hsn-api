@@ -1,6 +1,6 @@
 from core.hsn.appointment import Appointment, HsnCreatePatientAppontmentContext, hsn_patient_appontment_create
 from .router import appointment_router
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request, status
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -28,9 +28,12 @@ class AppointmentCreateRequestBody(BaseModel):
     tags=["Прием"]
 )
 async def appointment_create(request: Request, body: AppointmentCreateRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnCreatePatientAppontmentContext(
         user_id=request.user.id,
-        doctor_id=request.user.doctor.id
-                  ** body.model_dump()
+        doctor_id=request.user.doctor.id,
+        **body.model_dump()
     )
     return await hsn_patient_appontment_create(context)

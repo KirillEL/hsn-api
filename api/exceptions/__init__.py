@@ -1,6 +1,7 @@
 from .base import ExceptionResponseSchema, UserNotFoundException, NotFoundException, CustomException, UnauthorizedException
 from .base import UnauthorizedAdminException, BadRequestException
 from .base import InternalServerException, ValidationException
+from .base import DoctorNotAssignedException, AppointmentNotBelongsToUserException
 
 __all__ = [
     'ExceptionResponseSchema',
@@ -11,5 +12,7 @@ __all__ = [
     'UnauthorizedAdminException',
     'BadRequestException',
     'InternalServerException',
-    'ValidationException'
+    'ValidationException',
+    'DoctorNotAssignedException',
+    'AppointmentNotBelongsToUserException'
 ]

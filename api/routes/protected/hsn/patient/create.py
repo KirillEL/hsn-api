@@ -60,12 +60,12 @@ class CreatePatientRequestBody(BaseModel):
         birth_date = datetime.strptime(self.birth_date, "%d.%m.%Y")
         current_date = datetime.now()
         age = (current_date - birth_date).days / 365.25
-        logger.debug(f'age: {age}')
         if age < 0:
             raise ValidationException(message="Дата рождения не должна быть в будущем.")
-        if age > 110:
-            raise ValidationException(message="Возраст не должен превышать 110 лет.")
+        if age > 100:
+            raise ValidationException(message="Возраст не должен превышать 100 лет.")
         return self
+
 
 @patient_router.post(
     "",
@@ -75,7 +75,9 @@ class CreatePatientRequestBody(BaseModel):
     status_code=status.HTTP_201_CREATED
 )
 async def patient_create(request: Request, body: CreatePatientRequestBody):
-    context = HsnPatientCreateContext(**body.dict(), cabinet_id=request.user.doctor.cabinet_id,
-                                      user_id=request.user.doctor.id)
+    context = HsnPatientCreateContext(
+        **body.dict(),
+        cabinet_id=request.user.doctor.cabinet_id,
+        user_id=request.user.doctor.id)
     new_patient = await hsn_patient_create(context)
     return new_patient

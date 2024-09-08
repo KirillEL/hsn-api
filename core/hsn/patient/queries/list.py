@@ -4,26 +4,26 @@ from pydantic import BaseModel
 from core.hsn.patient.model import Patient
 from sqlalchemy import select
 from api.exceptions import NotFoundException
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 
 @SessionContext()
 async def hsn_patient_list(limit: int = None, offset: int = None, pattern: str = None):
     query = (
         select(PatientDBModel)
-        .options(joinedload(PatientDBModel.contragent))
+        .options(selectinload(PatientDBModel.contragent))
     )
 
     if hasattr(PatientDBModel, "is_deleted"):
         query = query.where(PatientDBModel.is_deleted.is_(False))
 
-    if limit is not None:
+    if limit:
         query = query.limit(limit)
 
-    if offset is not None:
+    if offset:
         query = query.offset(offset)
 
-    if pattern is not None:
+    if pattern:
         query = query.where(PatientDBModel.name.contains(pattern))
 
     cursor = await db_session.execute(query)

@@ -7,6 +7,7 @@ from core.hsn.appointment.blocks.clinical_condition import HsnBlockClinicalCondi
 from .router import block_clinic_doctor_router
 from api.exceptions import ExceptionResponseSchema
 from pydantic import BaseModel, Field
+from fastapi import Request
 
 
 class UpdateBlockClinicDoctorRequestBody(BaseModel):
@@ -24,9 +25,10 @@ class UpdateBlockClinicDoctorRequestBody(BaseModel):
     response_model=AppointmentClinicDoctorBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_clinic_doctor(appointment_id: int, body: UpdateBlockClinicDoctorRequestBody):
+async def update_block_clinic_doctor(request: Request, appointment_id: int, body: UpdateBlockClinicDoctorRequestBody):
+    user_id: int = request.user.id
     context = HsnBlockClinicDoctorUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()
     )
-    return await hsn_block_clinic_doctor_update(context)
+    return await hsn_block_clinic_doctor_update(context, user_id)
