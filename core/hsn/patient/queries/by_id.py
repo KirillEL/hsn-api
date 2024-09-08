@@ -20,7 +20,7 @@ from shared.db.models.contragent import ContragentDBModel
 @HandleExceptions()
 async def hsn_get_patient_by_id(current_user_id: int, patient_id: int):
     query = (
-        select(PatientDBModel)
+        select(PatientDBModel, PatientDBModel.author_id)
         .options(joinedload(PatientDBModel.cabinet)
                  .joinedload(CabinetDBModel.doctors)
                  , joinedload(PatientDBModel.contragent))
@@ -28,7 +28,11 @@ async def hsn_get_patient_by_id(current_user_id: int, patient_id: int):
         .where(PatientDBModel.id == patient_id)
     )
     cursor = await db_session.execute(query)
-    patient = cursor.scalars().first()
+    patient, author_id = cursor.first()
+
+    if author_id != current_user_id:
+        raise NotFoundException
+
     if not patient:
         raise NotFoundException(message="Пациент с таким id не найден!")
 
