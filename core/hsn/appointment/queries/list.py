@@ -61,9 +61,9 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
     cursor_count = await db_session.execute(query_count)
     count_appointments = cursor_count.scalar()
 
-    if context.limit is not None:
+    if context.limit:
         query = query.limit(context.limit)
-    if context.offset is not None:
+    if context.offset:
         query = query.offset(context.offset)
 
     cursor = await db_session.execute(query)
