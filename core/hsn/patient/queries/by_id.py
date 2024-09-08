@@ -29,7 +29,8 @@ async def hsn_get_patient_by_id(current_user_id: int, patient_id: int):
     )
     cursor = await db_session.execute(query)
     patient, author_id = cursor.first()
-
+    logger.debug(f'author_id: {author_id}')
+    logger.debug(f'current_user_id: {current_user_id}')
     if author_id != current_user_id:
         raise NotFoundException
 
