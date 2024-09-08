@@ -54,8 +54,8 @@ def init_middlewares() -> List[Middleware]:
     return middlewares
 
 
-def init_listeners(app: FastAPI) -> None:
-    @app.exception_handler(CustomException)
+def init_listeners(app_: FastAPI) -> None:
+    @app_.exception_handler(CustomException)
     async def custom_exception_handler(request: Request, exc: CustomException):
         logger.error(f'Exception: {exc.error_code}; Message: {exc.message}')
         return JSONResponse(

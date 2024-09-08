@@ -6,7 +6,7 @@ from core.hsn.appointment.blocks.complaint import HsnBlockComplaintAndClinicalCo
     hsn_block_complaint_and_clinical_condition_update
 from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
 from .router import block_complaint_router
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request
 
 
@@ -17,7 +17,8 @@ class UpdateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     has_weakness: Optional[bool] = Field(None)
     has_orthopnea: Optional[bool] = Field(None)
     has_heartbeat: Optional[bool] = Field(None)
-    note: Optional[str] = Field(None, max_length=1000, examples=["Your note here"], description="Optional note, can be omitted.")
+    note: Optional[str] = Field(None, max_length=1000, examples=["Your note here"],
+                                description="Optional note, can be omitted.")
 
     heart_failure_om: Optional[bool] = Field(None)
     orthopnea: Optional[bool] = Field(None)
@@ -50,12 +51,18 @@ class UpdateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     heart_rate: Optional[int] = Field(None, gt=0)
     six_min_walk_distance: Optional[int] = Field(None, gt=0)
 
+
 @block_complaint_router.patch(
     "/update_with_condition/{appointment_id}",
     response_model=AppointmentComplaintWithClinicalCondition,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_complaint_and_clinical_condition(request: Request, appointment_id: int, body: UpdateBlockComplaintAndClinicalConditionRequestBody):
+async def update_block_complaint_and_clinical_condition(request: Request,
+                                                        appointment_id: int,
+                                                        body: UpdateBlockComplaintAndClinicalConditionRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnBlockComplaintAndClinicalConditionUpdateContext(
         user_id=request.user.id,
         appointment_id=appointment_id,

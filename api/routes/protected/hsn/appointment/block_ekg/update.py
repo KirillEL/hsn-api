@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import Request
 from pydantic import BaseModel, Field
 
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock, HsnBlockEkgUpdateContext, hsn_block_ekg_update
 from .router import block_ekg_router
 
@@ -43,10 +43,12 @@ class UpdateBlockEkgRequestBody(BaseModel):
     response_model=AppointmentEkgBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_ekg(appointment_id: int, body: UpdateBlockEkgRequestBody):
+async def update_block_ekg(request: Request, appointment_id: int, body: UpdateBlockEkgRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnBlockEkgUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()
     )
     return await hsn_block_ekg_update(context)
-

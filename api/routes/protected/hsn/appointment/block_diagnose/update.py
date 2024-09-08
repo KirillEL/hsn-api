@@ -7,7 +7,7 @@ from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, HsnBl
 from core.hsn.appointment.blocks.diagnose.model import ClassificationFuncClassesType, ClassificationAdjacentReleaseType, \
     ClassificationNcStageType
 from .router import block_diagnose_router
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from pydantic import BaseModel, Field
 
 
@@ -48,7 +48,10 @@ class UpdateBlockDiagnoseRequestBody(BaseModel):
     response_model=AppointmentDiagnoseBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_diagnose(appointment_id: int, body: UpdateBlockDiagnoseRequestBody):
+async def update_block_diagnose(request: Request, appointment_id: int, body: UpdateBlockDiagnoseRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnBlockDiagnoseUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()

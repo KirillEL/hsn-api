@@ -1,12 +1,14 @@
 from datetime import datetime
 
 from .router import block_laboratory_test_router
-from api.exceptions import ExceptionResponseSchema, ValidationException
-from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, hsn_appointment_block_laboratory_test_create, HsnAppointmentBlockLaboratoryTestCreateContext
+from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
+from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
+    hsn_appointment_block_laboratory_test_create, HsnAppointmentBlockLaboratoryTestCreateContext
 from pydantic import BaseModel, Field, field_validator
 from datetime import date as tdate
 from typing import Optional
 from fastapi import Request
+
 
 class CreateBlockLaboratoryTestRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
@@ -69,5 +71,8 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_laboratory_test(request: Request, body: CreateBlockLaboratoryTestRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnAppointmentBlockLaboratoryTestCreateContext(**body.model_dump())
     return await hsn_appointment_block_laboratory_test_create(context)

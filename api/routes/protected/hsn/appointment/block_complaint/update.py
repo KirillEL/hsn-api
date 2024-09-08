@@ -1,7 +1,7 @@
 from typing import Optional
 
 from fastapi import Request
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock, HsnBlockComplaintUpdateContext, \
     hsn_block_complaint_update
 from .router import block_complaint_router
@@ -24,7 +24,10 @@ class UpdateBlockComplaintRequestBody(BaseModel):
     response_model=AppointmentComplaintBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_complaint(appointment_id: int, body: UpdateBlockComplaintRequestBody):
+async def update_block_complaint(request: Request, appointment_id: int, body: UpdateBlockComplaintRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnBlockComplaintUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()

@@ -1,7 +1,7 @@
 from core.hsn.appointment.blocks.diagnose.model import ClassificationFuncClassesType, ClassificationAdjacentReleaseType, \
     ClassificationNcStageType
 from .router import block_diagnose_router
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, hsn_appointment_block_diagnose_create, \
     HsnAppointmentBlockDiagnoseCreateContext
 from pydantic import BaseModel, Field
@@ -14,7 +14,8 @@ class CreateBlockDiagnoseRequestBody(BaseModel):
 
     diagnose: str = Field(max_length=1000)
     classification_func_classes: ClassificationFuncClassesType = Field(ClassificationFuncClassesType.FIRST.value)
-    classification_adjacent_release: ClassificationAdjacentReleaseType = Field(ClassificationAdjacentReleaseType.LOW.value)
+    classification_adjacent_release: ClassificationAdjacentReleaseType = Field(
+        ClassificationAdjacentReleaseType.LOW.value)
     classification_nc_stage: ClassificationNcStageType = Field(ClassificationNcStageType.I.value)
 
     cardiomyopathy: bool = Field(False)
@@ -47,5 +48,8 @@ class CreateBlockDiagnoseRequestBody(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_diagnose(request: Request, body: CreateBlockDiagnoseRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnAppointmentBlockDiagnoseCreateContext(**body.model_dump())
     return await hsn_appointment_block_diagnose_create(context)

@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, field_validator, ConfigDict
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
     HsnBlockLaboratoryTestUpdateContext, hsn_block_laboratory_test_update
 from .router import block_laboratory_test_router
-from api.exceptions import ExceptionResponseSchema, ValidationException
+from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
 
 
 class UpdateBlockLaboratoryTestRequestBody(BaseModel):
@@ -54,7 +54,6 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
         if value is not None and value <= 0:
             raise ValidationException(message="Hbalc должно быть больше 0")
 
-
     @field_validator('nt_pro_bnp_date', 'hbalc_date', 'eritrocit_date',
                      'hemoglobin_date', 'tg_date', 'lpvp_date', 'lpnp_date',
                      'general_hc_date', 'natriy_date', 'kaliy_date', 'glukoza_date',
@@ -70,16 +69,18 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
 
 
-
-
-
-
 @block_laboratory_test_router.patch(
     "/update/{appointment_id}",
     response_model=AppointmentLaboratoryTestBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_laboratory_test(appointment_id: int, body: UpdateBlockLaboratoryTestRequestBody):
+async def update_block_laboratory_test(request: Request,
+                                       appointment_id: int,
+                                       body: UpdateBlockLaboratoryTestRequestBody
+                                       ):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnBlockLaboratoryTestUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()

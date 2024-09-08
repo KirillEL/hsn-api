@@ -6,7 +6,7 @@ from fastapi import Request
 from core.hsn.appointment.blocks.complaint import hsn_block_complaint_and_clinical_condition_create, \
     HsnBlockComplaintAndClinicalCondtionCreateContext
 from .router import block_complaint_router
-from api.exceptions import ExceptionResponseSchema
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 
 
 class BlockComplaintCreateWithConditionResponse(BaseModel):
@@ -63,8 +63,10 @@ class CreateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
 )
 async def create_block_complaint_and_clinical_condition(request: Request,
                                                         body: CreateBlockComplaintAndClinicalConditionRequestBody):
+    if not request.user.doctor:
+        raise DoctorNotAssignedException
+
     context = HsnBlockComplaintAndClinicalCondtionCreateContext(
         **body.model_dump()
     )
     return await hsn_block_complaint_and_clinical_condition_create(context)
-
