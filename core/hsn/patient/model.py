@@ -1,4 +1,4 @@
-from mypy_extensions import TypedDict
+from typing_extensions import TypedDict
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
