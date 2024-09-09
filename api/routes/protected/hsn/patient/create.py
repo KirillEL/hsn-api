@@ -75,10 +75,17 @@ class CreatePatientRequestBody(BaseModel):
     status_code=status.HTTP_201_CREATED
 )
 async def patient_create(request: Request, body: CreatePatientRequestBody):
-    context = HsnPatientCreateContext(
-        **body.dict(),
-        cabinet_id=request.user.doctor.cabinet_id,
-        doctor_id=request.user.doctor.id)
-    new_patient = await hsn_patient_create(context)
-    return new_patient
-   
+    try:
+
+        context = HsnPatientCreateContext(
+            **body.dict(),
+            cabinet_id=request.user.doctor.cabinet_id,
+            doctor_id=request.user.doctor.id)
+        new_patient = await hsn_patient_create(context)
+        return new_patient
+    except ValidationException as ve:
+        logger.error(str(ve))
+        tg_api.send_telegram_message(
+            message="Ошибка валидации при создании пациента: {}".format(str(ve))
+        )
+        raise ve
