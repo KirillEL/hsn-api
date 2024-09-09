@@ -170,12 +170,6 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
         tg_api.send_telegram_message(
             message=f"Пациент успешно создан"
         )
-    except ValidationError as ve:
-        logger.error(f"Validation failed patient {ve}")
-        tg_api.send_telegram_message(
-            message=f"Ошибка валидации: {str(ve)}"
-        )
-        raise ValidationException
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Failed to create patient: {sqle}")
         tg_api.send_telegram_message(
@@ -205,4 +199,12 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
         )
 
     patient_response = await convert_to_patient_response(patient)
-    return PatientResponse.model_validate(patient_response)
+    try:
+        validated_model = PatientResponse.model_validate(patient_response)
+        return validated_model
+    except ValidationException as ve:
+        logger.error(f"Validation patient failed: {str(ve)}")
+        tg_api.send_telegram_message(
+            message=f"Ошибка валидации при создании пациента: {str(ve)}"
+        )
+        raise ve
