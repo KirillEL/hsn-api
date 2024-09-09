@@ -12,6 +12,9 @@ class Config(BaseSettings):
     DEBUG: Optional[bool] = True
     APP_HOST: Optional[str] = "0.0.0.0"
     APP_PORT: Optional[int] = 9999
+    IS_BOT_ENABLED: Optional[bool] = False
+    TG_BOT_TOKEN: Optional[str] = None
+    TG_CHAT_ID: Optional[str] = None
 
     KEY: str
 
