@@ -9,6 +9,9 @@ from core.hsn.patient import hsn_get_own_patients
 
 async def export_patients(user_id: int):
     result = await hsn_get_own_patients(user_id)
+    if not result["data"]:
+        raise NotFoundException
+
     patients = result["data"]
     if len(patients) == 0:
         raise NotFoundException

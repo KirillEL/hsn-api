@@ -41,3 +41,7 @@ class MedicinePrescriptionFlat(BaseModel):
     name: str
 
     note: Optional[str] = None
+
+
+class MedicinePrescriptionFlatResponse(MedicinePrescriptionFlat):
+    pass

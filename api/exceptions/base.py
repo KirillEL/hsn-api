@@ -80,3 +80,9 @@ class AppointmentNotBelongsToUserException(CustomException):
     code = HTTPStatus.FORBIDDEN
     error_code = HTTPStatus.FORBIDDEN
     message = "Прием вам не принадлежит"
+
+
+class MedicinePrescriptionCreateException(CustomException):
+    code = HTTPStatus.INTERNAL_SERVER_ERROR
+    error_code = HTTPStatus.INTERNAL_SERVER_ERROR
+    message = "Не удалось создать лекарственное назначение"
