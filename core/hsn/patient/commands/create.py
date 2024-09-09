@@ -172,6 +172,9 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
         )
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Failed to create patient: {sqle}")
+        tg_api.send_telegram_message(
+            message=f"Не удалось создать пациента: {str(sqle)}"
+        )
         raise InternalServerException(
             message="Failed to create patient"
         )
