@@ -1,3 +1,4 @@
+from loguru import logger
 from pydantic import ValidationError
 from sqlalchemy import select, exc
 from sqlalchemy.orm import selectinload
@@ -23,8 +24,20 @@ async def hsn_get_patient_by_appointment_id(appointment_id: int):
                  selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent))
         .where(AppointmentDBModel.id == appointment_id)
     )
-    cursor = await db_session.execute(query)
-    appointment = cursor.scalars().first()
+    try:
+        cursor = await db_session.execute(query)
+        appointment = cursor.scalars().first()
+    except exc.NoResultFound as nrf:
+        logger.error(f"No appointment found: {nrf}")
+        raise NotFoundException(
+            message=f"Не найден прием с id: {appointment_id}"
+        )
+    except exc.SQLAlchemyError as sqle:
+        logger.error(f"Failed to get appointment: {sqle}")
+        raise InternalServerException(
+            message="Ошибка сервера"
+        )
+
     patient_response = await convert_to_patient_response(appointment.patient, type="without")
 
     return PatientResponseWithoutFullName.model_validate(patient_response)

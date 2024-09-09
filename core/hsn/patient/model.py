@@ -1,3 +1,4 @@
+from mypy_extensions import TypedDict
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
@@ -145,3 +146,8 @@ class PatientTableResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra='ignore')
     id: int
     table_columns: list[TableColumns]
+
+
+class DictPatientResponse(TypedDict):
+    data: List[PatientResponse | PatientResponseWithoutFullName]
+    total: int

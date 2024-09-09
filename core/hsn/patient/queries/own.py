@@ -2,8 +2,10 @@ from datetime import date as tdate
 from enum import Enum
 from typing import Dict
 
-from sqlalchemy import desc, asc, func, text
+from sqlalchemy import desc, asc, func, text, exc
 from loguru import logger
+
+from api.exceptions import InternalServerException
 from ..helper import apply_ordering
 from api.decorators import HandleExceptions
 from api.exceptions.base import NotFoundException
@@ -15,6 +17,8 @@ from shared.db.models.doctor import DoctorDBModel
 from shared.db.db_session import db_session, SessionContext
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload, aliased, selectinload
+
+from ..model import DictPatientResponse
 
 
 class GenderType(str, Enum):
@@ -34,7 +38,6 @@ class LocationType(Enum):
     ANOTHER = "другое"
 
 
-@HandleExceptions()
 @SessionContext()
 async def hsn_get_own_patients(doctor_id: int,
                                limit: int = None,
@@ -43,7 +46,7 @@ async def hsn_get_own_patients(doctor_id: int,
                                full_name: str = None,
                                location: str = None,
                                columnKey: str = None,
-                               order: str = None):
+                               order: str = None) -> DictPatientResponse:
     contragent_alias = aliased(ContragentDBModel)
 
     # Основной запрос
@@ -88,12 +91,18 @@ async def hsn_get_own_patients(doctor_id: int,
     total_count_result = await db_session.execute(query_count)
     total_count = total_count_result.scalar()
 
-    cursor = await db_session.execute(query)
-    patients = cursor.unique().scalars().all()
+    try:
+        cursor = await db_session.execute(query)
+        patients = cursor.unique().scalars().all()
+    except exc.SQLAlchemyError as sqle:
+        logger.error(f"Failed to get list patients: {sqle}")
+        raise InternalServerException(
+            message="Ошибка сервера: не удалось выполнить запрос для получения списка пациентов"
+        )
 
     converted_patients = [await convert_to_patient_response(patient) for patient in patients]
 
-    return {
-        "data": converted_patients,
-        "total": total_count
-    }
+    return DictPatientResponse(
+        data=converted_patients,
+        total=total_count
+    )

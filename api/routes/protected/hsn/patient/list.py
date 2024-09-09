@@ -5,7 +5,8 @@ from typing import Optional, List
 from fastapi import Request, Depends, Query
 from pydantic import BaseModel, Field, parse_obj_as
 
-from core.hsn.patient.model import Patient, PatientFlat, PatientResponse, PatientResponseWithoutFullName
+from core.hsn.patient.model import Patient, PatientFlat, PatientResponse, PatientResponseWithoutFullName, \
+    DictPatientResponse
 from core.hsn.patient.queries.own import hsn_get_own_patients, GenderType
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
@@ -31,14 +32,9 @@ class GetOwnPatientsQueryParams(BaseModel):
     order: Optional[str] = None
 
 
-class GetOwnPatientResponse(BaseModel):
-    data: list[PatientResponse]
-    total: int
-
-
 @patient_router.get(
     '',
-    response_model=GetOwnPatientResponse,
+    response_model=DictPatientResponse,
     responses={'400': {"model": ExceptionResponseSchema}},
     summary='Получить своих пациентов'
 )

@@ -17,7 +17,6 @@ from shared.db.models.contragent import ContragentDBModel
 
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_get_patient_by_id(doctor_id: int, patient_id: int):
     query = (
         select(PatientDBModel)
@@ -27,11 +26,20 @@ async def hsn_get_patient_by_id(doctor_id: int, patient_id: int):
         .where(DoctorDBModel.id == doctor_id)
         .where(PatientDBModel.id == patient_id)
     )
-    cursor = await db_session.execute(query)
-    patient = cursor.scalars().first()
 
-    if not patient:
-        raise NotFoundException(message="Пациент с таким id не найден!")
+    try:
+        cursor = await db_session.execute(query)
+        patient = cursor.scalars().first()
+    except exc.NoResultFound as nrf:
+        logger.error(f"No patient was found: {nrf}")
+        raise NotFoundException(
+            message=f"Пациент с id: {patient_id} не найден"
+        )
+    except exc.SQLAlchemyError as sqle:
+        logger.error(f"Failed to get patient: {sqle}")
+        raise InternalServerException(
+            message="Ошибка сервера: не удалось выполнить запрос для получения пациента"
+        )
 
     converted_patient = await convert_to_patient_response(patient, type="without")
     return PatientResponseWithoutFullName.model_validate(converted_patient)

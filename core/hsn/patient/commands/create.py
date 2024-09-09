@@ -1,3 +1,5 @@
+from asyncpg import InternalServerError
+
 from api.decorators import HandleExceptions
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientResponseWithoutFullName
@@ -136,10 +138,11 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
 
 @SessionContext()
 @HandleExceptions()
-async def hsn_patient_create(context: HsnPatientCreateContext):
+async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientResponse:
     logger.info(f'Начало создания пациента')
     patient_payload = context.model_dump(
         exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'doctor_id'})
+
     contragent_payload = {
         'name': context.name,
         'last_name': context.last_name,
@@ -160,17 +163,34 @@ async def hsn_patient_create(context: HsnPatientCreateContext):
         )
         .returning(PatientDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    await db_session.commit()
-    patient_id = cursor.scalar()
+    try:
+        cursor = await db_session.execute(query)
+        await db_session.commit()
+        patient_id = cursor.scalar()
+    except exc.SQLAlchemyError as sqle:
+        logger.error(f"Failed to create patient: {sqle}")
+        raise InternalServerException(
+            message="Failed to create patient"
+        )
+
     query_get = (
         select(PatientDBModel)
         .options(joinedload(PatientDBModel.contragent))
         .where(PatientDBModel.id == patient_id)
     )
-    cursor = await db_session.execute(query_get)
-    patient = cursor.scalars().first()
-    if not patient:
-        raise NotFoundException(message="Пациент не найден!")
+    try:
+        cursor = await db_session.execute(query_get)
+        patient = cursor.scalars().first()
+    except exc.NoResultFound as nrf:
+        logger.error(f"NotFound records: {nrf}")
+        raise NotFoundException(
+            message=f"Не удалось найти пациента с id: {patient_id}"
+        )
+    except exc.SQLAlchemyError as sqle:
+        logger.error(f"Server error: {sqle}")
+        raise InternalServerException(
+            message="Server failed to get patient by id"
+        )
+
     patient_response = await convert_to_patient_response(patient)
     return PatientResponse.model_validate(patient_response)
