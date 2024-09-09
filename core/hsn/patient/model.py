@@ -1,8 +1,10 @@
 from typing_extensions import TypedDict
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator, field_validator
 from datetime import datetime
 from typing import List, Optional
 from datetime import date as tdate
+import re
+from api.exceptions import ValidationException
 from core.hsn.cabinet import Cabinet
 from core.hsn.cabinet.model import CabinetFlat
 from core.user import UserAuthor
@@ -111,6 +113,35 @@ class BasePatientResponse(BaseModel):
     count_hospitalization: Optional[int] = None
     last_hospitalization_date: Optional[str] = None
     patient_note: Optional[str] = None
+
+    @field_validator("birth_date", "dod")
+    def date_format_validation(cls, v):
+        if v is not None:
+            try:
+                parsed_date = datetime.strptime(v, "%d.%m.%Y")
+            except ValueError:
+                raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
+            if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
+                raise ValidationException(message="Дата последней госпитализации не должна быть позже чем текущая дата")
+        return v
+
+    @field_validator("phone")
+    def phone_validation(cls, v):
+        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
+        if v and not re.search(regex, v, re.I):
+            raise ValidationException(message="Номер телефона не валидный!")
+        return v
+
+    @model_validator(mode="after")
+    def validate_birth_date(self):
+        birth_date = datetime.strptime(self.birth_date, "%d.%m.%Y")
+        current_date = datetime.now()
+        age = (current_date - birth_date).days / 365.25
+        if age < 0:
+            raise ValidationException(message="Дата рождения не должна быть в будущем.")
+        if age > 100:
+            raise ValidationException(message="Возраст не должен превышать 100 лет.")
+        return self
 
 
 class PatientResponse(BasePatientResponse):

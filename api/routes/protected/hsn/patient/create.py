@@ -37,34 +37,7 @@ class CreatePatientRequestBody(BaseModel):
     last_hospitalization_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
     patient_note: Optional[str] = Field(None, max_length=1000)
 
-    @field_validator("birth_date", "dod")
-    def date_format_validation(cls, v):
-        if v is not None:
-            try:
-                parsed_date = datetime.strptime(v, "%d.%m.%Y")
-            except ValueError:
-                raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
-            if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
-                raise ValidationException(message="Дата последней госпитализации не должна быть позже чем текущая дата")
-        return v
 
-    @field_validator("phone")
-    def phone_validation(cls, v):
-        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
-        if v and not re.search(regex, v, re.I):
-            raise ValidationException(message="Номер телефона не валидный!")
-        return v
-
-    @model_validator(mode="after")
-    def validate_birth_date(self):
-        birth_date = datetime.strptime(self.birth_date, "%d.%m.%Y")
-        current_date = datetime.now()
-        age = (current_date - birth_date).days / 365.25
-        if age < 0:
-            raise ValidationException(message="Дата рождения не должна быть в будущем.")
-        if age > 100:
-            raise ValidationException(message="Возраст не должен превышать 100 лет.")
-        return self
 
 
 @patient_router.post(

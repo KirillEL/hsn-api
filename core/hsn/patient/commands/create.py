@@ -202,7 +202,7 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
     try:
         validated_model = PatientResponse.model_validate(patient_response)
         return validated_model
-    except ValidationError as ve:
+    except ValidationException as ve:
         logger.error(f"Validation patient failed: {str(ve)}")
         tg_api.send_telegram_message(
             message=f"Ошибка валидации при создании пациента: {str(ve)}"
