@@ -78,7 +78,7 @@ class ModelValidator(CreatePatientRequestBody):
 )
 async def patient_create(request: Request, body: CreatePatientRequestBody):
     try:
-        validated_body = ModelValidator.model_validate(**body.model_dump())
+        validated_body = ModelValidator.model_validate(body)
         context = HsnPatientCreateContext(
             **validated_body.dict(),
             cabinet_id=request.user.doctor.cabinet_id,
