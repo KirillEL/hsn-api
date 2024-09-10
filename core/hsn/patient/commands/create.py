@@ -137,7 +137,6 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
 
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientResponse:
     logger.info(f'Начало создания пациента')
     patient_payload = context.model_dump(

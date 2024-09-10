@@ -13,7 +13,7 @@ from shared.db.db_session import db_session
 from .router import patient_router
 from core.hsn.patient import Patient, HsnPatientCreateContext, hsn_patient_create
 from api.exceptions import ExceptionResponseSchema, ValidationException
-from pydantic import BaseModel, Field, validator, field_validator, model_validator
+from pydantic import BaseModel, Field, validator, field_validator, model_validator, ValidationError
 
 
 class CreatePatientRequestBody(BaseModel):
@@ -76,16 +76,17 @@ class CreatePatientRequestBody(BaseModel):
 )
 async def patient_create(request: Request, body: CreatePatientRequestBody):
     try:
-
         context = HsnPatientCreateContext(
             **body.dict(),
             cabinet_id=request.user.doctor.cabinet_id,
             doctor_id=request.user.doctor.id)
         new_patient = await hsn_patient_create(context)
         return new_patient
-    except ValidationException as ve:
+    except ValidationError as ve:
         logger.error(str(ve))
         tg_api.send_telegram_message(
             message="Ошибка валидации при создании пациента: {}".format(str(ve))
         )
-        raise ve
+        raise ValidationException(
+            message="Ошибка валидации: {}".format(str(ve))
+        )
