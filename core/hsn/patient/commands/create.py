@@ -201,4 +201,3 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
 
     validated_model = PatientResponse.model_validate(patient_response)
     return validated_model
-

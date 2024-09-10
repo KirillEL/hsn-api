@@ -61,6 +61,7 @@ async def get_own_patients(
         raise DoctorNotAssignedException
 
     return await hsn_get_own_patients(
+        request,
         request.user.doctor.id,
         limit=params.limit,
         offset=params.offset,

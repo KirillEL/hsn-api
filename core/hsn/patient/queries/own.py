@@ -1,10 +1,11 @@
-from datetime import date as tdate
+from datetime import date as tdate, datetime
 from enum import Enum
 from typing import Dict
-
+from tg_api import tg_api
 from sqlalchemy import desc, asc, func, text, exc
 from loguru import logger
 
+import tg_api.tg_api
 from api.exceptions import InternalServerException
 from ..helper import apply_ordering
 from api.decorators import HandleExceptions
@@ -17,7 +18,7 @@ from shared.db.models.doctor import DoctorDBModel
 from shared.db.db_session import db_session, SessionContext
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload, aliased, selectinload
-
+from fastapi import Request
 from ..model import DictPatientResponse
 
 
@@ -39,7 +40,8 @@ class LocationType(Enum):
 
 
 @SessionContext()
-async def hsn_get_own_patients(doctor_id: int,
+async def hsn_get_own_patients(request: Request,
+                               doctor_id: int,
                                limit: int = None,
                                offset: int = None,
                                gender: str = None,
@@ -96,6 +98,16 @@ async def hsn_get_own_patients(doctor_id: int,
         patients = cursor.unique().scalars().all()
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Failed to get list patients: {sqle}")
+        error_message = (
+            f"*Ошибка при получении списка пациентов*\n"
+            f"Врач: *{request.user.doctor.name} {request.user.doctor.last_name}*\n"
+            f"ID врача: {request.user.doctor.id}\n"
+            f"Дата и время: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            f"Описание ошибки: `{str(sqle)}`"
+        )
+        tg_api.send_telegram_message(
+            message=error_message
+        )
         raise InternalServerException(
             message="Ошибка сервера: не удалось выполнить запрос для получения списка пациентов"
         )

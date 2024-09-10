@@ -1,10 +1,11 @@
 from datetime import datetime
-
+from tg_api import tg_api
 from loguru import logger
 
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
 from core.hsn.patient.model import PatientResponse
 from core.hsn.patient.queries.own import GenderType, LocationType, LgotaDrugsType
+from . import ModelValidator
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
 from core.hsn.patient import Patient, hsn_update_patient_by_id, HsnPatientUpdateContext
@@ -35,36 +36,6 @@ class UpdatePatientRequestBody(BaseModel):
     last_hospitalization_date: Optional[str] = Field(None)
     patient_note: Optional[str] = Field(None, max_length=1000)
 
-    @field_validator("birth_date", "dod")
-    def date_format_validation(cls, v):
-        if v is not None:
-            try:
-                parsed_date = datetime.strptime(v, "%d.%m.%Y")
-            except ValueError:
-                raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
-            if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
-                raise ValidationException(message="Дата последней госпитализации не должна быть позже чем текущая дата")
-        return v
-
-    @field_validator("phone")
-    def phone_validation(cls, v):
-        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
-        if v and not re.search(regex, v, re.I):
-            raise ValidationException(message="Номер телефона не валидный!")
-        return v
-
-    @model_validator(mode="after")
-    def validate_birth_date(self):
-        birth_date = datetime.strptime(self.birth_date, "%d.%m.%Y")
-        current_date = datetime.now()
-        age = (current_date - birth_date).days / 365.25
-        logger.debug(f'age: {age}')
-        if age < 0:
-            raise ValidationException(message="Дата рождения не должна быть в будущем.")
-        if age > 110:
-            raise ValidationException(message="Возраст не должен превышать 110 лет.")
-        return self
-
 
 @patient_router.patch(
     "/{patient_id}",
@@ -75,9 +46,23 @@ async def update_patient_by_id(request: Request, patient_id: int, body: UpdatePa
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnPatientUpdateContext(
-        doctor_id=request.user.doctor.id,
-        patient_id=patient_id,
-        **body.model_dump()
-    )
-    return await hsn_update_patient_by_id(context)
+    try:
+        validated_body = ModelValidator.model_validate(body.model_dump())
+        context = HsnPatientUpdateContext(
+            doctor_id=request.user.doctor.id,
+            patient_id=patient_id,
+            **validated_body.model_dump()
+        )
+        return await hsn_update_patient_by_id(context)
+    except ValidationException as ve:
+        logger.error(f"ValidationFailed: {ve.message}")
+        error_message = (
+            f"*Ошибка при получении списка пациентов*\n"
+            f"Врач: *{request.user.doctor.name} {request.user.doctor.last_name}*\n"
+            f"ID врача: {request.user.doctor.id}\n"
+            f"Дата и время: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            f"Описание ошибки: `{str(ve.message)}`"
+        )
+        tg_api.send_telegram_message(
+            message=error_message
+        )
