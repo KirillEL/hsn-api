@@ -94,7 +94,7 @@ async def patient_create(request: Request, body: CreatePatientRequestBody):
             doctor_name=request.user.doctor.name,
             doctor_last_name=request.user.doctor.last_name,
             date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            description=str(ve)
+            description=str(ve.message)
         )
         logger.error(str(message_model))
         tg_api.send_telegram_message(
