@@ -37,6 +37,8 @@ class CreatePatientRequestBody(BaseModel):
     last_hospitalization_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
     patient_note: Optional[str] = Field(None, max_length=1000)
 
+
+class ModelValidator(CreatePatientRequestBody):
     @field_validator("birth_date", "dod")
     def date_format_validation(cls, v):
         if v is not None:
@@ -76,17 +78,17 @@ class CreatePatientRequestBody(BaseModel):
 )
 async def patient_create(request: Request, body: CreatePatientRequestBody):
     try:
+        validated_body = ModelValidator.model_validate(**body.model_dump())
         context = HsnPatientCreateContext(
-            **body.dict(),
+            **validated_body.dict(),
             cabinet_id=request.user.doctor.cabinet_id,
             doctor_id=request.user.doctor.id)
         new_patient = await hsn_patient_create(context)
         return new_patient
-    except ValidationError as ve:
-        logger.error(str(ve))
+    except ValidationException as ve:
+        error_message = f"Врач {request.user.doctor.name} пытался создать пациента, но произошла ошибка: {str(ve)}"
+        logger.error(error_message)
         tg_api.send_telegram_message(
-            message="Ошибка валидации при создании пациента: {}".format(str(ve))
+            message=error_message
         )
-        raise ValidationException(
-            message="Ошибка валидации: {}".format(str(ve))
-        )
+        raise ve
