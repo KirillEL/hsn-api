@@ -1,3 +1,4 @@
+import sys
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
@@ -18,11 +19,11 @@ from .middlewares import AuthMiddleware, AuthBackend
 from core.on_startup import hsn_create_admin, hsn_create_role_doctor, create_med_prescriptions
 
 
-def init_routers(application: FastAPI) -> None:
-    application.include_router(main_router)
+def init_routers(app_: FastAPI) -> None:
+    app_.include_router(main_router)
 
 
-def on_auth_error(request: Request, exc: Exception):
+def on_auth_error(request: Request, exc: Exception) -> JSONResponse:
     status_code, error_code, message = 401, None, str(exc)
     if isinstance(exc, CustomException):
         status_code = int(exc.code)
@@ -72,22 +73,27 @@ def init_tasks_on_startup(app_: FastAPI) -> None:
         await create_med_prescriptions()
 
 
-def init_secure_on_swagger(app_: FastAPI) -> None:
-    security = HTTPBasic()
+def init_logger() -> None:
+    logger.remove()
 
-    @app_.get('/api/docs', include_in_schema=False, dependencies=[Depends(security)])
-    async def get_documentation(credentials: HTTPBasicCredentials = Depends(security)):
-        if credentials.username != config.DOCS_USERNAME or credentials.password != config.DOCS_PASSWORD:
-            raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password",
-                headers={"WWW-Authenticate": "Basic"},
-            )
-        else:
-            return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
+    logger.add(
+        "logs/hsn_app.log",
+        rotation="10 MB",
+        retention="10 days",
+        compression="zip",
+        level="DEBUG",
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+    )
+
+    logger.add(
+        sys.stdout,
+        level="DEBUG",
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+    )
 
 
 def init_application() -> FastAPI:
+    init_logger()
     application = FastAPI(
         title="HSN",
         description="HSN_API",
@@ -95,9 +101,8 @@ def init_application() -> FastAPI:
         middleware=init_middlewares()
     )
 
-    init_secure_on_swagger(application)
-    init_routers(application)
-    init_listeners(application)
+    init_routers(app_=application)
+    init_listeners(app_=application)
     init_tasks_on_startup(app_=application)
 
     return application
