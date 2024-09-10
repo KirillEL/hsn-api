@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from api.exceptions.base import ValidationErrorTelegramSendMessageModel
 from tg_api import tg_api
 from loguru import logger
 
@@ -56,13 +58,14 @@ async def update_patient_by_id(request: Request, patient_id: int, body: UpdatePa
         return await hsn_update_patient_by_id(context)
     except ValidationException as ve:
         logger.error(f"ValidationFailed: {ve.message}")
-        error_message = (
-            f"*Ошибка при получении списка пациентов*\n"
-            f"Врач: *{request.user.doctor.name} {request.user.doctor.last_name}*\n"
-            f"ID врача: {request.user.doctor.id}\n"
-            f"Дата и время: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
-            f"Описание ошибки: `{str(ve.message)}`"
+        message_model = ValidationErrorTelegramSendMessageModel(
+            message="*Ошибка при изменении данных о пациенте*\n",
+            doctor_id=request.user.doctor.id,
+            doctor_name=request.user.doctor.name,
+            doctor_last_name=request.user.doctor.last_name,
+            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            description=ve.message
         )
         tg_api.send_telegram_message(
-            message=error_message
+            message=str(message_model)
         )

@@ -9,7 +9,7 @@ import tg_api.tg_api
 from api.exceptions import InternalServerException
 from ..helper import apply_ordering
 from api.decorators import HandleExceptions
-from api.exceptions.base import NotFoundException
+from api.exceptions.base import NotFoundException, ValidationErrorTelegramSendMessageModel
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import ContragentDBModel
 from shared.db.models.cabinet import CabinetDBModel
@@ -98,15 +98,16 @@ async def hsn_get_own_patients(request: Request,
         patients = cursor.unique().scalars().all()
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Failed to get list patients: {sqle}")
-        error_message = (
-            f"*Ошибка при получении списка пациентов*\n"
-            f"Врач: *{request.user.doctor.name} {request.user.doctor.last_name}*\n"
-            f"ID врача: {request.user.doctor.id}\n"
-            f"Дата и время: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
-            f"Описание ошибки: `{str(sqle)}`"
+        message_model = ValidationErrorTelegramSendMessageModel(
+            message="*Ошибка при получении списка пациентов*",
+            doctor_id=request.user.doctor.id,
+            doctor_name=request.user.doctor.name,
+            doctor_last_name=request.user.doctor.last_name,
+            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            description=sqle
         )
         tg_api.send_telegram_message(
-            message=error_message
+            message=str(message_model)
         )
         raise InternalServerException(
             message="Ошибка сервера: не удалось выполнить запрос для получения списка пациентов"

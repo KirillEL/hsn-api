@@ -3,6 +3,8 @@ from typing import Optional
 import re
 from fastapi import Request, status
 from loguru import logger
+
+from api.exceptions.base import ValidationErrorTelegramSendMessageModel
 from tg_api import tg_api
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
 from core.hsn.patient.model import PatientFlat, PatientResponse
@@ -86,9 +88,16 @@ async def patient_create(request: Request, body: CreatePatientRequestBody):
         new_patient = await hsn_patient_create(context)
         return new_patient
     except ValidationException as ve:
-        error_message = f"Врач {request.user.doctor.name} {request.user.doctor.last_name} пытался создать пациента, но произошла ошибка: {ve.message}"
-        logger.error(error_message)
+        message_model = ValidationErrorTelegramSendMessageModel(
+            message="*Ошибка при создании пациента*",
+            doctor_id=request.user.doctor.id,
+            doctor_name=request.user.doctor.name,
+            doctor_last_name=request.user.doctor.last_name,
+            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            description=str(ve)
+        )
+        logger.error(str(message_model))
         tg_api.send_telegram_message(
-            message=error_message
+            message=str(message_model)
         )
         raise ve
