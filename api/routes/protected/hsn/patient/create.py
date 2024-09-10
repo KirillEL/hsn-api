@@ -86,7 +86,7 @@ async def patient_create(request: Request, body: CreatePatientRequestBody):
         new_patient = await hsn_patient_create(context)
         return new_patient
     except ValidationException as ve:
-        error_message = f"Врач {request.user.doctor.name} пытался создать пациента, но произошла ошибка: {str(ve)}"
+        error_message = f"Врач {request.user.doctor.name} {request.user.doctor.last_name} пытался создать пациента, но произошла ошибка: {ve.message}"
         logger.error(error_message)
         tg_api.send_telegram_message(
             message=error_message
