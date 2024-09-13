@@ -121,9 +121,9 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
         'name': contragent_hasher.encrypt(str(contragent_payload['name'])),
         'last_name': contragent_hasher.encrypt(str(contragent_payload['last_name'])),
         'patronymic': contragent_hasher.encrypt(
-            str(contragent_payload['patronymic']) if contragent_payload['patronymic'] else None),
+            str(contragent_payload['patronymic']) if contragent_payload['patronymic'] else ""),
         'birth_date': contragent_hasher.encrypt(str(contragent_payload['birth_date'])),
-        'dod': contragent_hasher.encrypt(str(contragent_payload['dod'])) if contragent_payload['dod'] else None
+        'dod': contragent_hasher.encrypt(str(contragent_payload['dod'])) if contragent_payload['dod'] else ""
     }
     query = (
         insert(ContragentDBModel)
