@@ -1,5 +1,6 @@
-from datetime import date as tdate
+from datetime import date as tdate, datetime
 
+from loguru import logger
 from sqlalchemy import insert, update, exc
 
 from api.decorators import HandleExceptions
@@ -61,7 +62,6 @@ class HsnAppointmentBlockLaboratoryTestCreateContext(BaseModel):
 
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_appointment_block_laboratory_test_create(context: HsnAppointmentBlockLaboratoryTestCreateContext):
     await check_appointment_exists(context.appointment_id)
     payload = context.model_dump(exclude={'appointment_id'})

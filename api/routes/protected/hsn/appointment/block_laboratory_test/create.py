@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from loguru import logger
+
 from .router import block_laboratory_test_router
 from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
@@ -61,6 +63,7 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
             parsed_date = datetime.strptime(value, "%d.%m.%Y")
             if parsed_date > datetime.now():
                 raise ValidationException(message="Даты не могут быть позднее текущего дня")
+            return value
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
 
@@ -73,6 +76,5 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
 async def create_block_laboratory_test(request: Request, body: CreateBlockLaboratoryTestRequestBody):
     if not request.user.doctor:
         raise DoctorNotAssignedException
-
     context = HsnAppointmentBlockLaboratoryTestCreateContext(**body.model_dump())
     return await hsn_appointment_block_laboratory_test_create(context)

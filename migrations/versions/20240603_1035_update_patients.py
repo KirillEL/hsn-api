@@ -49,10 +49,10 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_column('public.patients', 'last_hospitalization_date')
-    op.drop_column('public.patients', 'count_hospitalization')
-    op.drop_column('public.patients', 'has_hospitalization')
-    op.drop_column('public.patients', 'lgota_drugs')
-    op.drop_column('public.patients', 'disability')
-    op.drop_column('public.patients', 'referring_clinic_organization')
-    op.drop_column('public.patients', 'referring_doctor')
+    op.drop_column('patients', 'last_hospitalization_date')
+    op.drop_column('patients', 'count_hospitalization')
+    op.drop_column('patients', 'has_hospitalization')
+    op.drop_column('patients', 'lgota_drugs')
+    op.drop_column('patients', 'disability')
+    op.drop_column('patients', 'referring_clinic_organization')
+    op.drop_column('patients', 'referring_doctor')
