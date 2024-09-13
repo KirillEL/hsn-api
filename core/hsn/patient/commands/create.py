@@ -1,5 +1,5 @@
 from asyncpg import InternalServerError
-from tg_api import tg_api
+from tg_api import tg_bot
 from api.decorators import HandleExceptions
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientResponseWithoutFullName
@@ -166,12 +166,12 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
         cursor = await db_session.execute(query)
         await db_session.commit()
         patient_id = cursor.scalar()
-        tg_api.send_telegram_message(
+        tg_bot.send_message(
             message=f"Пациент успешно создан"
         )
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Failed to create patient: {sqle}")
-        tg_api.send_telegram_message(
+        tg_bot.send_message(
             message=f"Не удалось создать пациента: {str(sqle)}"
         )
         raise InternalServerException(

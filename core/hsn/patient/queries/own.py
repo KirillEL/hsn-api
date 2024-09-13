@@ -1,15 +1,12 @@
 from datetime import date as tdate, datetime
 from enum import Enum
-from typing import Dict
-from tg_api import tg_api
+from tg_api import tg_bot
 from sqlalchemy import desc, asc, func, text, exc
 from loguru import logger
 
-import tg_api.tg_api
 from api.exceptions import InternalServerException
 from ..helper import apply_ordering
-from api.decorators import HandleExceptions
-from api.exceptions.base import NotFoundException, ValidationErrorTelegramSendMessageModel
+from api.exceptions.base import ValidationErrorTelegramSendMessageModel
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import ContragentDBModel
 from shared.db.models.cabinet import CabinetDBModel
@@ -17,7 +14,7 @@ from shared.db.models.patient import PatientDBModel
 from shared.db.models.doctor import DoctorDBModel
 from shared.db.db_session import db_session, SessionContext
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload, aliased, selectinload
+from sqlalchemy.orm import aliased, selectinload
 from fastapi import Request
 from ..model import DictPatientResponse
 
@@ -106,7 +103,7 @@ async def hsn_get_own_patients(request: Request,
             date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             description=sqle
         )
-        tg_api.send_telegram_message(
+        tg_bot.send_message(
             message=str(message_model)
         )
         raise InternalServerException(

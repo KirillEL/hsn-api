@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from api.exceptions.base import ValidationErrorTelegramSendMessageModel
-from tg_api import tg_api
+from tg_api import tg_bot
 from loguru import logger
 
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
@@ -66,6 +66,6 @@ async def update_patient_by_id(request: Request, patient_id: int, body: UpdatePa
             date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             description=ve.message
         )
-        tg_api.send_telegram_message(
+        tg_bot.send_message(
             message=str(message_model)
         )

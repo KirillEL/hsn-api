@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from api.exceptions.base import ValidationErrorTelegramSendMessageModel
-from tg_api import tg_api
+from tg_api import tg_bot
 from loguru import logger
 from sqlalchemy import select, func, exc
 from sqlalchemy.orm import joinedload, contains_eager, selectinload
@@ -71,13 +71,16 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
         patient_appointments = cursor.unique().scalars().all()
     except exc.SQLAlchemyError as sqle:
         logger.error(f'Failed fetching patient appointments: {sqle}')
-        model = ValidationErrorTelegramSendMessageModel(
+        message_model = ValidationErrorTelegramSendMessageModel(
             message="*Не удалось получить список приемов*",
             doctor_id=context.doctor_id,
             doctor_name=request.user.doctor.name,
             doctor_last_name=request.user.doctor.last_name,
             date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             description=str(sqle)
+        )
+        tg_bot.send_message(
+            message=str(message_model)
         )
         raise InternalServerException
 

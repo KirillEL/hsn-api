@@ -5,7 +5,7 @@ from fastapi import Request, status
 from loguru import logger
 
 from api.exceptions.base import ValidationErrorTelegramSendMessageModel
-from tg_api import tg_api
+from tg_api import tg_bot
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
 from core.hsn.patient.model import PatientFlat, PatientResponse
 from core.hsn.patient.queries.own import GenderType, LgotaDrugsType, LocationType
@@ -97,7 +97,7 @@ async def patient_create(request: Request, body: CreatePatientRequestBody):
             description=str(ve.message)
         )
         logger.error(str(message_model))
-        tg_api.send_telegram_message(
+        tg_bot.send_message(
             message=str(message_model)
         )
         raise ve
