@@ -1,11 +1,14 @@
+from datetime import datetime
 from typing import Optional
 
+from api.exceptions.base import ValidationErrorTelegramSendMessageModel
+from tg_api import tg_api
 from loguru import logger
-from sqlalchemy import select, func
+from sqlalchemy import select, func, exc
 from sqlalchemy.orm import joinedload, contains_eager, selectinload
-
+from fastapi import Request
 from api.decorators import HandleExceptions
-from api.exceptions import NotFoundException, BadRequestException, ValidationException
+from api.exceptions import NotFoundException, BadRequestException, ValidationException, InternalServerException
 from core.hsn.appointment import Appointment
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
 from core.hsn.patient.commands.create import convert_to_patient_response
@@ -21,37 +24,32 @@ from utils import contragent_hasher
 class HsnAppointmentListContext(BaseModel):
     doctor_id: int = Field(gt=0)
 
-    limit: Optional[int] = None
-    offset: Optional[int] = None
+    limit: Optional[int] = Field(None, ge=1)
+    offset: Optional[int] = Field(None, ge=0)
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_appointment_list(context: HsnAppointmentListContext):
-    results = []
-    query = select(AppointmentDBModel).where(AppointmentDBModel.is_deleted.is_(False),
-                                             AppointmentDBModel.doctor_id == context.doctor_id)
+async def hsn_appointment_list(request: Request, context: HsnAppointmentListContext):
+    logger.info(f"Fetching appointments for doctor_id: {context.doctor_id}")
 
-    query = query.outerjoin(AppointmentDBModel.block_clinic_doctor) \
-        .outerjoin(AppointmentDBModel.block_clinical_condition) \
-        .outerjoin(AppointmentDBModel.block_diagnose) \
-        .outerjoin(AppointmentDBModel.block_ekg) \
-        .outerjoin(AppointmentDBModel.block_complaint) \
-        .outerjoin(AppointmentDBModel.block_laboratory_test) \
-        .outerjoin(AppointmentDBModel.purposes) \
-        .outerjoin(AppointmentDBModel.patient) \
-        .outerjoin(PatientDBModel.contragent)
+    query = (
+        select(AppointmentDBModel)
+        .where(AppointmentDBModel.is_deleted.is_(False),
+               AppointmentDBModel.author_id == context.doctor_id)
+    )
 
-    query = query.options(selectinload(AppointmentDBModel.block_clinic_doctor),
-                          selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent),
-                          selectinload(AppointmentDBModel.block_clinical_condition),
-                          selectinload(AppointmentDBModel.block_diagnose),
-                          selectinload(AppointmentDBModel.block_ekg),
-                          selectinload(AppointmentDBModel.block_complaint),
-                          selectinload(AppointmentDBModel.block_laboratory_test),
-                          selectinload(AppointmentDBModel.purposes).selectinload(
-                              AppointmentPurposeDBModel.medicine_prescription).selectinload(
-                              MedicinesPrescriptionDBModel.medicine_group))
+    query = query.options(
+        selectinload(AppointmentDBModel.block_clinic_doctor),
+        selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent),
+        selectinload(AppointmentDBModel.block_clinical_condition),
+        selectinload(AppointmentDBModel.block_diagnose),
+        selectinload(AppointmentDBModel.block_ekg),
+        selectinload(AppointmentDBModel.block_complaint),
+        selectinload(AppointmentDBModel.block_laboratory_test),
+        selectinload(AppointmentDBModel.purposes).selectinload(
+            AppointmentPurposeDBModel.medicine_prescription).selectinload(
+            MedicinesPrescriptionDBModel.medicine_group)
+    )
 
     query_count = (
         select(func.count(AppointmentDBModel.id))
@@ -59,39 +57,55 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
         .where(AppointmentDBModel.doctor_id == context.doctor_id)
     )
     cursor_count = await db_session.execute(query_count)
-    count_appointments = cursor_count.scalar()
+    total_appointments = cursor_count.scalar()
 
+    # Применяем лимиты и смещение (если они указаны)
     if context.limit:
         query = query.limit(context.limit)
     if context.offset:
         query = query.offset(context.offset)
 
-    cursor = await db_session.execute(query)
+    # Выполняем запрос
+    try:
+        cursor = await db_session.execute(query)
+        patient_appointments = cursor.unique().scalars().all()
+    except exc.SQLAlchemyError as sqle:
+        logger.error(f'Failed fetching patient appointments: {sqle}')
+        model = ValidationErrorTelegramSendMessageModel(
+            message="*Не удалось получить список приемов*",
+            doctor_id=context.doctor_id,
+            doctor_name=request.user.doctor.name,
+            doctor_last_name=request.user.doctor.last_name,
+            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            description=str(sqle)
+        )
+        raise InternalServerException
 
-    patient_appointments = cursor.unique().scalars().all()
-    if len(patient_appointments) == 0:
-        return {
-            "data": [],
-            "total": 0
-        }
+    if not patient_appointments:
+        logger.warning("No appointments found")
+        return {"data": [], "total": 0}
+
+    results = []
     for appointment in patient_appointments:
-        logger.debug(f'appointment: {appointment.patient.contragent.__dict__}')
-        appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
-        appointment.patient.contragent.last_name = contragent_hasher.decrypt(
-            appointment.patient.contragent.last_name)
-        if appointment.patient.contragent.patronymic:
-            appointment.patient.contragent.patronymic = contragent_hasher.decrypt(
-                appointment.patient.contragent.patronymic)
+        # Дешифруем данные контрагента
+        logger.debug(f'Processing appointment for patient: {appointment.patient.contragent.__dict__}')
+        contragent = appointment.patient.contragent
+        contragent.name = contragent_hasher.decrypt(contragent.name)
+        contragent.last_name = contragent_hasher.decrypt(contragent.last_name)
+        if contragent.patronymic:
+            contragent.patronymic = contragent_hasher.decrypt(contragent.patronymic)
 
+        # Формируем информацию о пациенте
         patient_info = PatientFlatForAppointmentList(
-            name=appointment.patient.contragent.name,
-            last_name=appointment.patient.contragent.last_name,
-            patronymic=appointment.patient.contragent.patronymic
+            name=contragent.name,
+            last_name=contragent.last_name,
+            patronymic=contragent.patronymic
         )
 
+        # Формируем данные для каждой записи
         appointment_flat = PatientAppointmentFlat(
             id=appointment.id,
-            full_name=f'{patient_info.name} {patient_info.last_name} {patient_info.patronymic if patient_info.patronymic is not None else ""}'.rstrip(),
+            full_name=f'{patient_info.name} {patient_info.last_name} {patient_info.patronymic or ""}'.rstrip(),
             doctor_id=appointment.doctor_id,
             date=appointment.date,
             date_next=str(appointment.date_next) if appointment.date_next else None,
@@ -106,7 +120,5 @@ async def hsn_appointment_list(context: HsnAppointmentListContext):
         )
         results.append(appointment_flat)
 
-    return {
-        "data": results,
-        "total": count_appointments
-    }
+    logger.info(f"Successfully fetched {len(results)} appointments")
+    return {"data": results, "total": total_appointments}

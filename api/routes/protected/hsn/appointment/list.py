@@ -31,6 +31,6 @@ async def get_appointment_list(request: Request, params: GetAppointmentListQuery
 
     context = HsnAppointmentListContext(
         doctor_id=request.user.doctor.id,
-        **params.dict()
+        **params.model_dump()
     )
-    return await hsn_appointment_list(context)
+    return await hsn_appointment_list(request, context)

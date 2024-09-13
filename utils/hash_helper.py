@@ -13,8 +13,9 @@ class ContragentHasher:
         return self.fernet.encrypt(value.encode()).decode()
 
     def decrypt(self, value: str) -> str:
-        logger.debug(f'value to decode: {value}')
-        return self.fernet.decrypt(value.encode()).decode()
+        if value:
+            return self.fernet.decrypt(value.encode()).decode()
+        return ""
 
 
 contragent_hasher = ContragentHasher(config.KEY.encode())
