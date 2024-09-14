@@ -84,7 +84,8 @@ async def patient_create(request: Request, body: CreatePatientRequestBody):
         context = HsnPatientCreateContext(
             **validated_body.dict(),
             cabinet_id=request.user.doctor.cabinet_id,
-            doctor_id=request.user.doctor.id)
+            doctor_id=request.user.doctor.id
+        )
         new_patient = await hsn_patient_create(context)
         return new_patient
     except ValidationException as ve:

@@ -90,19 +90,12 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
 
     results = []
     for appointment in patient_appointments:
-        # Дешифруем данные контрагента
-        logger.debug(f'Processing appointment for patient: {appointment.patient.contragent.__dict__}')
-        contragent = appointment.patient.contragent
-        contragent.name = contragent_hasher.decrypt(contragent.name)
-        contragent.last_name = contragent_hasher.decrypt(contragent.last_name)
-        if contragent.patronymic:
-            contragent.patronymic = contragent_hasher.decrypt(contragent.patronymic)
-
         # Формируем информацию о пациенте
         patient_info = PatientFlatForAppointmentList(
-            name=contragent.name,
-            last_name=contragent.last_name,
-            patronymic=contragent.patronymic
+            name=contragent_hasher.decrypt(appointment.patient.contragent.name),
+            last_name=contragent_hasher.decrypt(appointment.patient.contragent.last_name),
+            patronymic=contragent_hasher.decrypt(
+                appointment.patient.contragent.patronymic) if appointment.patient.contragent.patronymic else ""
         )
 
         # Формируем данные для каждой записи

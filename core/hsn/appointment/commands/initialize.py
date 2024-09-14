@@ -32,7 +32,6 @@ async def check_patient_exists(patient_id: int):
 
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_appointment_initialize(context: HsnInitializeAppointmentContext):
     payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
     await check_patient_exists(context.patient_id)

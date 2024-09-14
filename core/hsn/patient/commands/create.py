@@ -15,7 +15,7 @@ from core.user.queries.me import hsn_user_get_me
 from loguru import logger
 from utils.hash_helper import contragent_hasher
 from api.exceptions import BadRequestException, ValidationException, NotFoundException, InternalServerException
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 
 class HsnPatientCreateContext(BaseModel):
@@ -149,6 +149,7 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
         'birth_date': context.birth_date,
         'dod': context.dod if context.dod else None
     }
+    logger.debug(f'contragent_payload: {contragent_payload}')
     new_contragent_id = await create_contragent(contragent_payload)
     logger.info(f'контрагент создан успешно!')
 
@@ -180,7 +181,7 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
 
     query_get = (
         select(PatientDBModel)
-        .options(joinedload(PatientDBModel.contragent))
+        .options(selectinload("contragent"))
         .where(PatientDBModel.id == patient_id)
     )
     try:
