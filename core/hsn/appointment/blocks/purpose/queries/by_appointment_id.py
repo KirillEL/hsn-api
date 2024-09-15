@@ -38,7 +38,7 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
                 id=purpose.medicine_prescription.id,
                 name=purpose.medicine_prescription.name,
                 dosa=purpose.dosa,
-                note=purpose.note
+                note=purpose.note if purpose.note else ""
             )
         )
         results.append(final_result)
