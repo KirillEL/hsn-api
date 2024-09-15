@@ -23,7 +23,7 @@ async def update_block_purpose(request: Request, appointment_id: int, body: Upda
         raise DoctorNotAssignedException
 
     context = HsnAppointmentPurposeUpdateContext(
-        user_id=request.user.id,
+        doctor_id=request.user.doctor.id,
         appointment_id=appointment_id,
         **body.model_dump()
     )
