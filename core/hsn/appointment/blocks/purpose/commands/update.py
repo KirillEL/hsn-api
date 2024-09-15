@@ -34,7 +34,6 @@ async def hsn_appointment_purpose_update(context: HsnAppointmentPurposeUpdateCon
     )
     cursor = await db_session.execute(query)
     purpose_id = cursor.scalar()
-    logger.debug(f'purpose_id: {purpose_id}')
 
     if purpose_id is None:
         raise NotFoundException(message="Назначение не найдено!")
@@ -50,6 +49,7 @@ async def hsn_appointment_purpose_update(context: HsnAppointmentPurposeUpdateCon
     )
     await db_session.execute(query_update)
     await db_session.commit()
+    await db_session.refresh(AppointmentPurposeDBModel)
 
     query_select = (
         select(AppointmentPurposeDBModel)
