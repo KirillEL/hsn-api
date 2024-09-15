@@ -32,6 +32,7 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
 
     results = []
     for purpose in purposes:
+        logger.debug(f'purpose: {purpose.__dict__}')
         final_result = AppointmentPurposeResponseFlat(
             medicine_group=purpose.medicine_prescription.medicine_group.name,
             medicine_group_data=MedicineGroupData(

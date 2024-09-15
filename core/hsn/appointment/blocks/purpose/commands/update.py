@@ -49,7 +49,6 @@ async def hsn_appointment_purpose_update(context: HsnAppointmentPurposeUpdateCon
     )
     await db_session.execute(query_update)
     await db_session.commit()
-    await db_session.refresh(AppointmentPurposeDBModel)
 
     query_select = (
         select(AppointmentPurposeDBModel)
