@@ -10,19 +10,19 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from sqlalchemy import insert, select, exc
 
-from shared.db.models import MedicinesPrescriptionDBModel
+from shared.db.models import MedicinesPrescriptionDBModel, MedicinesGroupDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 
 
 class MedicineContext(BaseModel):
-    medicine_prescription_id: int = Field(gt=0)
     dosa: str
+    medicine_group_id: int
     note: Optional[str] = None
 
 
 class HsnAppointmentPurposeCreateContext(BaseModel):
-    user_id: int = Field(gt=0)
+    doctor_id: int = Field(gt=0)
     appointment_id: int
     medicine_prescriptions: list[MedicineContext]
 
@@ -50,37 +50,46 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
 
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_appointment_purpose_create(context: HsnAppointmentPurposeCreateContext):
     await check_appointment_exists(context.appointment_id)
-    for med_prescription in context.medicine_prescriptions:
-        await check_medicine_prescription_exists(med_prescription.medicine_prescription_id)
-    payload = context.model_dump(exclude={'user_id'})
+
+    payload = context.model_dump(exclude={'doctor_id'})
     appointment_id = context.appointment_id
     created_purposes = []
+
+    # create appointment_purpose
+    query_create_purpose_block = (
+        insert(AppointmentPurposeDBModel)
+        .values(
+            appointment_id=context.appointment_id,
+            author_id=context.doctor_id
+        )
+        .returning(AppointmentPurposeDBModel.id)
+    )
+    cursor = await db_session.execute(query_create_purpose_block)
+    new_purpose_block_id = cursor.scalar()
+
     for med_prescription in context.medicine_prescriptions:
         logger.debug(f'med_prescription: {med_prescription}')
-        query = (
-            insert(AppointmentPurposeDBModel)
-            .values(
-                author_id=context.user_id,
-                appointment_id=appointment_id,
-                **med_prescription.model_dump()
-            )
-            .returning(AppointmentPurposeDBModel.id)
+        query_select_med_group = (
+            select(MedicinesGroupDBModel.id)
+            .where(MedicinesGroupDBModel.is_deleted.is_(False),
+                   MedicinesGroupDBModel.id == med_prescription.medicine_group_id)
         )
-        cursor = await db_session.execute(query)
-        inserted_id = cursor.scalar()
+        cursor = await db_session.execute(query_select_med_group)
+        med_group_id = cursor.scalar()
 
-        select_query = select(AppointmentPurposeDBModel).options(
-            joinedload(AppointmentPurposeDBModel.medicine_prescription).joinedload(
-                MedicinesPrescriptionDBModel.medicine_group)).where(
-            AppointmentPurposeDBModel.id == inserted_id)
-        cursor = await db_session.execute(select_query)
-        created_purpose = cursor.scalar_one()
-        logger.debug(f'created_purpose: {created_purpose.medicine_prescription.__dict__}')
-        created_purposes.append(created_purpose)
+        query = (
+            insert(MedicinesPrescriptionDBModel)
+            .values(
+                author_id=context.doctor_id,
+                appointment_purpose_id=new_purpose_block_id,
+                dosa=med_prescription.dosa,
+                medicine_group_id=med_group_id
+            )
+        )
+        await db_session.execute(query)
 
     await db_session.commit()
 
-    return [AppointmentPurposeFlat.model_validate(p) for p in created_purposes]
+    return new_purpose_block_id

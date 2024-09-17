@@ -40,7 +40,7 @@ class MedicinePrescriptionFlat(BaseModel):
 
     id: int
     medicine_group: Optional[MedicineGroupFlat] = None
-    name: str
+    dosa: str
     note: Optional[str] = None
 
 
@@ -49,9 +49,8 @@ class AppointmentPurposeFlat(BaseModel):
 
     id: int
     appointment_id: int
-    dosa: str
     note: Optional[str] = None
-    medicine_prescription: MedicinePrescriptionFlat
+    medicine_prescriptions: list[MedicinePrescriptionFlat]
 
 
 class MedicineGroupData(BaseModel):

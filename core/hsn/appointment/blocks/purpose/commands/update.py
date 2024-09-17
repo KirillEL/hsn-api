@@ -18,7 +18,7 @@ class HsnAppointmentPurposeUpdateContext(BaseModel):
     doctor_id: int = Field(gt=0)
     appointment_id: int = Field(gt=0)
 
-    medicine_prescription_id: Optional[int] = None
+    medicine_group_id: Optional[int] = None
     dosa: Optional[str] = None
     note: Optional[str] = None
 

@@ -39,8 +39,8 @@ async def hsn_medicine_prescriptions_get_fields():
                     grouped_prescriptions[group_name] = []
                 grouped_prescriptions[group_name].append(
                     MedicinePrescriptionSchema(
-                        id=prescription.id,
-                        displayName=prescription.name,
+                        id=prescription.medicine_group.id,
+                        displayName=prescription.medicine_group.name,
                         description=prescription.note or ""
                     )
                 )
@@ -54,7 +54,3 @@ async def hsn_medicine_prescriptions_get_fields():
         return response
     except exc.SQLAlchemyError as sqle:
         raise UnprocessableEntityException(message=str(sqle))
-    except Exception as e:
-        raise InternalServerException
-
-

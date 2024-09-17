@@ -24,10 +24,6 @@ def upgrade() -> None:
     id serial constraint appointment_purpose_id_pk primary key,
     appointment_id integer constraint appointment_id_fk
         references public.appointments,
-    medicine_prescription_id integer constraint medicine_prescription_id_fk
-        references public.medicine_prescriptions,
-    dosa varchar(100) not null,
-    note text,
     
     is_deleted boolean not null default false,
 

@@ -11,12 +11,15 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     __table_args__ = {'schema': 'public'}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    medicine_group_id = Column(Integer, ForeignKey('public.medicines_group.id'))
+    appointment_purpose_id = Column(BigInteger, ForeignKey('public.appointment_purposes.id'), nullable=False)
+
+    medicine_group_id = Column(Integer, ForeignKey('public.medicines_group.id'), nullable=False)
 
     medicine_group = relationship(MedicinesGroupDBModel, uselist=False)
 
-    name = Column(Text, nullable=False)
-    note = Column(Text)
+    dosa = Column(String(10), nullable=False)
+    #name = Column(Text, nullable=False)
+    note = Column(String(500), nullable=True)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

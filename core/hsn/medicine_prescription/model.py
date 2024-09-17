@@ -37,9 +37,9 @@ class MedicinePrescriptionFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    appointment_purpose_id: int
     medicine_group: Optional[MedicineGroupFlat] = None
-    name: str
-
+    dosa: str
     note: Optional[str] = None
 
 

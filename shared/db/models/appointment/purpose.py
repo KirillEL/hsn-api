@@ -14,10 +14,11 @@ class AppointmentPurposeDBModel(BaseDBModel):
     appointment = relationship("AppointmentDBModel",
                                primaryjoin="AppointmentDBModel.id == AppointmentPurposeDBModel.appointment_id",
                                back_populates="purposes")
-    medicine_prescription_id = Column(Integer, ForeignKey('public.medicine_prescriptions.id'), nullable=False)
-    medicine_prescription = relationship(MedicinesPrescriptionDBModel, uselist=False)
-    dosa = Column(String(100), nullable=False)
-    note = Column(Text)
+    # medicine_prescription_id = Column(Integer, ForeignKey('public.medicine_prescriptions.id'), nullable=False)
+    # medicine_prescription = relationship(MedicinesPrescriptionDBModel, uselist=False)
+    medicine_prescriptions = relationship(MedicinesPrescriptionDBModel)
+    # dosa = Column(String(100), nullable=False)
+    # note = Column(Text)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))
 

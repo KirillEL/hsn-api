@@ -47,7 +47,7 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
         selectinload(AppointmentDBModel.block_complaint),
         selectinload(AppointmentDBModel.block_laboratory_test),
         selectinload(AppointmentDBModel.purposes).selectinload(
-            AppointmentPurposeDBModel.medicine_prescription).selectinload(
+            AppointmentPurposeDBModel.medicine_prescriptions).selectinload(
             MedicinesPrescriptionDBModel.medicine_group)
     )
 

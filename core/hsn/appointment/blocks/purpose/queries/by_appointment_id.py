@@ -20,7 +20,7 @@ async def hsn_get_purposes_by_appointment_id(appointment_id: int):
     await check_appointment_exists(appointment_id)
     query = (
         select(AppointmentPurposeDBModel)
-        .options(selectinload(AppointmentPurposeDBModel.medicine_prescription).selectinload(
+        .options(selectinload(AppointmentPurposeDBModel.medicine_prescriptions).selectinload(
             MedicinesPrescriptionDBModel.medicine_group))
         .where(AppointmentPurposeDBModel.appointment_id == appointment_id)
         .where(AppointmentPurposeDBModel.is_deleted.is_(False))

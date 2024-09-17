@@ -8,7 +8,7 @@ from fastapi import Request
 
 
 class UpdateBlockPurposeRequestBody(BaseModel):
-    medicine_prescription_id: Optional[int] = Field(None, gt=0)
+    medicine_group_id: Optional[int] = Field(None, gt=0)
     dosa: Optional[str] = Field(None, max_length=100)
     note: Optional[str] = Field(None)
 

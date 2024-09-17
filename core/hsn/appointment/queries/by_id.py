@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
-from shared.db.models import PatientDBModel
+from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
@@ -54,7 +54,8 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
                           selectinload(AppointmentDBModel.block_complaint),
                           selectinload(AppointmentDBModel.block_laboratory_test),
                           selectinload(AppointmentDBModel.purposes).selectinload(
-                              AppointmentPurposeDBModel.medicine_prescription)
+                              AppointmentPurposeDBModel.medicine_prescriptions)
+                          .selectinload(MedicinesPrescriptionDBModel.medicine_group)
                           )
 
     cursor = await db_session.execute(query)
@@ -66,7 +67,7 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
 
     appointment_flat = PatientAppointmentFlat(
         id=appointment.id,
-        patient=patient_info,
+        full_name=f"{patient_info.last_name} {patient_info.name} {patient_info.patronymic}",
         doctor_id=appointment.doctor_id,
         date=appointment.date,
         date_next=str(appointment.date_next) if appointment.date_next else None,
