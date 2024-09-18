@@ -7,7 +7,7 @@ from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
 from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from core.hsn.appointment.blocks.purpose.model import AppointmentPurposeResponseFlat, MedicineGroupData
-from shared.db.models import MedicinesPrescriptionDBModel
+from shared.db.models import MedicinesPrescriptionDBModel, DrugDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 from shared.db.db_session import db_session, SessionContext
 
@@ -19,7 +19,7 @@ async def hsn_query_purposes_by_appointment_id(appointment_id: int):
     query = (
         select(AppointmentPurposeDBModel)
         .options(selectinload(AppointmentPurposeDBModel.medicine_prescriptions).selectinload(
-            MedicinesPrescriptionDBModel.drug))
+            MedicinesPrescriptionDBModel.drug).selectinload(DrugDBModel.drug_group))
         .where(AppointmentPurposeDBModel.appointment_id == appointment_id)
         .where(AppointmentPurposeDBModel.is_deleted.is_(False))
     )
@@ -28,10 +28,15 @@ async def hsn_query_purposes_by_appointment_id(appointment_id: int):
     if len(purposes) == 0:
         raise NotFoundException(message="У приема нет блока назначений лекарственных препаратов")
 
-    return [
-        AppointmentPurposeResponseFlat(
-            id=purpose.id,
-            appointment_id=purpose.appointment_id,
-            medicine_prescriptions=purpose.medicine_prescriptions
-        ) for purpose in purposes
-    ]
+    for purpose in purposes:
+        for med_prescription in purpose.medicine_prescriptions:
+            if med_prescription.drug.drug_group:
+                drug_group_name = med_prescription.drug.drug_group.name
+                results_dict[drug_group_name] = {
+                    "id": med_prescription.drug.id,
+                    "dosa": med_prescription.dosa,
+                    "note": med_prescription.note or "",
+                    "name": med_prescription.drug.name
+                }
+
+    return results_dict
