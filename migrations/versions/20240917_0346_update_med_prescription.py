@@ -22,7 +22,7 @@ def upgrade() -> None:
     op.execute('''
     ALTER TABLE public.medicine_prescriptions ADD COLUMN IF NOT EXISTS
     appointment_purpose_id bigint constraint med_prescription_purpose_id_fk
-                references public.appointment_purposes not null;
+                references public.appointment_purposes;
     ''')
 
 
