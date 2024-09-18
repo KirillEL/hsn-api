@@ -7,7 +7,7 @@ from fastapi import Request
 
 @block_purpose_router.get(
     "/fields",
-    response_model=DrugGroupFieldsResponse,
+    response_model=list[DrugGroupFieldsResponse],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def get_medicine_prescriptions_fields(request: Request):

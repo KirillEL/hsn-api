@@ -31,11 +31,9 @@ async def hsn_query_drug_group_fields():
                 )
             )
 
-    return DrugGroupFieldsResponse(
-        medicine_prescriptions=[
-            DrugFieldsSchema(
+    return  [DrugFieldsSchema(
                 displayName=group,
                 drugs=grouped_prescriptions[group]
             ) for group in grouped_prescriptions
         ]
-    )
+

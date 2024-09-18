@@ -12,5 +12,6 @@ class DrugFieldsSchema(BaseModel):
     drugs: list[DrugGroupSchema]
 
 
-class DrugGroupFieldsResponse(BaseModel):
-    medicine_prescriptions: list[DrugFieldsSchema]
+class DrugGroupFieldsResponse(DrugFieldsSchema):
+    pass
+    #medicine_prescriptions: list[DrugFieldsSchema]
