@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from core.hsn.drug_group.schemas import DrugGroupSchema, DrugGroupFieldsResponse
+from core.hsn.drug_group.schemas import DrugGroupSchema, DrugGroupFieldsResponse, DrugFieldsSchema
 from shared.db.db_session import SessionContext, db_session
 from shared.db.models import DrugDBModel
 
@@ -31,10 +31,11 @@ async def hsn_query_drug_group_fields():
                 )
             )
 
-    response = [
-        DrugGroupFieldsResponse(
-            displayName=group,
-            drugs=grouped_prescriptions[group]
-        ) for group in grouped_prescriptions
-    ]
-    return response
+    return DrugGroupFieldsResponse(
+        medicine_prescriptions=[
+            DrugFieldsSchema(
+                displayName=group,
+                drugs=grouped_prescriptions[group]
+            ) for group in grouped_prescriptions
+        ]
+    )

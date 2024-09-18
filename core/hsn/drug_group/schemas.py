@@ -7,6 +7,10 @@ class DrugGroupSchema(BaseModel):
     description: str
 
 
-class DrugGroupFieldsResponse(BaseModel):
+class DrugFieldsSchema(BaseModel):
     displayName: str
     drugs: list[DrugGroupSchema]
+
+
+class DrugGroupFieldsResponse(BaseModel):
+    medicine_prescriptions: list[DrugFieldsSchema]
