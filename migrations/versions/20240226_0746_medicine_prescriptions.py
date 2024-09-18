@@ -91,28 +91,24 @@ def upgrade() -> None:
                         execute procedure base.set_deleted_at();
                         ''')
 
-
     op.execute('''
-    create table public.medicine_prescriptions (
-    id serial constraint medicine_prescription_pk primary key,
-    medicine_group_id integer constraint medicine_prescription_medicine_group_fk
-        references public.medicines_group,
-    name text not null,
-    note text,
-    
-    is_deleted boolean not null default false,
-    
-    
-    created_at   timestamp with time zone default now() not null,
-    created_by   integer,
+        create table public.medicine_prescriptions (
+            id serial constraint med_prescription_id_pk primary key,
+            dosa varchar(10) not null,
+            note varchar(500),
 
-    updated_at   timestamp with time zone,
-    updated_by   integer,
+            is_deleted boolean not null default false,
 
-    deleted_at   timestamp with time zone,
-    deleted_by   integer
-    );
-    ''')
+            created_at   timestamp with time zone default now() not null,
+            created_by   integer not null,
+
+            updated_at   timestamp with time zone,
+            updated_by   integer,
+
+            deleted_at   timestamp with time zone,
+            deleted_by   integer
+        );
+        ''')
 
     op.execute('''
             create trigger medicine_prescription_updated_at_trg

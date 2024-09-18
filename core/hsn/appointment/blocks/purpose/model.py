@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from core.user import UserAuthor
 
@@ -30,17 +30,15 @@ class MedicineGroupFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra='ignore')
 
     id: int
-    code: Optional[str] = None
     name: str
-    note: Optional[str] = None
 
 
 class MedicinePrescriptionFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    medicine_group: Optional[MedicineGroupFlat] = None
-    name: str
+    drug: Optional[MedicineGroupFlat] = None
+    dosa: str
     note: Optional[str] = None
 
 
@@ -49,9 +47,8 @@ class AppointmentPurposeFlat(BaseModel):
 
     id: int
     appointment_id: int
-    dosa: str
     note: Optional[str] = None
-    medicine_prescription: MedicinePrescriptionFlat
+    medicine_prescriptions: list[MedicinePrescriptionFlat]
 
 
 class MedicineGroupData(BaseModel):
@@ -60,6 +57,15 @@ class MedicineGroupData(BaseModel):
     id: int
     name: str
     dosa: str
+    note: Optional[str] = None
+
+
+class MedicinePrescriptionData(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    dosa: str
+    drug_id: int
     note: Optional[str] = None
 
 

@@ -2,8 +2,8 @@ from typing import Optional
 
 from fastapi import Request
 
-from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, HsnBlockDiagnoseUpdateContext, \
-    hsn_block_diagnose_update
+from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, HsnCommandBlockDiagnoseUpdateContext, \
+    hsn_command_block_diagnose_update
 from core.hsn.appointment.blocks.diagnose.model import ClassificationFuncClassesType, ClassificationAdjacentReleaseType, \
     ClassificationNcStageType
 from .router import block_diagnose_router
@@ -52,8 +52,8 @@ async def update_block_diagnose(request: Request, appointment_id: int, body: Upd
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnBlockDiagnoseUpdateContext(
+    context = HsnCommandBlockDiagnoseUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()
     )
-    return await hsn_block_diagnose_update(context)
+    return await hsn_command_block_diagnose_update(context)

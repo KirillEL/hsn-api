@@ -2,7 +2,6 @@ from typing import Optional
 
 from sqlalchemy import insert, update, exc
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
@@ -12,7 +11,7 @@ from shared.db.models.appointment.blocks.block_complaint import AppointmentCompl
 from pydantic import BaseModel
 
 
-class HsnAppointmentBlockComplaintCreateContext(BaseModel):
+class HsnCommandAppointmentBlockComplaintCreateContext(BaseModel):
     appointment_id: int
     has_fatigue: Optional[bool] = False
     has_dyspnea: Optional[bool] = False
@@ -24,8 +23,7 @@ class HsnAppointmentBlockComplaintCreateContext(BaseModel):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_appointment_block_complaint_create(context: HsnAppointmentBlockComplaintCreateContext) -> int:
+async def hsn_command_appointment_block_complaint_create(context: HsnCommandAppointmentBlockComplaintCreateContext) -> int:
     await check_appointment_exists(context.appointment_id)
     payload = context.model_dump(exclude={'appointment_id'})
     query = (

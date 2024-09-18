@@ -3,7 +3,6 @@ from typing import Optional, Dict, Any
 from pydantic import BaseModel
 from sqlalchemy import insert, update, select
 
-from api.decorators import HandleExceptions
 from api.exceptions.base import BlockAlreadyExistsException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
 from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
@@ -13,7 +12,7 @@ from shared.db.models.appointment.blocks.block_clinical_condition import Appoint
 from shared.db.models.appointment.appointment import AppointmentDBModel
 
 
-class HsnBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
+class HsnCommandBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
     appointment_id: int
 
     has_fatigue: Optional[bool] = False
@@ -101,8 +100,7 @@ async def check_block_clinical_condition_exists_in_appointment(appointment_id: i
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_block_complaint_and_clinical_condition_create(context: HsnBlockComplaintAndClinicalCondtionCreateContext):
+async def hsn_command_block_complaint_and_clinical_condition_create(context: HsnCommandBlockComplaintAndClinicalCondtionCreateContext):
     await check_appointment_exists(context.appointment_id)
     payloads = context.create_payloads()
     query_insert_block_complaint = (

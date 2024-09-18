@@ -1,4 +1,3 @@
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from shared.db.db_session import db_session, SessionContext
@@ -8,8 +7,7 @@ from sqlalchemy import select
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_get_block_ekg_by_appointment_id(doctor_id: int, appointment_id: int):
+async def hsn_query_block_ekg_by_appointment_id(doctor_id: int, appointment_id: int):
     query = (
         select(AppointmentDBModel.block_ekg_id, AppointmentDBModel.doctor_id)
         .where(AppointmentDBModel.is_deleted.is_(False))

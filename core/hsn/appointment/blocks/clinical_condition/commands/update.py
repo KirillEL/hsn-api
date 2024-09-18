@@ -3,7 +3,6 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import select, update
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
@@ -12,7 +11,7 @@ from shared.db.models.appointment.blocks.block_clinical_condition import Appoint
 from shared.db.db_session import db_session, SessionContext
 
 
-class HsnBlockClinicalConditionUpdateContext(BaseModel):
+class HsnCommandBlockClinicalConditionUpdateContext(BaseModel):
     appointment_id: int
     heart_failure_om: Optional[bool] = None
     orthopnea: Optional[bool] = None
@@ -46,8 +45,7 @@ class HsnBlockClinicalConditionUpdateContext(BaseModel):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_block_clinical_condition_update(context: HsnBlockClinicalConditionUpdateContext):
+async def hsn_command_block_clinical_condition_update(context: HsnCommandBlockClinicalConditionUpdateContext):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
     query = (

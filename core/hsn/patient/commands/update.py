@@ -1,7 +1,6 @@
 from sqlalchemy import update, select
 from sqlalchemy.orm import selectinload
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from core.hsn.patient.commands.create import convert_to_patient_response
 from core.hsn.patient.model import PatientResponse
@@ -14,7 +13,7 @@ from typing import Optional
 from utils import contragent_hasher
 
 
-class HsnPatientUpdateContext(BaseModel):
+class HsnCommandPatientUpdateContext(BaseModel):
     doctor_id: int = Field(gt=0)
     patient_id: int = Field(gt=0)
 
@@ -59,8 +58,7 @@ async def check_patient_exists_by_id(patient_id: int):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_update_patient_by_id(context: HsnPatientUpdateContext):
+async def hsn_command_patient_update_by_id(context: HsnCommandPatientUpdateContext):
     await check_patient_exists_by_id(context.patient_id)
     patient_update_values = {key: value for key, value in context.dict().items() if
                              key in PatientDBModel.__table__.columns and value is not None}

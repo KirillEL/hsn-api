@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, field_validator, root_validator, model_va
 from starlette import status
 from fastapi import Request
 
-from core.hsn.appointment import HsnInitializeAppointmentContext, hsn_appointment_initialize
+from core.hsn.appointment import HsnCommandAppointmentInitContext, hsn_command_appointment_initialize
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
 
@@ -49,9 +49,9 @@ async def appointment_initialize(request: Request, body: AppointmentInitializeRe
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnInitializeAppointmentContext(
+    context = HsnCommandAppointmentInitContext(
         user_id=request.user.id,
         doctor_id=request.user.doctor.id,
         **body.model_dump()
     )
-    return await hsn_appointment_initialize(context)
+    return await hsn_command_appointment_initialize(context)

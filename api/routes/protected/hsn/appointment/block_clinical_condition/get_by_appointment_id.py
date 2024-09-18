@@ -1,6 +1,6 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock, \
-    hsn_get_block_clinical_condition_by_appointment_id
+    hsn_query_block_clinical_condition_by_appointment_id
 from .router import block_clinical_condition_router
 from fastapi import Request
 
@@ -14,4 +14,4 @@ async def get_block_clinical_condition_by_appointment_id(request: Request, appoi
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    return await hsn_get_block_clinical_condition_by_appointment_id(appointment_id)
+    return await hsn_query_block_clinical_condition_by_appointment_id(appointment_id)

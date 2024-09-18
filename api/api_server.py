@@ -68,26 +68,27 @@ def init_listeners(app_: FastAPI) -> None:
 def init_tasks_on_startup(app_: FastAPI) -> None:
     @app_.on_event("startup")
     async def init_startup():
-        await hsn_create_admin()
-        await hsn_create_role_doctor()
-        await create_med_prescriptions()
+        pass
+        # await hsn_create_admin()
+        # await hsn_create_role_doctor()
 
 
 def init_logger() -> None:
     logger.remove()
 
     logger.add(
-        "logs/hsn_app.log",
+        "logs/logs.log",
         rotation="10 MB",
         retention="10 days",
         compression="zip",
-        level="DEBUG",
+        level="INFO",
         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
     )
 
     logger.add(
         sys.stdout,
         level="DEBUG",
+        filter=lambda record: record["level"].name in ["DEBUG", "ERROR"],
         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
     )
 

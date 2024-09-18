@@ -2,7 +2,7 @@ from .router import block_clinical_condition_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from pydantic import BaseModel, Field
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock, \
-    hsn_appointment_block_clinical_condition_create, HsnAppointmentBlockClinicalConditionCreateContext
+    hsn_command_appointment_block_clinical_condition_create, HsnCommandAppointmentBlockClinicalConditionCreateContext
 from typing import Optional
 from fastapi import Request
 
@@ -49,5 +49,5 @@ async def create_block_clinical_condition(request: Request, body: CreateBlockCli
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnAppointmentBlockClinicalConditionCreateContext(**body.model_dump())
-    return await hsn_appointment_block_clinical_condition_create(context)
+    context = HsnCommandAppointmentBlockClinicalConditionCreateContext(**body.model_dump())
+    return await hsn_command_appointment_block_clinical_condition_create(context)

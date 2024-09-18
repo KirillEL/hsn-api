@@ -1,7 +1,7 @@
 from .router import block_ekg_router
 from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
-from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock, hsn_appointment_block_ekg_create, \
-    HsnAppointmentBlockEkgCreateContext
+from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock, hsn_command_appointment_block_ekg_create, \
+    HsnCommandAppointmentBlockEkgCreateContext
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import date as tdate, datetime
@@ -55,5 +55,5 @@ async def create_block_ekg(request: Request, body: CreateBlockEkgRequestBody):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnAppointmentBlockEkgCreateContext(**body.model_dump())
-    return await hsn_appointment_block_ekg_create(context)
+    context = HsnCommandAppointmentBlockEkgCreateContext(**body.model_dump())
+    return await hsn_command_appointment_block_ekg_create(context)

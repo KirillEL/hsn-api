@@ -56,7 +56,6 @@ class SessionContext:
         async def _session_context(*args, **kwargs):
             session_id = str(uuid4())
             context = set_session_context(session_id)
-            logger.debug(f'sessionContext')
             try:
                 result = await func(*args, **kwargs)
             except Exception as e:

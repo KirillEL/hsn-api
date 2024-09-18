@@ -1,7 +1,6 @@
 import json
 from sqlalchemy import insert, update, select
 
-from api.decorators import HandleExceptions
 from core.hsn.patient.model import PatientTableColumns, TableColumns
 from core.hsn.patient.queries.get_table_columns import default_payload
 from shared.db.models.patient_columns import PatientTableColumnsDBModel
@@ -38,7 +37,6 @@ async def create_default_columns_settings(user_id:int):
     return exists.id
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_patient_columns_create(context: HsnPatientColumnsCreateContext):
     created_default_columns_id = await create_default_columns_settings(context.user_id)
     serialized_columns = [column.dict() for column in context.table_columns]

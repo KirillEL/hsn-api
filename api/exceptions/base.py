@@ -92,7 +92,12 @@ class MedicinePrescriptionCreateException(CustomException):
     message = "Не удалось создать лекарственное назначение"
 
 
-class ValidationErrorTelegramSendMessageModel:
+class ForbiddenException(CustomException):
+    code = HTTPStatus.FORBIDDEN
+    error_code = HTTPStatus.FORBIDDEN
+    message = HTTPStatus.FORBIDDEN.description
+
+class ValidationErrorTelegramSendMessageSchema:
     def __init__(
             self,
             message: str,

@@ -1,4 +1,3 @@
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, AppointmentNotBelongsToUserException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from shared.db.db_session import db_session, SessionContext
@@ -8,7 +7,6 @@ from sqlalchemy import select
 
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_get_block_clinic_doctor_by_appointment_id(appointment_id: int, user_id: int = None):
     query = (
         select(AppointmentDBModel.block_clinic_doctor_id, AppointmentDBModel.author_id)

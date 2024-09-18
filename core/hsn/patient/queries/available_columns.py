@@ -4,7 +4,7 @@ from shared.db.db_session import db_session, SessionContext
 
 
 @SessionContext()
-async def hsn_get_patient_available_columns():
+async def hsn_query_patient_available_columns():
     available_patient_columns = [
         {'title': 'ID', 'value': 'id', 'disabled': True},
         {'title': 'ФИО', 'value': 'full_name', 'disabled': True},

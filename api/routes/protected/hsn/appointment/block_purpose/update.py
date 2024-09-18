@@ -7,10 +7,15 @@ from typing import Optional
 from fastapi import Request
 
 
+class UpdateMedicinePrescriptionModel(BaseModel):
+    id: int = Field(gt=0)
+    drug_id: Optional[int] = Field(None, gt=0)
+    dosa: Optional[str] = Field(None, max_length=255)
+    note: Optional[str] = Field(None, max_length=500)
+
+
 class UpdateBlockPurposeRequestBody(BaseModel):
-    medicine_prescription_id: Optional[int] = Field(None, gt=0)
-    dosa: Optional[str] = Field(None, max_length=100)
-    note: Optional[str] = Field(None)
+    medicine_prescriptions: list[UpdateMedicinePrescriptionModel]
 
 
 @block_purpose_router.patch(

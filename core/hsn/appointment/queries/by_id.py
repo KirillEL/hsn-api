@@ -3,10 +3,9 @@ from pydantic import ValidationError
 from sqlalchemy import select, RowMapping
 from sqlalchemy.orm import selectinload
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
-from shared.db.models import PatientDBModel
+from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
@@ -30,21 +29,10 @@ async def build_patient_info(appointment: RowMapping):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_appointment_by_id(user_id: int, appointment_id: int):
+async def hsn_appointment_by_id(doctor_id: int, appointment_id: int):
     query = select(AppointmentDBModel).where(AppointmentDBModel.is_deleted.is_(False),
-                                             AppointmentDBModel.doctor_id == user_id,
+                                             AppointmentDBModel.doctor_id == doctor_id,
                                              AppointmentDBModel.id == appointment_id)
-
-    query = query.outerjoin(AppointmentDBModel.block_clinic_doctor) \
-        .outerjoin(AppointmentDBModel.block_clinical_condition) \
-        .outerjoin(AppointmentDBModel.block_diagnose) \
-        .outerjoin(AppointmentDBModel.block_ekg) \
-        .outerjoin(AppointmentDBModel.block_complaint) \
-        .outerjoin(AppointmentDBModel.block_laboratory_test) \
-        .outerjoin(AppointmentDBModel.purposes) \
-        .outerjoin(AppointmentDBModel.patient) \
-        .outerjoin(PatientDBModel.contragent)
 
     query = query.options(selectinload(AppointmentDBModel.block_clinic_doctor),
                           selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent),
@@ -54,7 +42,8 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
                           selectinload(AppointmentDBModel.block_complaint),
                           selectinload(AppointmentDBModel.block_laboratory_test),
                           selectinload(AppointmentDBModel.purposes).selectinload(
-                              AppointmentPurposeDBModel.medicine_prescription)
+                              AppointmentPurposeDBModel.medicine_prescriptions)
+                          .selectinload(MedicinesPrescriptionDBModel.drug)
                           )
 
     cursor = await db_session.execute(query)
@@ -66,7 +55,7 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
 
     appointment_flat = PatientAppointmentFlat(
         id=appointment.id,
-        patient=patient_info,
+        full_name=f"{patient_info.last_name} {patient_info.name} {patient_info.patronymic}",
         doctor_id=appointment.doctor_id,
         date=appointment.date,
         date_next=str(appointment.date_next) if appointment.date_next else None,

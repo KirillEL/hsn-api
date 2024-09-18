@@ -1,13 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
-from api.exceptions.base import ValidationErrorTelegramSendMessageModel
+from api.exceptions.base import ValidationErrorTelegramSendMessageSchema
 from tg_api import tg_bot
 from loguru import logger
 from sqlalchemy import select, func, exc
 from sqlalchemy.orm import joinedload, contains_eager, selectinload
 from fastapi import Request
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, BadRequestException, ValidationException, InternalServerException
 from core.hsn.appointment import Appointment
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
@@ -47,8 +46,8 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
         selectinload(AppointmentDBModel.block_complaint),
         selectinload(AppointmentDBModel.block_laboratory_test),
         selectinload(AppointmentDBModel.purposes).selectinload(
-            AppointmentPurposeDBModel.medicine_prescription).selectinload(
-            MedicinesPrescriptionDBModel.medicine_group)
+            AppointmentPurposeDBModel.medicine_prescriptions).selectinload(
+            MedicinesPrescriptionDBModel.drug)
     )
 
     query_count = (
@@ -71,7 +70,7 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
         patient_appointments = cursor.unique().scalars().all()
     except exc.SQLAlchemyError as sqle:
         logger.error(f'Failed fetching patient appointments: {sqle}')
-        message_model = ValidationErrorTelegramSendMessageModel(
+        message_model = ValidationErrorTelegramSendMessageSchema(
             message="*Не удалось получить список приемов*",
             doctor_id=context.doctor_id,
             doctor_name=request.user.doctor.name,

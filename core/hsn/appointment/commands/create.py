@@ -1,6 +1,5 @@
 from sqlalchemy import insert, select
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from shared.db.models import BaseDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -18,7 +17,7 @@ from shared.db.models.appointment.blocks.block_clinical_condition import Appoint
 DBModelType = TypeVar("DBModelType", bound=BaseDBModel)
 
 
-class HsnCreatePatientAppontmentContext(BaseModel):
+class HsnCommandPatientAppointmentCreateContext(BaseModel):
     user_id: int = Field(gt=0)
     doctor_id: int = Field(gt=0)
     patient_id: int = Field(gt=0)
@@ -75,8 +74,7 @@ async def check_clinical_condition_exists(block_clinical_condition_id: int):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_patient_appontment_create(context: HsnCreatePatientAppontmentContext):
+async def hsn_command_patient_appontment_create(context: HsnCommandPatientAppointmentCreateContext):
     await check_block_clinic_doctor_exists(context.block_clinic_doctor_id)
     await check_block_diagnose_exists(context.block_diagnose_id)
     await check_block_laboratory_test_exists(context.block_laboratory_test_id)

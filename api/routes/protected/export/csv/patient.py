@@ -3,7 +3,7 @@ from io import StringIO
 
 from api.exceptions import ExceptionResponseSchema, NotFoundException, DoctorNotAssignedException
 from core.export.csv.queries.get import export_patients
-from core.hsn.patient import hsn_get_own_patients
+from core.hsn.patient import hsn_query_own_patients
 from .router import csv_router
 from starlette.responses import StreamingResponse
 from fastapi import Request
@@ -23,4 +23,4 @@ async def csv_export_patients(request: Request):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    return await export_patients(user_id=request.user.id)
+    return await export_patients(request, doctor_id=request.user.doctor.id)

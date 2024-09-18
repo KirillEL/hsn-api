@@ -1,6 +1,6 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
-    hsn_get_block_laboratory_test_by_appointment_id
+    hsn_query_block_laboratory_test_by_appointment_id
 from .router import block_laboratory_test_router
 from fastapi import Request
 
@@ -14,4 +14,4 @@ async def get_block_laboratory_test_by_appointment_id(request: Request, appointm
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    return await hsn_get_block_laboratory_test_by_appointment_id(appointment_id)
+    return await hsn_query_block_laboratory_test_by_appointment_id(appointment_id)

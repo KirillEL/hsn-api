@@ -5,7 +5,7 @@ from fastapi import Request
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
-    HsnBlockLaboratoryTestUpdateContext, hsn_block_laboratory_test_update
+    HsnCommandBlockLaboratoryTestUpdateContext, hsn_command_block_laboratory_test_update
 from .router import block_laboratory_test_router
 from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
 
@@ -81,8 +81,8 @@ async def update_block_laboratory_test(request: Request,
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnBlockLaboratoryTestUpdateContext(
+    context = HsnCommandBlockLaboratoryTestUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()
     )
-    return await hsn_block_laboratory_test_update(context)
+    return await hsn_command_block_laboratory_test_update(context)

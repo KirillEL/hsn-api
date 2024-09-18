@@ -1,4 +1,4 @@
-from core.hsn.patient import hsn_patient_columns
+from core.hsn.patient import hsn_query_patient_columns
 from core.hsn.patient.model import PatientTableResponse
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema
@@ -13,4 +13,4 @@ from fastapi import Request
     summary="Получить настройки таблицы для пациентов"
 )
 async def get_patient_table_columns(request: Request):
-    return await hsn_patient_columns(user_id=request.user.id)
+    return await hsn_query_patient_columns(user_id=request.user.id)

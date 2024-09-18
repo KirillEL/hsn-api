@@ -1,4 +1,3 @@
-from api.decorators import HandleExceptions
 from shared.db.db_session import SessionContext
 from shared.db.models.med_organization import MedOrganizationDBModel
 from pydantic import BaseModel, Field
@@ -15,7 +14,6 @@ class UpdateMedOrganizationContext(BaseModel):
 
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_med_organization_update(context: UpdateMedOrganizationContext):
     payload = context.model_dump(exclude={'user_id'})
     entity_db = await db_base_entity_update(db_model=MedOrganizationDBModel, entity_id=context.id,

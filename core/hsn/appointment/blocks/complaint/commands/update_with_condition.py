@@ -2,7 +2,6 @@ from typing import Optional, Dict, Any
 
 from sqlalchemy import update, select
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
 from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
@@ -13,7 +12,7 @@ from shared.db.models.appointment.appointment import AppointmentDBModel
 from pydantic import BaseModel, Field
 
 
-class HsnBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
+class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
     user_id: int = Field(gt=0)
     appointment_id: int
 
@@ -86,8 +85,7 @@ class HsnBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_block_complaint_and_clinical_condition_update(context: HsnBlockComplaintAndClinicalConditionUpdateContext):
+async def hsn_command_block_complaint_and_clinical_condition_update(context: HsnCommandBlockComplaintAndClinicalConditionUpdateContext):
     user_id = context.user_id
     appointment_id = context.appointment_id
     payloads = context.create_payloads()

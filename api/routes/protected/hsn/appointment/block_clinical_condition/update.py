@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock, \
-    HsnBlockClinicalConditionUpdateContext, hsn_block_clinical_condition_update
+    HsnCommandBlockClinicalConditionUpdateContext, hsn_command_block_clinical_condition_update
 from .router import block_clinical_condition_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request
@@ -52,8 +52,8 @@ async def update_block_clinical_condition(request: Request, appointment_id: int,
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnBlockClinicalConditionUpdateContext(
+    context = HsnCommandBlockClinicalConditionUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()
     )
-    return await hsn_block_clinical_condition_update(context)
+    return await hsn_command_block_clinical_condition_update(context)

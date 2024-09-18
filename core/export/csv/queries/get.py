@@ -4,11 +4,12 @@ from io import StringIO
 from starlette.responses import StreamingResponse
 
 from api.exceptions import NotFoundException
-from core.hsn.patient import hsn_get_own_patients
+from core.hsn.patient import hsn_query_own_patients
+from fastapi import Request
 
 
-async def export_patients(user_id: int):
-    result = await hsn_get_own_patients(user_id)
+async def export_patients(request: Request, doctor_id: int):
+    result = await hsn_query_own_patients(request=request, doctor_id=doctor_id)
     if not result["data"]:
         raise NotFoundException
 

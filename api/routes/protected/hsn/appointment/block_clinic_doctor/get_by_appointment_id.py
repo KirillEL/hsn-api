@@ -1,7 +1,7 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock, \
     hsn_get_block_clinic_doctor_by_appointment_id
-from core.hsn.appointment.blocks.clinical_condition import hsn_get_block_clinical_condition_by_appointment_id
+from core.hsn.appointment.blocks.clinical_condition import hsn_query_block_clinical_condition_by_appointment_id
 from .router import block_clinic_doctor_router
 from fastapi import Request
 

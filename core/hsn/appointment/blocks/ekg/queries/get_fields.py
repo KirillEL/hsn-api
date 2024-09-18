@@ -7,7 +7,7 @@ from shared.db.db_session import SessionContext
 
 
 @SessionContext()
-async def hsn_get_block_ekg_fields():
+async def hsn_query_block_ekg_fields():
     inspector = inspect(AppointmentEkgBlockDBModel)
     response = AppointmentBlockEkgBooleanFieldsResponse()
 

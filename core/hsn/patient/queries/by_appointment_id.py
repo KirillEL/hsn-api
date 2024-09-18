@@ -3,21 +3,27 @@ from pydantic import ValidationError
 from sqlalchemy import select, exc
 from sqlalchemy.orm import selectinload
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException, ValidationException
-from api.exceptions.base import UnprocessableEntityException
+from api.exceptions.base import UnprocessableEntityException, ForbiddenException
 from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from core.hsn.patient.commands.create import convert_to_patient_response
-from core.hsn.patient.model import PatientResponse, PatientResponseWithoutFullName
+from core.hsn.patient.model import PatientResponse, PatientWithoutFullNameResponse
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.patient import PatientDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
+from shared.db.queries import db_query_entity_by_id
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_get_patient_by_appointment_id(appointment_id: int):
-    await check_appointment_exists(appointment_id)
+async def hsn_query_patient_by_appointment_id(appointment_id: int,
+                                              doctor_id: int = None) -> PatientWithoutFullNameResponse:
+    appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
+    if not appointment:
+        raise NotFoundException
+
+    if appointment.author_id != doctor_id:
+        raise ForbiddenException(message=f"У вас нет прав к получению приема с id: {appointment_id}")
+
     query = (
         select(AppointmentDBModel)
         .options(selectinload(AppointmentDBModel.patient),
@@ -27,11 +33,6 @@ async def hsn_get_patient_by_appointment_id(appointment_id: int):
     try:
         cursor = await db_session.execute(query)
         appointment = cursor.scalars().first()
-    except exc.NoResultFound as nrf:
-        logger.error(f"No appointment found: {nrf}")
-        raise NotFoundException(
-            message=f"Не найден прием с id: {appointment_id}"
-        )
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Failed to get appointment: {sqle}")
         raise InternalServerException(
@@ -40,4 +41,4 @@ async def hsn_get_patient_by_appointment_id(appointment_id: int):
 
     patient_response = await convert_to_patient_response(appointment.patient, type="without")
 
-    return PatientResponseWithoutFullName.model_validate(patient_response)
+    return PatientWithoutFullNameResponse.model_validate(patient_response)

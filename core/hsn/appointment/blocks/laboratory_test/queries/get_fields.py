@@ -8,7 +8,7 @@ from shared.db.db_session import SessionContext
 
 
 @SessionContext()
-async def hsn_get_block_laboratory_test_fields():
+async def hsn_query_block_laboratory_test_fields():
     inspector = inspect(AppointmentLaboratoryTestBlockDBModel)
     all_columns = inspector.columns.keys()
 

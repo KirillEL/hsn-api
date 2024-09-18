@@ -1,11 +1,11 @@
 from typing import Optional
 
+from pydantic import BaseModel
+
 from core.hsn.appointment.model import PatientAppointmentFlat
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment import Appointment, HsnAppointmentListContext, hsn_appointment_list
 from fastapi import Request, Depends
-from pydantic import BaseModel
 
 
 class GetAppointmentListQueryParams(BaseModel):
@@ -28,6 +28,7 @@ class GetOwnPatientAppointmentsResponse(BaseModel):
 async def get_appointment_list(request: Request, params: GetAppointmentListQueryParams = Depends()):
     if not request.user.doctor:
         raise DoctorNotAssignedException
+    from core.hsn.appointment import HsnAppointmentListContext, hsn_appointment_list
 
     context = HsnAppointmentListContext(
         doctor_id=request.user.doctor.id,

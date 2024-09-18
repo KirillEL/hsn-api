@@ -1,4 +1,3 @@
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
 from shared.db.db_session import db_session, SessionContext
@@ -7,8 +6,7 @@ from shared.db.models.appointment.blocks.block_clinical_condition import Appoint
 from sqlalchemy import select
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_get_block_clinical_condition_by_appointment_id(appointment_id:int):
+async def hsn_query_block_clinical_condition_by_appointment_id(appointment_id:int):
     query = (
         select(AppointmentDBModel.block_clinical_condition_id)
         .where(AppointmentDBModel.is_deleted.is_(False))

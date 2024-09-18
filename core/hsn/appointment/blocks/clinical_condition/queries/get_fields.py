@@ -5,7 +5,7 @@ from sqlalchemy import inspect
 
 
 @SessionContext()
-async def hsn_get_block_clinical_condition_fields():
+async def hsn_query_block_clinical_condition_fields():
     inspector = inspect(AppointmentClinicalConditionBlockDBModel)
     field_responses = []
 

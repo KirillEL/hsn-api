@@ -71,23 +71,3 @@ async def create_med_prescriptions():
     await db_session.commit()
     logger.info(f"Справочник групп препаратов успешно создан!")
 
-    for key, value in payloads.items():
-        query = (
-            select(MedicinesGroupDBModel.id)
-            .where(MedicinesGroupDBModel.name.contains(key))
-        )
-        cursor = await db_session.execute(query)
-        id = cursor.scalar()
-        for val in value:
-            query = (
-                insert(MedicinesPrescriptionDBModel)
-                .values(
-                    medicine_group_id=id,
-                    name=val
-                )
-            )
-            await db_session.execute(query)
-
-    await db_session.commit()
-
-    logger.info(f'Все препараты успешно созданы!')

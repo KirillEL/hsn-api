@@ -115,13 +115,11 @@ class BasePatientResponse(BaseModel):
     patient_note: Optional[str] = None
 
 
-
-
 class PatientResponse(BasePatientResponse):
     full_name: str
 
 
-class PatientResponseWithoutFullName(BasePatientResponse):
+class PatientWithoutFullNameResponse(BasePatientResponse):
     name: str
     last_name: str
     patronymic: Optional[str] = None
@@ -153,5 +151,5 @@ class PatientTableResponse(BaseModel):
 
 
 class DictPatientResponse(TypedDict):
-    data: List[PatientResponse | PatientResponseWithoutFullName]
+    data: List[PatientResponse | PatientWithoutFullNameResponse]
     total: int

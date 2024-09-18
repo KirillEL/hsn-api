@@ -3,7 +3,6 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import select, update
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -11,7 +10,7 @@ from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBM
 from shared.db.db_session import db_session, SessionContext
 
 
-class HsnBlockEkgUpdateContext(BaseModel):
+class HsnCommandBlockEkgUpdateContext(BaseModel):
     appointment_id: int
     date_ekg: Optional[str] = None
     sinus_ritm: Optional[bool] = None
@@ -41,8 +40,7 @@ class HsnBlockEkgUpdateContext(BaseModel):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_block_ekg_update(context: HsnBlockEkgUpdateContext):
+async def hsn_command_block_ekg_update(context: HsnCommandBlockEkgUpdateContext):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
     query = (

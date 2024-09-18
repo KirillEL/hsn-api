@@ -67,3 +67,5 @@ class PatientAppointmentFlat(BaseModel):
     purposes: Optional[list[AppointmentPurposeFlat]] = None
 
     status: str
+
+
