@@ -60,17 +60,26 @@ class MedicineGroupData(BaseModel):
     note: Optional[str] = None
 
 
+class DrugSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+
+
 class MedicinePrescriptionData(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     dosa: str
-    drug_id: int
+    drug_id: Optional[int]
+    drug: Optional[DrugSchema] = None
     note: Optional[str] = None
 
 
 class AppointmentPurposeResponseFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    medicine_group: str
-    medicine_group_data: Optional[MedicineGroupData] = None
+    id: int
+    appointment_id: int
+    medicine_prescriptions: list[MedicinePrescriptionData]

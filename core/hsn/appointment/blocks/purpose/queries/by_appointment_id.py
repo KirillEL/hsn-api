@@ -28,19 +28,10 @@ async def hsn_query_purposes_by_appointment_id(appointment_id: int):
     if len(purposes) == 0:
         raise NotFoundException(message="У приема нет блока назначений лекарственных препаратов")
 
-    results = []
-    for purpose in purposes:
-        logger.debug(f'purpose: {purpose.__dict__}')
-        final_result = AppointmentPurposeResponseFlat(
-            medicine_group=purpose.medicine_prescription.medicine_group.name,
-            medicine_group_data=MedicineGroupData(
-                id=purpose.medicine_prescription.id,
-                name=purpose.medicine_prescription.name,
-                dosa=purpose.dosa,
-                note=purpose.note if purpose.note else ""
-            )
-        )
-        results.append(final_result)
-        for r in results:
-            results_dict[r.medicine_group] = r.medicine_group_data
-    return results_dict
+    return [
+        AppointmentPurposeResponseFlat(
+            id=purpose.id,
+            appointment_id=purpose.appointment_id,
+            medicine_prescriptions=purpose.medicine_prescriptions
+        ) for purpose in purposes
+    ]

@@ -7,7 +7,7 @@ from fastapi import Request
 
 @block_purpose_router.get(
     "/{appointment_id}",
-    response_model=dict,
+    response_model=list[AppointmentPurposeResponseFlat],
     responses={'400': {"model": ExceptionResponseSchema}}
 )
 async def get_purposes_by_appointment_id(request: Request, appointment_id: int):
