@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship, foreign
 
 from . import UserDBModel
 from .BASE import BaseDBModel
+from .drug import DrugDBModel
 from .medicines_group import MedicinesGroupDBModel
 
 
@@ -13,12 +14,10 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     appointment_purpose_id = Column(BigInteger, ForeignKey('public.appointment_purposes.id'), nullable=False)
 
-    medicine_group_id = Column(Integer, ForeignKey('public.medicines_group.id'), nullable=False)
-
-    medicine_group = relationship(MedicinesGroupDBModel, uselist=False)
+    drug_id = Column(BigInteger, ForeignKey('public.drugs.id'), nullable=False)
+    drug = relationship(DrugDBModel)
 
     dosa = Column(String(10), nullable=False)
-    #name = Column(Text, nullable=False)
     note = Column(String(500), nullable=True)
 
     is_deleted = Column(Boolean, nullable=False, server_default=text("false"))

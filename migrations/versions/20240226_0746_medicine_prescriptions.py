@@ -94,8 +94,6 @@ def upgrade() -> None:
     op.execute('''
         create table public.medicine_prescriptions (
             id serial constraint med_prescription_id_pk primary key,
-            medicine_group_id integer not null references public.medicines_group
-                not null,
             dosa varchar(10) not null,
             note varchar(500),
 

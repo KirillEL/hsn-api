@@ -2,7 +2,6 @@ from typing import Optional
 
 from sqlalchemy import insert, update, select, exc
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.db_session import db_session, SessionContext
@@ -12,7 +11,7 @@ from pydantic import BaseModel
 from datetime import date as tdate
 
 
-class HsnAppointmentBlockClinicDoctorCreateContext(BaseModel):
+class HsnCommandAppointmentBlockClinicDoctorCreateContext(BaseModel):
     appointment_id: int
     referring_doctor: Optional[str] = None
     referring_clinic_organization: Optional[str] = None
@@ -35,8 +34,7 @@ async def check_appointment_exists(appointment_id: int):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_appointment_block_clinic_doctor_create(context: HsnAppointmentBlockClinicDoctorCreateContext):
+async def hsn_command_appointment_block_clinic_doctor_create(context: HsnCommandAppointmentBlockClinicDoctorCreateContext):
     await check_appointment_exists(context.appointment_id)
     payload = context.model_dump(exclude={'appointment_id'})
     query = (

@@ -3,7 +3,6 @@ from datetime import date as tdate, datetime
 from loguru import logger
 from sqlalchemy import insert, update, exc
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
@@ -16,7 +15,7 @@ from typing import Optional
 from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
 
 
-class HsnAppointmentBlockLaboratoryTestCreateContext(BaseModel):
+class HsnCommandAppointmentBlockLaboratoryTestCreateContext(BaseModel):
     appointment_id: int
 
     nt_pro_bnp: Optional[float] = None
@@ -62,7 +61,7 @@ class HsnAppointmentBlockLaboratoryTestCreateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_appointment_block_laboratory_test_create(context: HsnAppointmentBlockLaboratoryTestCreateContext):
+async def hsn_command_appointment_block_laboratory_test_create(context: HsnCommandAppointmentBlockLaboratoryTestCreateContext):
     await check_appointment_exists(context.appointment_id)
     payload = context.model_dump(exclude={'appointment_id'})
     query = (

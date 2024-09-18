@@ -1,8 +1,7 @@
 from asyncpg import InternalServerError
 from tg_api import tg_bot
-from api.decorators import HandleExceptions
 from api.exceptions.base import UnprocessableEntityException
-from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientResponseWithoutFullName
+from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientWithoutFullNameResponse
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field, ValidationError
 from typing import Optional
@@ -44,7 +43,7 @@ class HsnPatientCreateContext(BaseModel):
 
 
 async def convert_to_patient_response(patient,
-                                      type: str = "full_name") -> PatientResponse | PatientResponseWithoutFullName:
+                                      type: str = "full_name") -> PatientResponse | PatientWithoutFullNameResponse:
     decrypted_name = contragent_hasher.decrypt(patient.contragent.name)
     decrypted_last_name = contragent_hasher.decrypt(patient.contragent.last_name)
     decrypted_patronymic = contragent_hasher.decrypt(patient.contragent.patronymic)
@@ -90,7 +89,7 @@ async def convert_to_patient_response(patient,
         )
         return patient_response
     else:
-        patient_response = PatientResponseWithoutFullName(
+        patient_response = PatientWithoutFullNameResponse(
             id=patient.id,
             name=decrypted_name,
             last_name=decrypted_last_name,
@@ -181,17 +180,12 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
 
     query_get = (
         select(PatientDBModel)
-        .options(selectinload("contragent"))
+        .options(selectinload(PatientDBModel.contragent))
         .where(PatientDBModel.id == patient_id)
     )
     try:
         cursor = await db_session.execute(query_get)
         patient = cursor.scalars().first()
-    except exc.NoResultFound as nrf:
-        logger.error(f"NotFound records: {nrf}")
-        raise NotFoundException(
-            message=f"Не удалось найти пациента с id: {patient_id}"
-        )
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Server error: {sqle}")
         raise InternalServerException(

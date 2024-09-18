@@ -1,4 +1,3 @@
-from api.decorators import HandleExceptions
 from shared.db.commands import db_base_entity_delete
 from shared.db.db_session import SessionContext
 from pydantic import BaseModel, Field
@@ -11,6 +10,5 @@ class DeleteMedOrganizationContext(BaseModel):
 
 
 @SessionContext()
-@HandleExceptions()
 async def hsn_med_organization_delete(context: DeleteMedOrganizationContext):
     return await db_base_entity_delete(MedOrganizationDBModel, entity_id=context.id, user_id=context.user_id)

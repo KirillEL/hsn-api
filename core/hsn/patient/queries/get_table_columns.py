@@ -1,7 +1,6 @@
 from loguru import logger
 from sqlalchemy import select
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException
 from core.hsn.patient.model import PatientTableColumns, PatientTableResponse
 from shared.db.models.patient_columns import PatientTableColumnsDBModel
@@ -216,8 +215,7 @@ default_payload = [
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_patient_columns(user_id: int):
+async def hsn_query_patient_columns(user_id: int):
     query = (
         select(PatientTableColumnsDBModel.table_columns)
         .where(PatientTableColumnsDBModel.user_id == user_id)

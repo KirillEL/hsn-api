@@ -2,7 +2,6 @@ from typing import Optional
 
 from loguru import logger
 
-from api.decorators import HandleExceptions
 from api.exceptions import InternalServerException, NotFoundException
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.db_session import db_session, SessionContext
@@ -12,7 +11,7 @@ from sqlalchemy import insert, exc, select
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class HsnInitializeAppointmentContext(BaseModel):
+class HsnCommandAppointmentInitContext(BaseModel):
     user_id: int = Field(gt=0)
     doctor_id: int = Field(gt=0)
     patient_id: int
@@ -32,7 +31,7 @@ async def check_patient_exists(patient_id: int):
 
 
 @SessionContext()
-async def hsn_appointment_initialize(context: HsnInitializeAppointmentContext):
+async def hsn_command_appointment_initialize(context: HsnCommandAppointmentInitContext):
     payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
     await check_patient_exists(context.patient_id)
     query = (

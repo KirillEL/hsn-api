@@ -5,13 +5,13 @@ from fastapi import Request
 from starlette import status
 
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat, HsnAppointmentPurposeCreateContext, \
-    hsn_appointment_purpose_create
+    hsn_command_appointment_purpose_create
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 
 
 class MedicineData(BaseModel):
-    medicine_group_id: int = Field(gt=0)
+    drug_id: int = Field(gt=0)
     dosa: str = Field(max_length=1000)
     note: Optional[str] = Field(None)
 
@@ -35,4 +35,4 @@ async def create_appointment_purpose(request: Request, body: CreateAppointmentPu
         doctor_id=request.user.doctor.id,
         **body.model_dump()
     )
-    return await hsn_appointment_purpose_create(context)
+    return await hsn_command_appointment_purpose_create(context)

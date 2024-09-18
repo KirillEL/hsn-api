@@ -6,7 +6,7 @@ from loguru import logger
 
 from api.exceptions import InternalServerException
 from ..helper import apply_ordering
-from api.exceptions.base import ValidationErrorTelegramSendMessageModel
+from api.exceptions.base import ValidationErrorTelegramSendMessageSchema
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import ContragentDBModel
 from shared.db.models.cabinet import CabinetDBModel
@@ -37,24 +37,26 @@ class LocationType(Enum):
 
 
 @SessionContext()
-async def hsn_get_own_patients(request: Request,
-                               doctor_id: int,
-                               limit: int = None,
-                               offset: int = None,
-                               gender: str = None,
-                               full_name: str = None,
-                               location: str = None,
-                               columnKey: str = None,
-                               order: str = None) -> DictPatientResponse:
+async def hsn_query_own_patients(request: Request,
+                                 doctor_id: int,
+                                 limit: int = None,
+                                 offset: int = None,
+                                 gender: str = None,
+                                 full_name: str = None,
+                                 location: str = None,
+                                 columnKey: str = None,
+                                 order: str = None) -> DictPatientResponse:
     contragent_alias = aliased(ContragentDBModel)
 
-    # Основной запрос
     query = (
         select(PatientDBModel)
-        .options(selectinload(PatientDBModel.cabinet).selectinload(CabinetDBModel.doctors),
-                 selectinload(PatientDBModel.contragent))
-        .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
-        .where(DoctorDBModel.id == doctor_id)
+        .where(PatientDBModel.is_deleted.is_(False),
+               DoctorDBModel.id == doctor_id)
+        .options(
+            selectinload(PatientDBModel.cabinet)
+            .selectinload(CabinetDBModel.doctors),
+            selectinload(PatientDBModel.contragent)
+        )
     )
 
     query_count = (
@@ -95,7 +97,7 @@ async def hsn_get_own_patients(request: Request,
         patients = cursor.unique().scalars().all()
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Failed to get list patients: {sqle}")
-        message_model = ValidationErrorTelegramSendMessageModel(
+        message_model = ValidationErrorTelegramSendMessageSchema(
             message="*Ошибка при получении списка пациентов*",
             doctor_id=request.user.doctor.id,
             doctor_name=request.user.doctor.name,

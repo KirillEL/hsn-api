@@ -3,7 +3,6 @@ from typing import Optional
 
 from loguru import logger
 from api.exceptions.base import InternalServerException, NotFoundException, ValidationException
-from api.routes.admin import roles
 from sqlalchemy.orm import joinedload
 from shared.db.db_session import SessionContext, db_session
 from pydantic import BaseModel, Field, ValidationError, field_validator

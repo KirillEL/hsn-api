@@ -3,7 +3,7 @@ from typing import Optional
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock, HsnBlockClinicDoctorUpdateContext, \
     hsn_block_clinic_doctor_update
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType, LgotaDrugsType
-from core.hsn.appointment.blocks.clinical_condition import HsnBlockClinicalConditionUpdateContext
+from core.hsn.appointment.blocks.clinical_condition import HsnCommandBlockClinicalConditionUpdateContext
 from .router import block_clinic_doctor_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from pydantic import BaseModel, Field

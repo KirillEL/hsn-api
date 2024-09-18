@@ -5,7 +5,7 @@ from loguru import logger
 from .router import block_laboratory_test_router
 from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
-    hsn_appointment_block_laboratory_test_create, HsnAppointmentBlockLaboratoryTestCreateContext
+    hsn_command_appointment_block_laboratory_test_create, HsnCommandAppointmentBlockLaboratoryTestCreateContext
 from pydantic import BaseModel, Field, field_validator
 from datetime import date as tdate
 from typing import Optional
@@ -76,5 +76,5 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
 async def create_block_laboratory_test(request: Request, body: CreateBlockLaboratoryTestRequestBody):
     if not request.user.doctor:
         raise DoctorNotAssignedException
-    context = HsnAppointmentBlockLaboratoryTestCreateContext(**body.model_dump())
-    return await hsn_appointment_block_laboratory_test_create(context)
+    context = HsnCommandAppointmentBlockLaboratoryTestCreateContext(**body.model_dump())
+    return await hsn_command_appointment_block_laboratory_test_create(context)

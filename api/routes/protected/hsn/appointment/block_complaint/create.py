@@ -2,8 +2,8 @@ from typing import Optional
 
 from .router import block_complaint_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock, hsn_appointment_block_complaint_create, \
-    HsnAppointmentBlockComplaintCreateContext
+from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock, hsn_command_appointment_block_complaint_create, \
+    HsnCommandAppointmentBlockComplaintCreateContext
 from pydantic import BaseModel, Field
 from fastapi import Request
 
@@ -28,5 +28,5 @@ async def create_block_complaint(request: Request, body: CreateBlockComplaintReq
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnAppointmentBlockComplaintCreateContext(**body.model_dump())
-    return await hsn_appointment_block_complaint_create(context)
+    context = HsnCommandAppointmentBlockComplaintCreateContext(**body.model_dump())
+    return await hsn_command_appointment_block_complaint_create(context)

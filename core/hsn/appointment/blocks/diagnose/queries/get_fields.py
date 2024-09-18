@@ -4,7 +4,7 @@ from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagno
 from sqlalchemy import inspect
 
 @SessionContext()
-async def hsn_get_block_diagnose_fields():
+async def hsn_query_block_diagnose_fields():
     inspector = inspect(AppointmentDiagnoseBlockDBModel)
     field_responses = []
 

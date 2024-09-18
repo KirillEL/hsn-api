@@ -2,8 +2,8 @@ from core.hsn.appointment.blocks.diagnose.model import ClassificationFuncClasses
     ClassificationNcStageType
 from .router import block_diagnose_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, hsn_appointment_block_diagnose_create, \
-    HsnAppointmentBlockDiagnoseCreateContext
+from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, hsn_command_appointment_block_diagnose_create, \
+    HsnCommandAppointmentBlockDiagnoseCreateContext
 from pydantic import BaseModel, Field
 from typing import Optional
 from fastapi import Request
@@ -51,5 +51,5 @@ async def create_block_diagnose(request: Request, body: CreateBlockDiagnoseReque
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    context = HsnAppointmentBlockDiagnoseCreateContext(**body.model_dump())
-    return await hsn_appointment_block_diagnose_create(context)
+    context = HsnCommandAppointmentBlockDiagnoseCreateContext(**body.model_dump())
+    return await hsn_command_appointment_block_diagnose_create(context)

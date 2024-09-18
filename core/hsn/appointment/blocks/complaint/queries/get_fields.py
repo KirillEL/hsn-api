@@ -7,7 +7,7 @@ from shared.db.models.appointment.blocks.block_complaint import AppointmentCompl
 
 
 @SessionContext()
-async def hsn_get_block_complaint_fields():
+async def hsn_query_block_complaint_fields():
     inspector = inspect(AppointmentComplaintBlockDBModel)
     field_responses = []
 

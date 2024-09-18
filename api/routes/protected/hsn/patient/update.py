@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from api.exceptions.base import ValidationErrorTelegramSendMessageModel
+from api.exceptions.base import ValidationErrorTelegramSendMessageSchema
 from tg_api import tg_bot
 from loguru import logger
 
@@ -10,7 +10,7 @@ from core.hsn.patient.queries.own import GenderType, LocationType, LgotaDrugsTyp
 from . import ModelValidator
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
-from core.hsn.patient import Patient, hsn_update_patient_by_id, HsnPatientUpdateContext
+from core.hsn.patient import Patient, hsn_command_patient_update_by_id, HsnCommandPatientUpdateContext
 from fastapi import Request
 from pydantic import BaseModel, Field, model_validator, field_validator
 from typing import Optional
@@ -50,15 +50,15 @@ async def update_patient_by_id(request: Request, patient_id: int, body: UpdatePa
 
     try:
         validated_body = ModelValidator.model_validate(body.model_dump())
-        context = HsnPatientUpdateContext(
+        context = HsnCommandPatientUpdateContext(
             doctor_id=request.user.doctor.id,
             patient_id=patient_id,
             **validated_body.model_dump()
         )
-        return await hsn_update_patient_by_id(context)
+        return await hsn_command_patient_update_by_id(context)
     except ValidationException as ve:
         logger.error(f"ValidationFailed: {ve.message}")
-        message_model = ValidationErrorTelegramSendMessageModel(
+        message_model = ValidationErrorTelegramSendMessageSchema(
             message="*Ошибка при изменении данных о пациенте*\n",
             doctor_id=request.user.doctor.id,
             doctor_name=request.user.doctor.name,

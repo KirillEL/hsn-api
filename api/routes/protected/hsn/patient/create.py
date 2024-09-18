@@ -4,7 +4,7 @@ import re
 from fastapi import Request, status
 from loguru import logger
 
-from api.exceptions.base import ValidationErrorTelegramSendMessageModel
+from api.exceptions.base import ValidationErrorTelegramSendMessageSchema
 from tg_api import tg_bot
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
 from core.hsn.patient.model import PatientFlat, PatientResponse
@@ -82,14 +82,14 @@ async def patient_create(request: Request, body: CreatePatientRequestBody):
     try:
         validated_body = ModelValidator.model_validate(body.model_dump())
         context = HsnPatientCreateContext(
-            **validated_body.dict(),
+            **validated_body.model_dump(),
             cabinet_id=request.user.doctor.cabinet_id,
             doctor_id=request.user.doctor.id
         )
         new_patient = await hsn_patient_create(context)
         return new_patient
     except ValidationException as ve:
-        message_model = ValidationErrorTelegramSendMessageModel(
+        message_model = ValidationErrorTelegramSendMessageSchema(
             message="*Ошибка при создании пациента*",
             doctor_id=request.user.doctor.id,
             doctor_name=request.user.doctor.name,

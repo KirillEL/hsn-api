@@ -3,7 +3,6 @@ from pydantic import ValidationError
 from sqlalchemy import select, RowMapping
 from sqlalchemy.orm import selectinload
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
@@ -30,21 +29,10 @@ async def build_patient_info(appointment: RowMapping):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_appointment_by_id(user_id: int, appointment_id: int):
+async def hsn_appointment_by_id(doctor_id: int, appointment_id: int):
     query = select(AppointmentDBModel).where(AppointmentDBModel.is_deleted.is_(False),
-                                             AppointmentDBModel.doctor_id == user_id,
+                                             AppointmentDBModel.doctor_id == doctor_id,
                                              AppointmentDBModel.id == appointment_id)
-
-    query = query.outerjoin(AppointmentDBModel.block_clinic_doctor) \
-        .outerjoin(AppointmentDBModel.block_clinical_condition) \
-        .outerjoin(AppointmentDBModel.block_diagnose) \
-        .outerjoin(AppointmentDBModel.block_ekg) \
-        .outerjoin(AppointmentDBModel.block_complaint) \
-        .outerjoin(AppointmentDBModel.block_laboratory_test) \
-        .outerjoin(AppointmentDBModel.purposes) \
-        .outerjoin(AppointmentDBModel.patient) \
-        .outerjoin(PatientDBModel.contragent)
 
     query = query.options(selectinload(AppointmentDBModel.block_clinic_doctor),
                           selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent),
@@ -55,7 +43,7 @@ async def hsn_appointment_by_id(user_id: int, appointment_id: int):
                           selectinload(AppointmentDBModel.block_laboratory_test),
                           selectinload(AppointmentDBModel.purposes).selectinload(
                               AppointmentPurposeDBModel.medicine_prescriptions)
-                          .selectinload(MedicinesPrescriptionDBModel.medicine_group)
+                          .selectinload(MedicinesPrescriptionDBModel.drug)
                           )
 
     cursor = await db_session.execute(query)

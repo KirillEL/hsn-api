@@ -2,7 +2,6 @@ from sqlalchemy import insert, update, exc
 from pydantic import BaseModel
 from typing import Optional
 
-from api.decorators import HandleExceptions
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
@@ -12,7 +11,7 @@ from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBM
 from datetime import date as tdate
 
 
-class HsnAppointmentBlockEkgCreateContext(BaseModel):
+class HsnCommandAppointmentBlockEkgCreateContext(BaseModel):
     appointment_id: int
     date_ekg: str
     sinus_ritm: Optional[bool] = False
@@ -43,8 +42,7 @@ class HsnAppointmentBlockEkgCreateContext(BaseModel):
 
 
 @SessionContext()
-@HandleExceptions()
-async def hsn_appointment_block_ekg_create(context: HsnAppointmentBlockEkgCreateContext):
+async def hsn_command_appointment_block_ekg_create(context: HsnCommandAppointmentBlockEkgCreateContext):
     await check_appointment_exists(context.appointment_id)
     payload = context.model_dump(exclude={'appointment_id'})
     query = (
