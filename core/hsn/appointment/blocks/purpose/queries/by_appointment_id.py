@@ -19,7 +19,7 @@ async def hsn_query_purposes_by_appointment_id(appointment_id: int):
     query = (
         select(AppointmentPurposeDBModel)
         .options(selectinload(AppointmentPurposeDBModel.medicine_prescriptions).selectinload(
-            MedicinesPrescriptionDBModel.medicine_group))
+            MedicinesPrescriptionDBModel.drug))
         .where(AppointmentPurposeDBModel.appointment_id == appointment_id)
         .where(AppointmentPurposeDBModel.is_deleted.is_(False))
     )
