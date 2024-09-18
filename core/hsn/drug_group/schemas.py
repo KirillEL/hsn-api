@@ -9,7 +9,7 @@ class DrugGroupSchema(BaseModel):
 
 class DrugFieldsSchema(BaseModel):
     displayName: str
-    drugs: list[DrugGroupSchema]
+    medicine_prescriptions: list[DrugGroupSchema]
 
 
 class DrugGroupFieldsResponse(DrugFieldsSchema):
