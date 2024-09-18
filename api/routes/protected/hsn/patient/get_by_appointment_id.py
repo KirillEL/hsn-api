@@ -14,4 +14,4 @@ async def get_patient_by_appointment_id(request: Request, appointment_id: int):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    return await hsn_query_patient_by_appointment_id(appointment_id)
+    return await hsn_query_patient_by_appointment_id(appointment_id, doctor_id=request.user.doctor.id)
