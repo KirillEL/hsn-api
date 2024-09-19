@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select, update, exc, insert
 from sqlalchemy.orm import selectinload
 
-from api.exceptions import NotFoundException
+from api.exceptions import NotFoundException, InternalServerException
 from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
 from core.hsn.appointment.blocks.purpose.model import MedicinePrescriptionData, MedicinePrescriptionUpdateSchema
@@ -30,8 +30,12 @@ async def update_medicine_prescription(med_prescription_id: int, editor_id: int,
         )
         .where(MedicinesPrescriptionDBModel.id == med_prescription_id)
     )
-    await db_session.execute(query)
-    await db_session.commit()
+    try:
+        await db_session.execute(query)
+        await db_session.commit()
+    except exc.SQLAlchemyError as sqle:
+        logger.error(f"Failed to update med_prescription: {str(sqle)}")
+        raise InternalServerException
 
 
 async def create_medicine_prescription(appointment_purpose_id: int, doctor_id: int,
@@ -46,8 +50,12 @@ async def create_medicine_prescription(appointment_purpose_id: int, doctor_id: i
             author_id=doctor_id
         )
     )
-    await db_session.execute(query)
-    await db_session.commit()
+    try:
+        await db_session.execute(query)
+        await db_session.commit()
+    except exc.SQLAlchemyError as sqle:
+        logger.error(f"Failed to create med_prescription: {str(sqle)}")
+        raise InternalServerException
 
 
 @SessionContext()
