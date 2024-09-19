@@ -70,10 +70,18 @@ class DrugSchema(BaseModel):
 class MedicinePrescriptionData(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    # id: Optional[int]
     dosa: str
-    drug_id: Optional[int]
+    drug_id: Optional[int] = None
     drug: Optional[DrugSchema] = None
+    note: Optional[str] = None
+
+
+class MedicinePrescriptionUpdateSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    dosa: str
+    drug_id: int
     note: Optional[str] = None
 
 

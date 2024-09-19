@@ -8,7 +8,6 @@ from fastapi import Request
 
 
 class UpdateMedicinePrescriptionModel(BaseModel):
-    id: int = Field(gt=0)
     drug_id: Optional[int] = Field(None, gt=0)
     dosa: Optional[str] = Field(None, max_length=255)
     note: Optional[str] = Field(None, max_length=500)
@@ -30,6 +29,6 @@ async def update_block_purpose(request: Request, appointment_id: int, body: Upda
     context = HsnAppointmentPurposeUpdateContext(
         doctor_id=request.user.doctor.id,
         appointment_id=appointment_id,
-        **body.model_dump()
+        medicine_prescriptions=body.medicine_prescriptions
     )
     return await hsn_appointment_purpose_update(context)
