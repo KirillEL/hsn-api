@@ -2,15 +2,15 @@ version: '3.7'
 
 services:
   #hsn_nginx:
-    #build:
-     # context: .nginx/
-      #dockerfile: Dockerfile
-    #container_name: hsn_nginx
-    #ports:
-    #  - "1111:1111"
-   # restart: on-failure
-   # networks:
-   #   - hsn_network
+  #build:
+  # context: .nginx/
+  #dockerfile: Dockerfile
+  #container_name: hsn_nginx
+  #ports:
+  #  - "1111:1111"
+  # restart: on-failure
+  # networks:
+  #   - hsn_network
 
   hsn_api:
     build:
@@ -64,7 +64,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-      - ./pgadmin:/var/lib/pgadmin
+      - pgadmin-data:/var/lib/pgadmin
     ports:
       - "5050:80"
     networks:
@@ -79,3 +79,5 @@ networks:
 volumes:
   db-data:
     name: db-data
+  pgadmin-data:
+    name: pgadmin-data
