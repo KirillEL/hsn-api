@@ -16,7 +16,7 @@ from starlette.middleware.authentication import (
 
 class AuthBackend(AuthenticationBackend):
     async def authenticate(
-        self, conn: HTTPConnection
+            self, conn: HTTPConnection
     ) -> Tuple[bool, Optional[User]]:
         curr_user = None
         authorization: str = conn.headers.get("Authorization")

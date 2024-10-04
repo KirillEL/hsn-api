@@ -29,7 +29,7 @@ class NotFoundException(CustomException):
 class UserNotFoundException(CustomException):
     code = HTTPStatus.NOT_FOUND
     error_code = HTTPStatus.NOT_FOUND
-    message = "user not found!"
+    message = "Пользователь не найден"
 
 
 class UnauthorizedException(CustomException):
@@ -41,7 +41,7 @@ class UnauthorizedException(CustomException):
 class UnauthorizedAdminException(CustomException):
     code = HTTPStatus.UNAUTHORIZED
     error_code = HTTPStatus.UNAUTHORIZED
-    message = "you are not admin!"
+    message = "Вы не администратор"
 
 
 class BadRequestException(CustomException):
@@ -96,6 +96,7 @@ class ForbiddenException(CustomException):
     code = HTTPStatus.FORBIDDEN
     error_code = HTTPStatus.FORBIDDEN
     message = HTTPStatus.FORBIDDEN.description
+
 
 class ValidationErrorTelegramSendMessageSchema:
     def __init__(

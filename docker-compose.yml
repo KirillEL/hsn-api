@@ -32,21 +32,6 @@ services:
     volumes:
       - '.:/app'
 
-  #hsn_admin:
-  #  build:
-  #    context: hsn_admin/
-  #    dockerfile: ../.docker/admin/Dockerfile
-  #  container_name: hsn_admin
-  #  hostname: hsn_admin
-  #  networks:
-  #    - hsn_network
-  #  depends_on:
-  #    - hsn_api
-  #  restart: always
-  #  volumes:
-  #    - "./hsn_admin:/admin"
-  #    - "/admin/node_modules"
-
   database:
     image: postgres
     container_name: database
@@ -68,6 +53,24 @@ services:
       retries: 40
     networks:
       - hsn_network
+
+  pgadmin:
+    container_name: local_pgadmin
+    image: dpage/pgadmin4:6.19
+    depends_on:
+      - database
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - hsn_network
+    restart: unless-stopped
+
 
 networks:
   hsn_network:
