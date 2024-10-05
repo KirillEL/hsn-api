@@ -95,7 +95,7 @@ class MedicinePrescriptionCreateException(CustomException):
 class ForbiddenException(CustomException):
     code = HTTPStatus.FORBIDDEN
     error_code = HTTPStatus.FORBIDDEN
-    message = HTTPStatus.FORBIDDEN.description
+    message = "У вас нет прав"
 
 
 class ValidationErrorTelegramSendMessageSchema:

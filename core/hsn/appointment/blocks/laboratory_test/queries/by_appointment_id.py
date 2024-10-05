@@ -16,7 +16,7 @@ async def hsn_query_block_laboratory_test_by_appointment_id(appointment_id: int)
     cursor = await db_session.execute(query)
     block_laboratory_test_id = cursor.scalar()
     if block_laboratory_test_id is None:
-        raise NotFoundException(message="У приема нет данного блока!")
+        raise NotFoundException(message="У приема нет данного блока")
 
     query_get_block = (
         select(AppointmentLaboratoryTestBlockDBModel)
