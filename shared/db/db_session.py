@@ -1,3 +1,4 @@
+import traceback
 from contextvars import ContextVar, Token
 from functools import wraps
 from typing import Union
@@ -60,8 +61,9 @@ class SessionContext:
             try:
                 result = await func(*args, **kwargs)
             except Exception as e:
+                error_trace = traceback.format_exc()
                 logger.error(f'Server Error in func ({func.__name__}): {e}')
-                tg_bot.send_message(f'Server Error in func ({func.__name__}): {e.__traceback__}')
+                tg_bot.send_message(f'Server Error in func ({func.__name__}): {error_trace}')
                 raise InternalServerException
             finally:
                 await db_session.remove()
