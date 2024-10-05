@@ -47,10 +47,6 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
 
 @SessionContext()
 async def hsn_command_appointment_purpose_create(context: HsnAppointmentPurposeCreateContext):
-    #await check_appointment_exists(context.appointment_id)
-
-
-    # create appointment_purpose
     query_create_purpose_block = (
         insert(AppointmentPurposeDBModel)
         .values(
@@ -63,8 +59,6 @@ async def hsn_command_appointment_purpose_create(context: HsnAppointmentPurposeC
     new_purpose_block_id = cursor.scalar()
 
     for med_prescription in context.medicine_prescriptions:
-        logger.debug(f'med_prescription: {med_prescription}')
-
         query = (
             insert(MedicinesPrescriptionDBModel)
             .values(

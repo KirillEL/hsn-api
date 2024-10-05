@@ -2,7 +2,7 @@ from contextvars import ContextVar, Token
 from functools import wraps
 from typing import Union
 from uuid import uuid4
-
+from tg_api.tg_api import tg_bot
 from loguru import logger
 from sqlalchemy import create_engine
 
@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import sessionmaker, Session, scoped_session
 
+from api.exceptions import InternalServerException
 from infra import config
 
 session_context: ContextVar[str] = ContextVar('session_context')
@@ -59,7 +60,9 @@ class SessionContext:
             try:
                 result = await func(*args, **kwargs)
             except Exception as e:
-                raise e
+                logger.error(f'Server Error in func ({func.__name__}): {e}')
+                tg_bot.send_message(f'Server Error in func ({func.__name__}): {str(e)}')
+                raise InternalServerException
             finally:
                 await db_session.remove()
                 reset_session_context(context)

@@ -59,7 +59,7 @@ class ValidationException(CustomException):
 class InternalServerException(CustomException):
     code = HTTPStatus.INTERNAL_SERVER_ERROR
     error_code = HTTPStatus.INTERNAL_SERVER_ERROR
-    message = "Ошибка сервера!"
+    message = "Произошла внутренняя ошибка сервера"
 
 
 class UnprocessableEntityException(CustomException):
