@@ -59,8 +59,6 @@ class SessionContext:
             try:
                 result = await func(*args, **kwargs)
             except Exception as e:
-                logger.error(f'Server Error in func ({func.__name__}): {e}')
-                tg_bot.send_message(f'Server Error in func ({func.__name__})')
                 raise e
             finally:
                 await db_session.remove()

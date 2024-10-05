@@ -1,4 +1,5 @@
 from api.exceptions import NotFoundException
+from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -17,10 +18,10 @@ async def hsn_query_block_ekg_by_appointment_id(doctor_id: int, appointment_id: 
     block_ekg_id, appointment_doctor_id = cursor.first()
 
     if appointment_doctor_id != doctor_id:
-        raise NotFoundException
+        raise ForbiddenException
 
     if not block_ekg_id:
-        raise NotFoundException(message="У приема нет данного блока!")
+        raise NotFoundException(message="У приема нет данного блока")
 
     query_get_block = (
         select(AppointmentEkgBlockDBModel)
