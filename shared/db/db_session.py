@@ -1,11 +1,9 @@
-import traceback
 from contextvars import ContextVar, Token
 from functools import wraps
 from typing import Union
 from uuid import uuid4
 from tg_api.tg_api import tg_bot
 from loguru import logger
-from sqlalchemy import create_engine
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -61,9 +59,8 @@ class SessionContext:
             try:
                 result = await func(*args, **kwargs)
             except Exception as e:
-                error_trace = traceback.format_exc()
                 logger.error(f'Server Error in func ({func.__name__}): {e}')
-                tg_bot.send_message(f'Server Error in func ({func.__name__}): {error_trace}')
+                tg_bot.send_message(f'Server Error in func ({func.__name__})')
                 raise InternalServerException
             finally:
                 await db_session.remove()
