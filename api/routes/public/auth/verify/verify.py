@@ -12,6 +12,6 @@ class AuthVerifyTokenRequest(BaseModel):
     '',
     summary="Верификация пользователя"
 )
-async def verify_user(body: AuthVerifyTokenRequest):
+async def verify_user_route(body: AuthVerifyTokenRequest):
     jwt_decode(body.token)
     return Response(status_code=200)

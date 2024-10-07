@@ -26,7 +26,10 @@ class CreateBlockClinicDoctorRequestBody(BaseModel):
     response_model=int,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_clinic_doctor(request: Request, body: CreateBlockClinicDoctorRequestBody):
+async def create_block_clinic_doctor_route(
+        request: Request,
+        body: CreateBlockClinicDoctorRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

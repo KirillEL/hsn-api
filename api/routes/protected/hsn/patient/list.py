@@ -38,7 +38,7 @@ class GetOwnPatientsQueryParams(BaseModel):
     responses={'400': {"model": ExceptionResponseSchema}},
     summary='Получить своих пациентов'
 )
-async def get_own_patients(
+async def get_own_patients_route(
         request: Request,
         limit: Optional[int] = Query(None),
         offset: Optional[int] = Query(None),

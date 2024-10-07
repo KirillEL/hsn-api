@@ -35,7 +35,7 @@ class UserCreateRequest(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Регистрация пользователя"
 )
-async def register_user(req_body: UserCreateRequest):
+async def register_user_route(req_body: UserCreateRequest):
     context = UserDoctorCreateContext(
         login=req_body.login,
         password=req_body.password,

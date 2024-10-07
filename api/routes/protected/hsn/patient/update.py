@@ -44,7 +44,11 @@ class UpdatePatientRequestBody(BaseModel):
     response_model=PatientResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_patient_by_id(request: Request, patient_id: int, body: UpdatePatientRequestBody):
+async def update_patient_by_id_route(
+        request: Request,
+        patient_id: int,
+        body: UpdatePatientRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

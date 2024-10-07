@@ -34,20 +34,25 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
     query = (
         select(AppointmentDBModel)
         .where(AppointmentDBModel.is_deleted.is_(False),
-               AppointmentDBModel.author_id == context.doctor_id)
+               AppointmentDBModel.doctor_id == context.doctor_id)
     )
 
     query = query.options(
         selectinload(AppointmentDBModel.block_clinic_doctor),
-        selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent),
+        selectinload(AppointmentDBModel.patient)
+        .selectinload(PatientDBModel.contragent),
         selectinload(AppointmentDBModel.block_clinical_condition),
         selectinload(AppointmentDBModel.block_diagnose),
         selectinload(AppointmentDBModel.block_ekg),
         selectinload(AppointmentDBModel.block_complaint),
         selectinload(AppointmentDBModel.block_laboratory_test),
-        selectinload(AppointmentDBModel.purposes).selectinload(
-            AppointmentPurposeDBModel.medicine_prescriptions).selectinload(
-            MedicinesPrescriptionDBModel.drug)
+        selectinload(AppointmentDBModel.purposes)
+        .selectinload(
+            AppointmentPurposeDBModel.medicine_prescriptions
+        )
+        .selectinload(
+            MedicinesPrescriptionDBModel.drug
+        )
     )
 
     query_count = (
@@ -58,13 +63,11 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
     cursor_count = await db_session.execute(query_count)
     total_appointments = cursor_count.scalar()
 
-    # Применяем лимиты и смещение (если они указаны)
     if context.limit:
         query = query.limit(context.limit)
     if context.offset:
         query = query.offset(context.offset)
 
-    # Выполняем запрос
     try:
         cursor = await db_session.execute(query)
         patient_appointments = cursor.unique().scalars().all()
@@ -89,7 +92,6 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
 
     results = []
     for appointment in patient_appointments:
-        # Формируем информацию о пациенте
         patient_info = PatientFlatForAppointmentList(
             name=contragent_hasher.decrypt(appointment.patient.contragent.name),
             last_name=contragent_hasher.decrypt(appointment.patient.contragent.last_name),
@@ -97,7 +99,6 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
                 appointment.patient.contragent.patronymic) if appointment.patient.contragent.patronymic else ""
         )
 
-        # Формируем данные для каждой записи
         appointment_flat = PatientAppointmentFlat(
             id=appointment.id,
             full_name=f'{patient_info.name} {patient_info.last_name} {patient_info.patronymic or ""}'.rstrip(),

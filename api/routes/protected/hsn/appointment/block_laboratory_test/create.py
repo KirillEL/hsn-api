@@ -73,7 +73,10 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
     response_model=int,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_laboratory_test(request: Request, body: CreateBlockLaboratoryTestRequestBody):
+async def create_block_laboratory_test_route(
+        request: Request,
+        body: CreateBlockLaboratoryTestRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

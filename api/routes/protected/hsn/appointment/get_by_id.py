@@ -12,7 +12,7 @@ from fastapi import Request, status
     tags=["Прием"],
     summary="Получение приема по id"
 )
-async def get_appointment_by_id(request: Request, appointment_id: int):
+async def get_appointment_by_id_route(request: Request, appointment_id: int):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

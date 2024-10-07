@@ -18,7 +18,7 @@ class AuthRequest(BaseModel):
     responses={"404": {"model": ExceptionResponseSchema}},
     summary="Вход в аккаунт"
 )
-async def login_user(req: AuthRequest):
+async def login_user_route(req: AuthRequest):
     user = await user_query_login(req.login, req.password)
     if user is None:
         raise UserNotFoundException

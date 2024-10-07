@@ -11,5 +11,5 @@ from api.exceptions import ExceptionResponseSchema
     response_model=List[AppointmentBlockBooleanFieldsResponse],
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def get_block_clinical_condition_fields():
+async def get_block_clinical_condition_fields_route():
     return await hsn_query_block_clinical_condition_fields()

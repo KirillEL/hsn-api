@@ -16,7 +16,7 @@ class CreatePatientTableColumnsRequest(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Создать настройки для таблицы пациентов"
 )
-async def create_patient_table_columns(request: Request, payload: CreatePatientTableColumnsRequest):
+async def create_patient_table_columns_route(request: Request, payload: CreatePatientTableColumnsRequest):
     context = HsnPatientColumnsCreateContext(
         user_id=request.user.id,
         table_columns=payload.table_columns

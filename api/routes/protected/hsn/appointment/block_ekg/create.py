@@ -51,7 +51,7 @@ class CreateBlockEkgRequestBody(BaseModel):
     response_model=int,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_ekg(request: Request, body: CreateBlockEkgRequestBody):
+async def create_block_ekg_route(request: Request, body: CreateBlockEkgRequestBody):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

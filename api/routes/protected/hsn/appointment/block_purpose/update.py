@@ -22,7 +22,11 @@ class UpdateBlockPurposeRequestBody(BaseModel):
     response_model=AppointmentPurposeFlat,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_purpose(request: Request, appointment_id: int, body: UpdateBlockPurposeRequestBody):
+async def update_block_purpose_route(
+        request: Request,
+        appointment_id: int,
+        body: UpdateBlockPurposeRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

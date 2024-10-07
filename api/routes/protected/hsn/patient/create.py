@@ -78,7 +78,7 @@ class ModelValidator(CreatePatientRequestBody):
     summary="Создание нового пациента",
     status_code=status.HTTP_201_CREATED
 )
-async def patient_create(request: Request, body: CreatePatientRequestBody):
+async def patient_create_route(request: Request, body: CreatePatientRequestBody):
     try:
         validated_body = ModelValidator.model_validate(body.model_dump())
         context = HsnPatientCreateContext(

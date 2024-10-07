@@ -61,8 +61,10 @@ class CreateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     response_model=BlockComplaintCreateWithConditionResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_complaint_and_clinical_condition(request: Request,
-                                                        body: CreateBlockComplaintAndClinicalConditionRequestBody):
+async def create_block_complaint_and_clinical_condition_route(
+        request: Request,
+        body: CreateBlockComplaintAndClinicalConditionRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

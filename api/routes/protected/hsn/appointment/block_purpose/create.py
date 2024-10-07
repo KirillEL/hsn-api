@@ -27,7 +27,10 @@ class CreateAppointmentPurposeRequestBody(BaseModel):
     responses={"400": {"model": ExceptionResponseSchema}},
     status_code=status.HTTP_201_CREATED
 )
-async def create_appointment_purpose(request: Request, body: CreateAppointmentPurposeRequestBody):
+async def create_appointment_purpose_route(
+        request: Request,
+        body: CreateAppointmentPurposeRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

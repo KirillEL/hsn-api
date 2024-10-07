@@ -24,7 +24,11 @@ class UpdateBlockComplaintRequestBody(BaseModel):
     response_model=AppointmentComplaintBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_complaint(request: Request, appointment_id: int, body: UpdateBlockComplaintRequestBody):
+async def update_block_complaint_route(
+        request: Request,
+        appointment_id: int,
+        body: UpdateBlockComplaintRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

@@ -6,6 +6,7 @@ from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalCo
 from typing import Optional
 from fastapi import Request
 
+
 class CreateBlockClinicalConditionRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
     heart_failure_om: Optional[bool] = Field(False)
@@ -45,7 +46,10 @@ class CreateBlockClinicalConditionRequestBody(BaseModel):
     response_model=int,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def create_block_clinical_condition(request: Request, body: CreateBlockClinicalConditionRequestBody):
+async def create_block_clinical_condition_route(
+        request: Request,
+        body: CreateBlockClinicalConditionRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

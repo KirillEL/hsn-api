@@ -74,7 +74,7 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
     response_model=AppointmentLaboratoryTestBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_laboratory_test(
+async def update_block_laboratory_test_route(
         request: Request,
         appointment_id: int,
         body: UpdateBlockLaboratoryTestRequestBody
