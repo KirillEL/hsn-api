@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy import select, update
 
 from api.exceptions import NotFoundException, AppointmentNotBelongsToUserException
+from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_clinic_doctor import AppointmentBlockClinicDoctorDBModel
@@ -22,7 +23,7 @@ class HsnBlockClinicDoctorUpdateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_block_clinic_doctor_update(context: HsnBlockClinicDoctorUpdateContext, user_id: int = None):
+async def hsn_block_clinic_doctor_update(context: HsnBlockClinicDoctorUpdateContext, doctor_id: int = None):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
     query = (
@@ -36,8 +37,10 @@ async def hsn_block_clinic_doctor_update(context: HsnBlockClinicDoctorUpdateCont
     if block_clinic_doctor_id is None:
         raise NotFoundException(message="У приема нет этого блока!")
 
-    if author_id != user_id:
-        raise AppointmentNotBelongsToUserException
+    if author_id != doctor_id:
+        raise ForbiddenException(
+            message="У вас нет прав на управление этим блоком"
+        )
 
     query_update = (
         update(AppointmentBlockClinicDoctorDBModel)

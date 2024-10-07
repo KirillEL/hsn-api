@@ -10,6 +10,8 @@ from shared.db.models.appointment.blocks.block_clinic_doctor import AppointmentB
 from pydantic import BaseModel
 from datetime import date as tdate
 
+from shared.db.queries import db_query_entity_by_id
+
 
 class HsnCommandAppointmentBlockClinicDoctorCreateContext(BaseModel):
     appointment_id: int
@@ -22,20 +24,17 @@ class HsnCommandAppointmentBlockClinicDoctorCreateContext(BaseModel):
     last_hospitalization_date: Optional[tdate] = None
 
 
-async def check_appointment_exists(appointment_id: int):
-    query = (
-        select(AppointmentDBModel)
-        .where(AppointmentDBModel.id == appointment_id)
-    )
-    cursor = await db_session.execute(query)
-    appointment = cursor.scalars().first()
-    if appointment is None:
-        raise NotFoundException(message="Прием не найден!")
-
-
 @SessionContext()
-async def hsn_command_appointment_block_clinic_doctor_create(context: HsnCommandAppointmentBlockClinicDoctorCreateContext):
-    await check_appointment_exists(context.appointment_id)
+async def hsn_command_appointment_block_clinic_doctor_create(
+        context: HsnCommandAppointmentBlockClinicDoctorCreateContext
+):
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+
+    if not appointment:
+        raise NotFoundException(
+            message="Прием не найден"
+        )
+
     payload = context.model_dump(exclude={'appointment_id'})
     query = (
         insert(AppointmentBlockClinicDoctorDBModel)

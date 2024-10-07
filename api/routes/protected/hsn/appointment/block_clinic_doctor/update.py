@@ -33,9 +33,9 @@ async def update_block_clinic_doctor_route(
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    user_id: int = request.user.id
+    doctor_id: int = request.user.doctor.id
     context = HsnBlockClinicDoctorUpdateContext(
         appointment_id=appointment_id,
         **body.model_dump()
     )
-    return await hsn_block_clinic_doctor_update(context, user_id)
+    return await hsn_block_clinic_doctor_update(context, doctor_id)

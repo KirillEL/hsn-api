@@ -4,12 +4,13 @@ from sqlalchemy import select, update, exc, insert
 from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, InternalServerException
-from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
 from core.hsn.appointment.blocks.purpose.model import MedicinePrescriptionData, MedicinePrescriptionUpdateSchema
 from shared.db.models import MedicinesPrescriptionDBModel
+from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 from shared.db.db_session import db_session, SessionContext
+from shared.db.queries import db_query_entity_by_id
 
 
 class HsnAppointmentPurposeUpdateContext(BaseModel):
@@ -60,7 +61,10 @@ async def create_medicine_prescription(appointment_purpose_id: int, doctor_id: i
 
 @SessionContext()
 async def hsn_appointment_purpose_update(context: HsnAppointmentPurposeUpdateContext):
-    await check_appointment_exists(context.appointment_id)
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    if not appointment:
+        raise NotFoundException(message="Прием не найден")
+
     query_get_appointment_purpose = (
         select(AppointmentPurposeDBModel.id)
         .where(AppointmentPurposeDBModel.is_deleted.is_(False),

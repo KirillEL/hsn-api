@@ -4,12 +4,13 @@ from sqlalchemy import update, select
 
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
-from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from pydantic import BaseModel, Field
+
+from shared.db.queries import db_query_entity_by_id
 
 
 class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
@@ -85,11 +86,15 @@ class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_command_block_complaint_and_clinical_condition_update(context: HsnCommandBlockComplaintAndClinicalConditionUpdateContext):
+async def hsn_command_block_complaint_and_clinical_condition_update(
+        context: HsnCommandBlockComplaintAndClinicalConditionUpdateContext
+):
     user_id = context.user_id
     appointment_id = context.appointment_id
     payloads = context.create_payloads()
-    await check_appointment_exists(appointment_id)
+    appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
+    if not appointment:
+        raise NotFoundException("Прием не найден")
 
     # 1
     query_get_block_complaint_id = (
@@ -134,4 +139,3 @@ async def hsn_command_block_complaint_and_clinical_condition_update(context: Hsn
         block_clinical_condition=updated_block_clinical_condition
     )
     return AppointmentComplaintWithClinicalCondition.model_validate(response)
-

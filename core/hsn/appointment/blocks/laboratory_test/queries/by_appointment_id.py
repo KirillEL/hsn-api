@@ -21,14 +21,14 @@ async def hsn_query_block_laboratory_test_by_appointment_id(doctor_id: int, appo
     result = cursor.first()
 
     if not result:
-        raise NotFoundException
+        raise NotFoundException(message="Блок лабораторные тесты не найден")
 
     block_laboratory_test_id, appointment_doctor_id = result
 
     if appointment_doctor_id != doctor_id:
-        raise ForbiddenException
+        raise ForbiddenException(message="У вас нет прав ")
 
-    if block_laboratory_test_id is None:
+    if not block_laboratory_test_id:
         raise NotFoundException(message="У приема нет данного блока")
 
     query_get_block = (

@@ -3,13 +3,13 @@ from typing import Optional, Dict, Any
 from pydantic import BaseModel
 from sqlalchemy import insert, update, select
 
+from api.exceptions import NotFoundException
 from api.exceptions.base import BlockAlreadyExistsException
-from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
-from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
+from shared.db.queries import db_query_entity_by_id
 
 
 class HsnCommandBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
@@ -100,8 +100,13 @@ async def check_block_clinical_condition_exists_in_appointment(appointment_id: i
 
 
 @SessionContext()
-async def hsn_command_block_complaint_and_clinical_condition_create(context: HsnCommandBlockComplaintAndClinicalCondtionCreateContext):
-    await check_appointment_exists(context.appointment_id)
+async def hsn_command_block_complaint_and_clinical_condition_create(
+        context: HsnCommandBlockComplaintAndClinicalCondtionCreateContext
+):
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    if not appointment:
+        raise NotFoundException(message="Прием не найден")
+
     payloads = context.create_payloads()
     query_insert_block_complaint = (
         insert(AppointmentComplaintBlockDBModel)

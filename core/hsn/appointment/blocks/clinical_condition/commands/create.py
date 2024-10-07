@@ -2,13 +2,13 @@ from typing import Optional
 
 from sqlalchemy import insert, update, exc
 
-from api.exceptions import NotFoundException, InternalServerException
-from api.exceptions.base import UnprocessableEntityException
-from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
+from api.exceptions import NotFoundException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
 from pydantic import BaseModel
+
+from shared.db.queries import db_query_entity_by_id
 
 
 class HsnCommandAppointmentBlockClinicalConditionCreateContext(BaseModel):
@@ -46,8 +46,12 @@ class HsnCommandAppointmentBlockClinicalConditionCreateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_command_appointment_block_clinical_condition_create(context: HsnCommandAppointmentBlockClinicalConditionCreateContext):
-    await check_appointment_exists(context.appointment_id)
+async def hsn_command_appointment_block_clinical_condition_create(
+        context: HsnCommandAppointmentBlockClinicalConditionCreateContext):
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    if not appointment:
+        raise NotFoundException("Прием не найден")
+
     payload = context.model_dump(exclude={'appointment_id'})
     query = (
         insert(AppointmentClinicalConditionBlockDBModel)

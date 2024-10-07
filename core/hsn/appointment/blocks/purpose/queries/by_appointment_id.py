@@ -1,21 +1,20 @@
-from loguru import logger
 from sqlalchemy import select, exc
 from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, InternalServerException
-from api.exceptions.base import UnprocessableEntityException
-from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
-from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
-from core.hsn.appointment.blocks.purpose.model import AppointmentPurposeResponseFlat, MedicineGroupData
 from shared.db.models import MedicinesPrescriptionDBModel, DrugDBModel
+from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 from shared.db.db_session import db_session, SessionContext
+from shared.db.queries import db_query_entity_by_id
 
 
 @SessionContext()
 async def hsn_query_purposes_by_appointment_id(appointment_id: int):
-    results_dict = dict()
-    await check_appointment_exists(appointment_id)
+    results_dict = {}
+    appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
+    if not appointment:
+        raise NotFoundException(message="Прием не найден")
     query = (
         select(AppointmentPurposeDBModel)
         .options(selectinload(AppointmentPurposeDBModel.medicine_prescriptions).selectinload(

@@ -23,17 +23,6 @@ class HsnAppointmentPurposeCreateContext(BaseModel):
     medicine_prescriptions: list[MedicineContext]
 
 
-async def check_appointment_exists(appointment_id: int):
-    query = (
-        select(AppointmentDBModel)
-        .where(AppointmentDBModel.id == appointment_id)
-    )
-    cursor = await db_session.execute(query)
-    appointment = cursor.scalars().first()
-    if appointment is None:
-        raise NotFoundException(message="Такого приема не существует!")
-
-
 async def check_medicine_prescription_exists(medicine_prescription_id: int):
     query = (
         select(MedicinesPrescriptionDBModel)
@@ -41,8 +30,8 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
     )
     cursor = await db_session.execute(query)
     medicine_prescription = cursor.scalars().first()
-    if medicine_prescription is None:
-        raise NotFoundException(message="Такого препарата не найдено!")
+    if not medicine_prescription:
+        raise NotFoundException(message="Такого препарата не найдено")
 
 
 @SessionContext()

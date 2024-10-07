@@ -16,4 +16,4 @@ async def db_query_entity_by_id(db_model: Type[DBModelType], entity_id: int) -> 
     cursor = await db_session.execute(query)
     model = cursor.scalars().first()
 
-    return model
+    return None if model is None else model

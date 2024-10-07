@@ -5,7 +5,6 @@ from sqlalchemy import insert, update, exc
 
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
-from core.hsn.appointment.blocks.clinic_doctor.commands.create import check_appointment_exists
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
@@ -63,7 +62,8 @@ class HsnCommandAppointmentBlockLaboratoryTestCreateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_appointment_block_laboratory_test_create(
-        context: HsnCommandAppointmentBlockLaboratoryTestCreateContext):
+        context: HsnCommandAppointmentBlockLaboratoryTestCreateContext
+):
     appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
         raise NotFoundException(

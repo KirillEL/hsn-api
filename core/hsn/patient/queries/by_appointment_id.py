@@ -5,7 +5,6 @@ from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, InternalServerException, ValidationException
 from api.exceptions.base import UnprocessableEntityException, ForbiddenException
-from core.hsn.appointment.blocks.purpose.commands.create import check_appointment_exists
 from core.hsn.patient.commands.create import convert_to_patient_response
 from core.hsn.patient.model import PatientResponse, PatientWithoutFullNameResponse
 from shared.db.db_session import db_session, SessionContext
