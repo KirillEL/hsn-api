@@ -1,7 +1,5 @@
 from typing import Type
-
 from sqlalchemy import select
-
 from shared.db.db_session import db_session
 from shared.db.types import DBModelType
 

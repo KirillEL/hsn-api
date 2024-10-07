@@ -74,10 +74,11 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
     response_model=AppointmentLaboratoryTestBlock,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_laboratory_test(request: Request,
-                                       appointment_id: int,
-                                       body: UpdateBlockLaboratoryTestRequestBody
-                                       ):
+async def update_block_laboratory_test(
+        request: Request,
+        appointment_id: int,
+        body: UpdateBlockLaboratoryTestRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

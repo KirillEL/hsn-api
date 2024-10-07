@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
+from shared.db.queries import db_query_entity_by_id
 
 
 class HsnCommandAppointmentBlockLaboratoryTestCreateContext(BaseModel):
@@ -61,8 +62,14 @@ class HsnCommandAppointmentBlockLaboratoryTestCreateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_command_appointment_block_laboratory_test_create(context: HsnCommandAppointmentBlockLaboratoryTestCreateContext):
-    await check_appointment_exists(context.appointment_id)
+async def hsn_command_appointment_block_laboratory_test_create(
+        context: HsnCommandAppointmentBlockLaboratoryTestCreateContext):
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    if not appointment:
+        raise NotFoundException(
+            message="Прием не найден"
+        )
+
     payload = context.model_dump(exclude={'appointment_id'})
     query = (
         insert(AppointmentLaboratoryTestBlockDBModel)

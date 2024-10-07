@@ -10,7 +10,10 @@ from sqlalchemy import select
 @SessionContext()
 async def hsn_query_block_laboratory_test_by_appointment_id(doctor_id: int, appointment_id: int):
     query = (
-        select(AppointmentDBModel.block_laboratory_test_id, AppointmentDBModel.doctor_id)
+        select(
+            AppointmentDBModel.block_laboratory_test_id,
+            AppointmentDBModel.doctor_id
+        )
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == appointment_id)
     )

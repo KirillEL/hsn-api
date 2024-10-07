@@ -52,7 +52,9 @@ class HsnCommandBlockLaboratoryTestUpdateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_command_block_laboratory_test_update(context: HsnCommandBlockLaboratoryTestUpdateContext):
+async def hsn_command_block_laboratory_test_update(
+        context: HsnCommandBlockLaboratoryTestUpdateContext
+):
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
     query = (

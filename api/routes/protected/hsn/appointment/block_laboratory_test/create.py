@@ -76,5 +76,6 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
 async def create_block_laboratory_test(request: Request, body: CreateBlockLaboratoryTestRequestBody):
     if not request.user.doctor:
         raise DoctorNotAssignedException
+
     context = HsnCommandAppointmentBlockLaboratoryTestCreateContext(**body.model_dump())
     return await hsn_command_appointment_block_laboratory_test_create(context)
