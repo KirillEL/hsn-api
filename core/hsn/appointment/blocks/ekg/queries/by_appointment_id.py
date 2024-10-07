@@ -15,13 +15,17 @@ async def hsn_query_block_ekg_by_appointment_id(doctor_id: int, appointment_id: 
         .where(AppointmentDBModel.id == appointment_id)
     )
     cursor = await db_session.execute(query)
-    block_ekg_id, appointment_doctor_id = cursor.first()
+    result = cursor.first()
+    if not result:
+        raise NotFoundException
+
+    block_ekg_id, appointment_doctor_id = result
 
     if appointment_doctor_id != doctor_id:
         raise ForbiddenException
 
     if not block_ekg_id:
-        raise NotFoundException(message="У приема нет данного блока")
+        raise NotFoundException(message="К приему пока не привязан данный блок")
 
     query_get_block = (
         select(AppointmentEkgBlockDBModel)

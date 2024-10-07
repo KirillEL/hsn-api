@@ -14,4 +14,4 @@ async def get_block_laboratory_test_by_appointment_id(request: Request, appointm
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    return await hsn_query_block_laboratory_test_by_appointment_id(appointment_id)
+    return await hsn_query_block_laboratory_test_by_appointment_id(request.user.doctor.id, appointment_id)

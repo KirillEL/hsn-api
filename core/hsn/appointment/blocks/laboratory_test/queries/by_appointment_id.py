@@ -1,4 +1,5 @@
 from api.exceptions import NotFoundException
+from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -7,14 +8,23 @@ from sqlalchemy import select
 
 
 @SessionContext()
-async def hsn_query_block_laboratory_test_by_appointment_id(appointment_id: int):
+async def hsn_query_block_laboratory_test_by_appointment_id(doctor_id: int, appointment_id: int):
     query = (
-        select(AppointmentDBModel.block_laboratory_test_id)
+        select(AppointmentDBModel.block_laboratory_test_id, AppointmentDBModel.doctor_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == appointment_id)
     )
     cursor = await db_session.execute(query)
-    block_laboratory_test_id = cursor.scalar()
+    result = cursor.first()
+
+    if not result:
+        raise NotFoundException
+
+    block_laboratory_test_id, appointment_doctor_id = result
+
+    if appointment_doctor_id != doctor_id:
+        raise ForbiddenException
+
     if block_laboratory_test_id is None:
         raise NotFoundException(message="У приема нет данного блока")
 
