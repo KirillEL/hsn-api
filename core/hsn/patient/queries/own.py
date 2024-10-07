@@ -50,8 +50,10 @@ async def hsn_query_own_patients(request: Request,
 
     query = (
         select(PatientDBModel)
-        .where(PatientDBModel.is_deleted.is_(False),
-               DoctorDBModel.id == doctor_id)
+        .where(
+            PatientDBModel.is_deleted.is_(False),
+            DoctorDBModel.id == doctor_id
+        )
         .options(
             selectinload(PatientDBModel.cabinet)
             .selectinload(CabinetDBModel.doctors),

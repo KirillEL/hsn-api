@@ -21,6 +21,6 @@ async def user_query_login(username: str, password: str) -> Optional[User]:
         return None
 
     if PasswordHasher.verify_password(hashed_password=user_db.password, plain_password=password):
-        return User.from_orm(user_db)
+        return User.model_validate(user_db)
     else:
         return None

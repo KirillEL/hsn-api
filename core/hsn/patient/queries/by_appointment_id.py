@@ -15,19 +15,25 @@ from shared.db.queries import db_query_entity_by_id
 
 
 @SessionContext()
-async def hsn_query_patient_by_appointment_id(appointment_id: int,
-                                              doctor_id: int = None) -> PatientWithoutFullNameResponse:
+async def hsn_query_patient_by_appointment_id(
+        appointment_id: int,
+        doctor_id: int = None
+) -> PatientWithoutFullNameResponse:
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
     if not appointment:
-        raise NotFoundException
+        raise NotFoundException(
+            message="Прием не найден"
+        )
 
     if appointment.author_id != doctor_id:
         raise ForbiddenException(message=f"У вас нет прав к получению приема с id: {appointment_id}")
 
     query = (
         select(AppointmentDBModel)
-        .options(selectinload(AppointmentDBModel.patient),
-                 selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent))
+        .options(
+            selectinload(AppointmentDBModel.patient),
+            selectinload(AppointmentDBModel.patient).selectinload(PatientDBModel.contragent)
+        )
         .where(AppointmentDBModel.id == appointment_id)
     )
     try:

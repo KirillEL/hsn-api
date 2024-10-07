@@ -21,8 +21,9 @@ async def hsn_query_patient_by_id(doctor_id: int, patient_id: int) -> PatientWit
         select(PatientDBModel)
         .options(
             selectinload(PatientDBModel.cabinet)
-            .selectinload(CabinetDBModel.doctors)
-            , selectinload(PatientDBModel.contragent))
+            .selectinload(CabinetDBModel.doctors),
+            selectinload(PatientDBModel.contragent)
+        )
         .where(DoctorDBModel.id == doctor_id)
         .where(PatientDBModel.id == patient_id)
         .where(PatientDBModel.is_deleted.is_(False))

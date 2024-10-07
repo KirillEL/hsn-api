@@ -11,7 +11,9 @@ from sqlalchemy.orm import joinedload, selectinload
 async def hsn_patient_list(limit: int = None, offset: int = None, pattern: str = None):
     query = (
         select(PatientDBModel)
-        .options(selectinload(PatientDBModel.contragent))
+        .options(
+            selectinload(PatientDBModel.contragent)
+        )
     )
 
     if hasattr(PatientDBModel, "is_deleted"):
