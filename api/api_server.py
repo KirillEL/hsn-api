@@ -1,4 +1,6 @@
 import sys
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
@@ -73,6 +75,13 @@ def init_tasks_on_startup(app_: FastAPI) -> None:
         # await hsn_create_role_doctor()
 
 
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    await hsn_create_admin()
+    await hsn_create_role_doctor()
+    yield
+
+
 def init_logger() -> None:
     logger.remove()
 
@@ -100,12 +109,13 @@ def init_application() -> FastAPI:
         description="HSN_API",
         version="1.0.0",
         docs_url="/api/v1/docs",
-        middleware=init_middlewares()
+        middleware=init_middlewares(),
+        lifespan=lifespan
     )
 
     init_routers(app_=application)
     init_listeners(app_=application)
-    init_tasks_on_startup(app_=application)
+    #init_tasks_on_startup(app_=application)
 
     return application
 
