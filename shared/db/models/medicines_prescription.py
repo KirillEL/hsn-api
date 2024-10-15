@@ -14,7 +14,7 @@ class MedicinesPrescriptionDBModel(BaseDBModel):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     appointment_purpose_id = Column(BigInteger, ForeignKey('public.appointment_purposes.id'), nullable=False)
 
-    drug_id = Column(BigInteger, ForeignKey('public.drugs.id'), nullable=False)
+    drug_id = Column(BigInteger, ForeignKey('public.drugs.id', ondelete="CASCADE"), nullable=False)
     drug = relationship(DrugDBModel)
 
     dosa = Column(String(10), nullable=False)

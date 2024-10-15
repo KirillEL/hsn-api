@@ -22,7 +22,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.execute('''
            ALTER TABLE public.medicine_prescriptions ADD COLUMN IF NOT EXISTS
-           drug_id bigint references public.drugs;
+           drug_id bigint references public.drugs ON DELETE CASCADE;
            ''')
 
 
