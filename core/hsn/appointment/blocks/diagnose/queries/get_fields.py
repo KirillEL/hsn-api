@@ -49,17 +49,17 @@ async def hsn_query_block_diagnose_fields():
         key=lambda col: list(display_names.keys()).index(col.name)
     )
 
-    for column in columns_list_sorted:
+    for index, column in enumerate(columns_list_sorted):
+        if index % 2 == 1:
+            field_name = column.name
+            if field_name not in exclude_fields:
+                displayName = display_names.get(field_name, "")
+                textName = f"{field_name}_note" if field_name + "_note" in display_names else ""
 
-        field_name = column.name
-        if field_name not in exclude_fields:
-            displayName = display_names.get(field_name, "")
-            textName = f"{field_name}_note" if field_name + "_note" in display_names else ""
-
-            field_responses.append(AppointmentBlockBooleanTextFieldsResponse(
-                booleanName=field_name,
-                displayName=displayName,
-                textName=textName
-            ))
+                field_responses.append(AppointmentBlockBooleanTextFieldsResponse(
+                    booleanName=field_name,
+                    displayName=displayName,
+                    textName=textName
+                ))
 
     return field_responses
