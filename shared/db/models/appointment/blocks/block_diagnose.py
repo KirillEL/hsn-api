@@ -30,8 +30,8 @@ class AppointmentDiagnoseBlockDBModel(BaseDBModel):
     ad = Column(Boolean, nullable=False, server_default=text("false"))
     ad_note = Column(Text)
 
-    cd = Column(Boolean, nullable=False, server_default=text("false"))
-    cd_note = Column(Text)
+    dislipidemia = Column(Boolean, nullable=False, server_default=text("false"))
+    dislipidemia_note = Column(Text)
 
     hobl_ba = Column(Boolean, nullable=False, server_default=text("false"))
     hobl_ba_note = Column(Text)

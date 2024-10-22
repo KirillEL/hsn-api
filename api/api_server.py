@@ -67,14 +67,6 @@ def init_listeners(app_: FastAPI) -> None:
         )
 
 
-def init_tasks_on_startup(app_: FastAPI) -> None:
-    @app_.on_event("startup")
-    async def init_startup():
-        pass
-        # await hsn_create_admin()
-        # await hsn_create_role_doctor()
-
-
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     await hsn_create_admin()
@@ -115,7 +107,6 @@ def init_application() -> FastAPI:
 
     init_routers(app_=application)
     init_listeners(app_=application)
-    #init_tasks_on_startup(app_=application)
 
     return application
 
