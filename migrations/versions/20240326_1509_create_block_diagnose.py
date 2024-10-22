@@ -46,7 +46,8 @@ def upgrade() -> None:
     onmk_tia_note text,
     hbp boolean not null default false,
     hbp_note text,
-    another text
+    another boolean not null default false,
+    another_note text
     );
     ''')
 

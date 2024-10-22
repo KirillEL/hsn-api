@@ -8,9 +8,9 @@ class AppointmentDiagnoseBlockDBModel(BaseDBModel):
 
     id = Column(Integer, primary_key=True, nullable=False)
     diagnose = Column(Text, nullable=False)
-    classification_func_classes = Column(String(1), nullable=False) # 1 2 3 4
-    classification_adjacent_release = Column(String(50), nullable=False) # Низкая / Умеренно-сниженная / сохранная
-    classification_nc_stage = Column(String(5), nullable=False) # I IIa IIб III
+    classification_func_classes = Column(String(1), nullable=False)  # 1 2 3 4
+    classification_adjacent_release = Column(String(50), nullable=False)  # Низкая / Умеренно-сниженная / сохранная
+    classification_nc_stage = Column(String(5), nullable=False)  # I IIa IIб III
 
     cardiomyopathy = Column(Boolean, nullable=False, server_default=text("false"))
     cardiomyopathy_note = Column(Text)
@@ -42,5 +42,5 @@ class AppointmentDiagnoseBlockDBModel(BaseDBModel):
     hbp = Column(Boolean, nullable=False, server_default=text("false"))
     hbp_note = Column(Text)
 
-    another = Column(Text)
-    
+    another = Column(Boolean, nullable=False, server_default=text("false"))
+    another_note = Column(Text)
