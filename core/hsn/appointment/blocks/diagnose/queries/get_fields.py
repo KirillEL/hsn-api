@@ -50,7 +50,7 @@ async def hsn_query_block_diagnose_fields():
     )
 
     for index, column in enumerate(columns_list_sorted):
-        if index % 2 == 1:
+        if index % 2 == 0:
             field_name = column.name
             if field_name not in exclude_fields:
                 displayName = display_names.get(field_name, "")
