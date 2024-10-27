@@ -21,10 +21,11 @@ class AppointmentComplaintBlock(BaseModel):
 class AppointmentBlockBooleanFieldsResponse(BaseModel):
     name: str
     displayName: str
+    secondName: Optional[str]
 
 
 class EchoEkgFieldsResponse(BaseModel):
-    integer_fields: list[AppointmentBlockBooleanFieldsResponse] = []
+    float_fields: list[AppointmentBlockBooleanFieldsResponse] = []
     boolean_fields: list[AppointmentBlockBooleanFieldsResponse] = []
 
 
