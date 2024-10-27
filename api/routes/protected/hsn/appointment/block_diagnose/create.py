@@ -38,7 +38,8 @@ class CreateBlockDiagnoseRequestBody(BaseModel):
     onmk_tia_note: Optional[str] = Field(None, max_length=1000)
     hbp: bool = Field(False)
     hbp_note: Optional[str] = Field(None, max_length=1000)
-    another: Optional[str] = Field(None, max_length=1000)
+    another: bool = Field(False)
+    another_note: Optional[str] = Field(None, max_length=1000)
 
 
 @block_diagnose_router.post(

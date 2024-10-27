@@ -45,7 +45,8 @@ class HsnCommandAppointmentBlockDiagnoseCreateContext(BaseModel):
     hbp: Optional[bool] = False
     hbp_note: Optional[str] = None
 
-    another: Optional[str] = None
+    another: Optional[bool] = False
+    another_note: Optional[str] = None
 
 
 @SessionContext()
