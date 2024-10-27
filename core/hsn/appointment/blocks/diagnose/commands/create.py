@@ -36,9 +36,6 @@ class HsnCommandAppointmentBlockDiagnoseCreateContext(BaseModel):
     ad: Optional[bool] = False
     ad_note: Optional[str] = None
 
-    cd: Optional[bool] = False
-    cd_note: Optional[str] = None
-
     hobl_ba: Optional[bool] = False
     hobl_ba_note: Optional[str] = None
 
