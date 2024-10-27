@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock, HsnCommandBlockEkgUpdateContext, \
     hsn_command_block_ekg_update
+from core.hsn.appointment.blocks.ekg.model import AppointmentEkgBlockResponse
 from .router import block_ekg_router
 
 
@@ -24,15 +25,15 @@ class UpdateBlockEkgRequestBody(BaseModel):
     another_changes: Optional[str] = Field(None, max_length=1000)
 
     date_echo_ekg: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
-    fv: Optional[int] = Field(None, gt=0)
-    sdla: Optional[int] = Field(None, gt=0)
-    lp: Optional[int] = Field(None, gt=0)
-    pp: Optional[int] = Field(None, gt=0)
-    kdr_lg: Optional[int] = Field(None, gt=0)
-    ksr_lg: Optional[int] = Field(None, gt=0)
-    kdo_lg: Optional[int] = Field(None, gt=0)
-    mgp: Optional[int] = Field(None, gt=0)
-    zslg: Optional[int] = Field(None, gt=0)
+    fv: Optional[float] = Field(None, gt=0)
+    sdla: Optional[float] = Field(None, gt=0)
+    lp: Optional[float] = Field(None, gt=0)
+    pp: Optional[float] = Field(None, gt=0)
+    kdr_lg: Optional[float] = Field(None, gt=0)
+    ksr_lg: Optional[float] = Field(None, gt=0)
+    kdo_lg: Optional[float] = Field(None, gt=0)
+    mgp: Optional[float] = Field(None, gt=0)
+    zslg: Optional[float] = Field(None, gt=0)
     local_hypokines: Optional[bool] = Field(False)
     distol_disfunction: Optional[bool] = Field(False)
     anevrizma: Optional[bool] = Field(False)
@@ -41,7 +42,7 @@ class UpdateBlockEkgRequestBody(BaseModel):
 
 @block_ekg_router.patch(
     "/update/{appointment_id}",
-    response_model=AppointmentEkgBlock,
+    response_model=AppointmentEkgBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def update_block_ekg_route(

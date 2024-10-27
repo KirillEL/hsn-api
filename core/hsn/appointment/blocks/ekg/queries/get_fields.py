@@ -21,7 +21,7 @@ async def hsn_query_block_ekg_fields():
         "valvular_lesions", "anevrizma"
     }
 
-    echo_ekg_integer_fields = {
+    echo_ekg_float_fields = {
         "fv", "sdla", "lp", "pp", "kdr_lg", "ksr_lg", "kdo_lg", "mgp", "zslg"
     }
 
@@ -58,13 +58,14 @@ async def hsn_query_block_ekg_fields():
         if field_name not in exclude_fields:
             field_response = AppointmentBlockBooleanFieldsResponse(
                 name=field_name,
-                displayName=display_names.get(field_name, "")
+                displayName=display_names.get(field_name, ""),
+                secondName=display_names.get(field_name, "") if field_name == "lp" or field_name == "pp" else ""
             )
             if field_name in ekg_fields:
                 response.ekg.append(field_response)
             elif field_name in echo_ekg_fields:
                 response.echo_ekg.boolean_fields.append(field_response)
-            elif field_name in echo_ekg_integer_fields:
-                response.echo_ekg.integer_fields.append(field_response)
+            elif field_name in echo_ekg_float_fields:
+                response.echo_ekg.float_fields.append(field_response)
 
     return response

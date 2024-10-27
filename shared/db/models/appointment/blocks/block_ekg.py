@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, text, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, text, Text, Float
 from shared.db.models.BASE import BaseDBModel
 
 
@@ -20,15 +20,15 @@ class AppointmentEkgBlockDBModel(BaseDBModel):
     another_changes = Column(Text)
 
     date_echo_ekg = Column(Text, nullable=False)
-    fv = Column(Integer, nullable=False)
-    sdla = Column(Integer)
-    lp = Column(Integer)
-    pp = Column(Integer)
-    kdr_lg = Column(Integer)
-    ksr_lg = Column(Integer)
-    kdo_lg = Column(Integer)
-    mgp = Column(Integer)
-    zslg = Column(Integer)
+    fv = Column(Float, nullable=False)
+    sdla = Column(Float)
+    lp = Column(Float)
+    pp = Column(Float)
+    kdr_lg = Column(Float)
+    ksr_lg = Column(Float)
+    kdo_lg = Column(Float)
+    mgp = Column(Float)
+    zslg = Column(Float)
     local_hypokines = Column(Boolean, nullable=False, server_default=text("false"))
     difusal_hypokines = Column(Boolean, nullable=False, server_default=text("false"))
     distol_disfunction = Column(Boolean, nullable=False, server_default=text("false"))
