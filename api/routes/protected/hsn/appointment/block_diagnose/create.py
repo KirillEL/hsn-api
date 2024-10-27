@@ -32,8 +32,6 @@ class CreateBlockDiagnoseRequestBody(BaseModel):
     fp_tp_note: Optional[str] = Field(None, max_length=1000)
     ad: bool = Field(False)
     ad_note: Optional[str] = Field(None, max_length=1000)
-    cd: bool = Field(False)
-    cd_note: Optional[str] = Field(None, max_length=1000)
     hobl_ba: bool = Field(False)
     hobl_ba_note: Optional[str] = Field(None, max_length=1000)
     onmk_tia: bool = Field(False)
