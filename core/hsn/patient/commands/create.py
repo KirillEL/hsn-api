@@ -1,11 +1,14 @@
 from asyncpg import InternalServerError
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningInsert
+
 from tg_api import tg_bot
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientWithoutFullNameResponse
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field, ValidationError
 from typing import Optional
-from sqlalchemy import insert, select, exc
+from sqlalchemy import insert, select, exc, Select
 from shared.db.models.contragent import ContragentDBModel
 from shared.db.models.patient import PatientDBModel
 from core.hsn.patient import Patient
@@ -136,12 +139,14 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
 
 
 @SessionContext()
-async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientResponse:
+async def hsn_patient_create(
+        context: HsnPatientCreateContext
+) -> PatientResponse:
     logger.info(f'Начало создания пациента')
     patient_payload = context.model_dump(
         exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'doctor_id'})
 
-    contragent_payload = {
+    contragent_payload: dict[str, any] = {
         'name': context.name,
         'last_name': context.last_name,
         'patronymic': context.patronymic if context.patronymic else "",
@@ -149,10 +154,10 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
         'dod': context.dod if context.dod else None
     }
     logger.debug(f'contragent_payload: {contragent_payload}')
-    new_contragent_id = await create_contragent(contragent_payload)
+    new_contragent_id: int = await create_contragent(contragent_payload)
     logger.info(f'контрагент создан успешно!')
 
-    query = (
+    query: ReturningInsert = (
         insert(PatientDBModel)
         .values(
             author_id=context.doctor_id,
@@ -163,9 +168,9 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
         .returning(PatientDBModel.id)
     )
     try:
-        cursor = await db_session.execute(query)
+        cursor: AsyncResult = await db_session.execute(query)
         await db_session.commit()
-        patient_id = cursor.scalar()
+        patient_id: int = cursor.scalar()
         tg_bot.send_message(
             message=f"Пациент успешно создан"
         )
@@ -178,14 +183,14 @@ async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientRespons
             message="Failed to create patient"
         )
 
-    query_get = (
+    query_get: Select = (
         select(PatientDBModel)
         .options(selectinload(PatientDBModel.contragent))
         .where(PatientDBModel.id == patient_id)
     )
     try:
-        cursor = await db_session.execute(query_get)
-        patient = cursor.scalars().first()
+        cursor: AsyncResult = await db_session.execute(query_get)
+        patient: PatientDBModel = cursor.scalars().first()
     except exc.SQLAlchemyError as sqle:
         logger.error(f"Server error: {sqle}")
         raise InternalServerException(

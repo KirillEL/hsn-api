@@ -1,6 +1,7 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Type
 
-from sqlalchemy import update, select
+from sqlalchemy import update, select, Select, Result
+from sqlalchemy.sql.dml import ReturningUpdate
 
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
@@ -88,49 +89,49 @@ class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
 @SessionContext()
 async def hsn_command_block_complaint_and_clinical_condition_update(
         context: HsnCommandBlockComplaintAndClinicalConditionUpdateContext
-):
-    user_id = context.user_id
-    appointment_id = context.appointment_id
+) -> AppointmentComplaintWithClinicalCondition:
+    user_id: int = context.user_id
+    appointment_id: int = context.appointment_id
     payloads = context.create_payloads()
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
     if not appointment:
         raise NotFoundException("Прием не найден")
 
     # 1
-    query_get_block_complaint_id = (
+    query_get_block_complaint_id: Select = (
         select(AppointmentDBModel.block_complaint_id)
         .where(AppointmentDBModel.id == appointment_id)
     )
-    cursor = await db_session.execute(query_get_block_complaint_id)
-    block_complaint_id = cursor.scalar()
-    if block_complaint_id is None:
+    cursor: Result = await db_session.execute(query_get_block_complaint_id)
+    block_complaint_id: int = cursor.scalar()
+    if not block_complaint_id:
         raise NotFoundException(message="У приема не привязан еще блок жалоб!")
 
-    query_get_block_clinical_condition_id = (
+    query_get_block_clinical_condition_id: Select = (
         select(AppointmentDBModel.block_clinical_condition_id)
         .where(AppointmentDBModel.id == appointment_id)
     )
-    cursor = await db_session.execute(query_get_block_clinical_condition_id)
-    block_clinical_condition_id = cursor.scalar()
-    if block_clinical_condition_id is None:
+    cursor: Result = await db_session.execute(query_get_block_clinical_condition_id)
+    block_clinical_condition_id: int = cursor.scalar()
+    if not block_clinical_condition_id:
         raise NotFoundException(message="У приема не привязан еще блок клинического состояния!")
 
-    query_update_block_complaint = (
+    query_update_block_complaint: ReturningUpdate = (
         update(AppointmentComplaintBlockDBModel)
         .values(payloads["block_complaint"])
         .where(AppointmentComplaintBlockDBModel.id == block_complaint_id)
         .returning(AppointmentComplaintBlockDBModel)
     )
-    cursor = await db_session.execute(query_update_block_complaint)
+    cursor: Result = await db_session.execute(query_update_block_complaint)
     updated_block_complaint = cursor.scalars().first()
 
-    query_update_block_clinical_condition = (
+    query_update_block_clinical_condition: ReturningUpdate = (
         update(AppointmentClinicalConditionBlockDBModel)
         .values(payloads["block_clinical_condition"])
         .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
         .returning(AppointmentClinicalConditionBlockDBModel)
     )
-    cursor = await db_session.execute(query_update_block_clinical_condition)
+    cursor: Result = await db_session.execute(query_update_block_clinical_condition)
     updated_block_clinical_condition = cursor.scalars().first()
 
     await db_session.commit()

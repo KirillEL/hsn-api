@@ -1,6 +1,8 @@
 from typing import Optional
 
-from sqlalchemy import insert, update, exc
+from sqlalchemy import insert, update, exc, Update
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException, InternalServerException
 from shared.db.db_session import db_session, SessionContext
@@ -50,21 +52,23 @@ class HsnCommandAppointmentBlockDiagnoseCreateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_command_appointment_block_diagnose_create(context: HsnCommandAppointmentBlockDiagnoseCreateContext):
-    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+async def hsn_command_appointment_block_diagnose_create(
+        context: HsnCommandAppointmentBlockDiagnoseCreateContext
+) -> int:
+    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
         raise NotFoundException(message="Прием не найден")
 
     payload = context.model_dump(exclude={'appointment_id'})
-    query = (
+    query: ReturningInsert = (
         insert(AppointmentDiagnoseBlockDBModel)
         .values(**payload)
         .returning(AppointmentDiagnoseBlockDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    new_block_diagnose_id = cursor.scalar()
+    cursor: AsyncResult = await db_session.execute(query)
+    new_block_diagnose_id: int = cursor.scalar()
 
-    query_update_appointment = (
+    query_update_appointment: Update = (
         update(AppointmentDBModel)
         .values(
             block_diagnose_id=new_block_diagnose_id

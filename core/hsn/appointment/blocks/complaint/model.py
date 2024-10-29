@@ -18,6 +18,10 @@ class AppointmentComplaintBlock(BaseModel):
     note: Optional[str] = None
 
 
+class AppointmentComplaintBlockResponse(AppointmentComplaintBlock):
+    pass
+
+
 class AppointmentBlockBooleanFieldsResponse(BaseModel):
     name: str
     displayName: str
@@ -37,3 +41,7 @@ class AppointmentBlockEkgBooleanFieldsResponse(BaseModel):
 class AppointmentComplaintWithClinicalCondition(BaseModel):
     block_complaint: AppointmentComplaintBlock
     block_clinical_condition: AppointmentClinicalConditionBlock
+
+
+class AppointmentComplaintWithClinicalConditionResponse(AppointmentComplaintWithClinicalCondition):
+    pass

@@ -1,7 +1,9 @@
 from datetime import date as tdate, datetime
 
 from loguru import logger
-from sqlalchemy import insert, update, exc
+from sqlalchemy import insert, update, exc, Result, Update
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
@@ -63,23 +65,23 @@ class HsnCommandAppointmentBlockLaboratoryTestCreateContext(BaseModel):
 @SessionContext()
 async def hsn_command_appointment_block_laboratory_test_create(
         context: HsnCommandAppointmentBlockLaboratoryTestCreateContext
-):
-    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+) -> int:
+    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
         raise NotFoundException(
             message="Прием не найден"
         )
 
     payload = context.model_dump(exclude={'appointment_id'})
-    query = (
+    query: ReturningInsert = (
         insert(AppointmentLaboratoryTestBlockDBModel)
         .values(**payload)
         .returning(AppointmentLaboratoryTestBlockDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    new_block_laboratory_test_id = cursor.scalar()
+    cursor: AsyncResult = await db_session.execute(query)
+    new_block_laboratory_test_id: int = cursor.scalar()
 
-    query_update_appointment = (
+    query_update_appointment: Update = (
         update(AppointmentDBModel)
         .values(
             block_laboratory_test_id=new_block_laboratory_test_id

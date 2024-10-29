@@ -39,6 +39,10 @@ class Appointment(BaseModel):
     deleted_by: Optional[UserAuthor] = None
 
 
+class AppointmentCreateResponse(Appointment):
+    pass
+
+
 class PatientFlatForAppointmentList(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -67,3 +71,5 @@ class PatientAppointmentFlat(BaseModel):
     status: str
 
 
+class AppointmentFlatResponse(PatientAppointmentFlat):
+    pass

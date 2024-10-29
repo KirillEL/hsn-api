@@ -1,13 +1,14 @@
 from typing import Optional
 
 from loguru import logger
+from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import InternalServerException, NotFoundException
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.patient import PatientDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from sqlalchemy import insert, exc, select
+from sqlalchemy import insert, exc, select, Result
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -31,10 +32,13 @@ async def check_patient_exists(patient_id: int):
 
 
 @SessionContext()
-async def hsn_command_appointment_initialize(context: HsnCommandAppointmentInitContext):
+async def hsn_command_appointment_initialize(
+        context: HsnCommandAppointmentInitContext
+) -> int:
     payload = context.model_dump(exclude={'user_id'}, exclude_none=True)
     await check_patient_exists(context.patient_id)
-    query = (
+
+    query: ReturningInsert = (
         insert(AppointmentDBModel)
         .values(
             **payload,
@@ -42,7 +46,7 @@ async def hsn_command_appointment_initialize(context: HsnCommandAppointmentInitC
         )
         .returning(AppointmentDBModel.id)
     )
-    cursor = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     await db_session.commit()
-    new_patient_appointment_id = cursor.scalar()
+    new_patient_appointment_id: int = cursor.scalar()
     return new_patient_appointment_id

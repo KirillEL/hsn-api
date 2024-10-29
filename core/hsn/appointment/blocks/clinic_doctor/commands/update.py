@@ -1,7 +1,9 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import select, update
+from sqlalchemy import select, update, Select
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningUpdate
 
 from api.exceptions import NotFoundException, AppointmentNotBelongsToUserException
 from api.exceptions.base import ForbiddenException
@@ -23,18 +25,21 @@ class HsnBlockClinicDoctorUpdateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_block_clinic_doctor_update(context: HsnBlockClinicDoctorUpdateContext, doctor_id: int = None):
+async def hsn_block_clinic_doctor_update(
+        context: HsnBlockClinicDoctorUpdateContext,
+        doctor_id: int = None
+) -> AppointmentClinicDoctorBlock:
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
-    query = (
+    query: Select = (
         select(AppointmentDBModel.block_clinic_doctor_id, AppointmentDBModel.author_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
+    cursor: AsyncResult = await db_session.execute(query)
     result = cursor.first()
     block_clinic_doctor_id, author_id = result
-    if block_clinic_doctor_id is None:
+    if not block_clinic_doctor_id:
         raise NotFoundException(message="У приема нет этого блока!")
 
     if author_id != doctor_id:
@@ -42,13 +47,13 @@ async def hsn_block_clinic_doctor_update(context: HsnBlockClinicDoctorUpdateCont
             message="У вас нет прав на управление этим блоком"
         )
 
-    query_update = (
+    query_update: ReturningUpdate = (
         update(AppointmentBlockClinicDoctorDBModel)
         .values(**payload)
         .where(AppointmentBlockClinicDoctorDBModel.id == block_clinic_doctor_id)
         .returning(AppointmentBlockClinicDoctorDBModel)
     )
-    cursor = await db_session.execute(query_update)
+    cursor: AsyncResult = await db_session.execute(query_update)
     await db_session.commit()
-    update_block_clinic_doctor = cursor.scalars().first()
+    update_block_clinic_doctor: AppointmentBlockClinicDoctorDBModel = cursor.scalars().first()
     return AppointmentClinicDoctorBlock.model_validate(update_block_clinic_doctor)

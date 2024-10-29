@@ -1,7 +1,9 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import select, update
+from sqlalchemy import select, update, Select
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningUpdate
 
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
@@ -45,26 +47,28 @@ class HsnCommandBlockClinicalConditionUpdateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_command_block_clinical_condition_update(context: HsnCommandBlockClinicalConditionUpdateContext):
+async def hsn_command_block_clinical_condition_update(
+        context: HsnCommandBlockClinicalConditionUpdateContext
+) -> AppointmentClinicalConditionBlock:
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
-    query = (
+    query: Select = (
         select(AppointmentDBModel.block_clinical_condition_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
-    block_clinical_condition_id = cursor.scalar()
-    if block_clinical_condition_id is None:
+    cursor: AsyncResult = await db_session.execute(query)
+    block_clinical_condition_id: int = cursor.scalar()
+    if not block_clinical_condition_id:
         raise NotFoundException(message="У приема нет данного блока!")
 
-    query_update = (
+    query_update: ReturningUpdate = (
         update(AppointmentClinicalConditionBlockDBModel)
         .values(**payload)
         .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
         .returning(AppointmentClinicalConditionBlockDBModel)
     )
-    cursor = await db_session.execute(query_update)
+    cursor: AsyncResult = await db_session.execute(query_update)
     await db_session.commit()
-    updated_block = cursor.scalars().first()
+    updated_block: AppointmentClinicalConditionBlockDBModel = cursor.scalars().first()
     return AppointmentClinicalConditionBlock.model_validate(updated_block)

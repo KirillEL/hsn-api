@@ -52,3 +52,8 @@ class AppointmentLaboratoryTestBlock(BaseModel):
     microalbumuria: Optional[float] = None
     microalbumuria_date: Optional[str] = None
     note: Optional[str] = None
+
+
+
+class AppointmentLaboratoryTestBlockResponse(AppointmentLaboratoryTestBlock):
+    pass

@@ -1,5 +1,6 @@
 from core.hsn.appointment import Appointment, HsnCommandPatientAppointmentCreateContext, \
     hsn_command_patient_appontment_create
+from core.hsn.appointment.model import AppointmentCreateResponse
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request, status
@@ -22,13 +23,16 @@ class AppointmentCreateRequestBody(BaseModel):
 
 @appointment_router.post(
     "",
-    response_model=Appointment,
+    response_model=int,
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Создать прием пациента",
     status_code=status.HTTP_201_CREATED,
     tags=["Прием"]
 )
-async def appointment_create_route(request: Request, body: AppointmentCreateRequestBody):
+async def appointment_create_route(
+        request: Request,
+        body: AppointmentCreateRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

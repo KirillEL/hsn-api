@@ -1,13 +1,14 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock, \
     hsn_query_block_clinical_condition_by_appointment_id
+from core.hsn.appointment.blocks.clinical_condition.model import AppointmentClinicalConditionBlockResponse
 from .router import block_clinical_condition_router
 from fastapi import Request
 
 
 @block_clinical_condition_router.get(
     "/{appointment_id}",
-    response_model=AppointmentClinicalConditionBlock,
+    response_model=AppointmentClinicalConditionBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def get_block_clinical_condition_by_appointment_id_route(

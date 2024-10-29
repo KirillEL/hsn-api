@@ -1,7 +1,9 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import select, update
+from sqlalchemy import select, update, Select, Result
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningUpdate
 
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
@@ -40,26 +42,28 @@ class HsnCommandBlockEkgUpdateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_command_block_ekg_update(context: HsnCommandBlockEkgUpdateContext):
+async def hsn_command_block_ekg_update(
+        context: HsnCommandBlockEkgUpdateContext
+) -> AppointmentEkgBlock:
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
-    query = (
+    query: Select = (
         select(AppointmentDBModel.block_ekg_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
-    block_ekg_id = cursor.scalar()
-    if block_ekg_id is None:
+    cursor: AsyncResult = await db_session.execute(query)
+    block_ekg_id: int = cursor.scalar()
+    if not block_ekg_id:
         raise NotFoundException(message="У приема нет данного блока!")
 
-    query_update = (
+    query_update: ReturningUpdate = (
         update(AppointmentEkgBlockDBModel)
         .values(**payload)
         .where(AppointmentEkgBlockDBModel.id == block_ekg_id)
         .returning(AppointmentEkgBlockDBModel)
     )
-    cursor = await db_session.execute(query_update)
+    cursor: AsyncResult = await db_session.execute(query_update)
     await db_session.commit()
-    updated_block_ekg = cursor.scalars().first()
+    updated_block_ekg: AppointmentEkgBlockDBModel = cursor.scalars().first()
     return AppointmentEkgBlock.model_validate(updated_block_ekg)

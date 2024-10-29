@@ -1,7 +1,8 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import select, update
+from sqlalchemy import select, update, Select, Result
+from sqlalchemy.sql.dml import ReturningUpdate
 
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
@@ -22,26 +23,28 @@ class HsnCommandBlockComplaintUpdateContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_command_block_complaint_update(context: HsnCommandBlockComplaintUpdateContext):
+async def hsn_command_block_complaint_update(
+        context: HsnCommandBlockComplaintUpdateContext
+) -> AppointmentComplaintBlock:
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
-    query = (
+    query: Select = (
         select(AppointmentDBModel.block_complaint_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
-    block_complaint_id = cursor.scalar()
-    if block_complaint_id is None:
+    cursor: Result = await db_session.execute(query)
+    block_complaint_id: int = cursor.scalar()
+    if not block_complaint_id:
         raise NotFoundException(message="У приема нет данного блока!")
 
-    query_update = (
+    query_update: ReturningUpdate = (
         update(AppointmentComplaintBlockDBModel)
         .values(**payload)
         .where(AppointmentComplaintBlockDBModel.id == block_complaint_id)
         .returning(AppointmentComplaintBlockDBModel)
     )
-    cursor = await db_session.execute(query_update)
+    cursor: Result = await db_session.execute(query_update)
     await db_session.commit()
     updated_block_complaint = cursor.scalars().first()
     return AppointmentComplaintBlock.model_validate(updated_block_complaint)

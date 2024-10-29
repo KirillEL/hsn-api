@@ -1,10 +1,12 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
+
+from sqlalchemy.ext.asyncio import AsyncResult
 
 from api.exceptions.base import ValidationErrorTelegramSendMessageSchema
 from tg_api import tg_bot
 from loguru import logger
-from sqlalchemy import select, func, exc
+from sqlalchemy import select, func, exc, Select, Result
 from sqlalchemy.orm import joinedload, contains_eager, selectinload
 from fastapi import Request
 from api.exceptions import NotFoundException, BadRequestException, ValidationException, InternalServerException
@@ -28,10 +30,13 @@ class HsnAppointmentListContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_appointment_list(request: Request, context: HsnAppointmentListContext):
+async def hsn_appointment_list(
+        request: Request,
+        context: HsnAppointmentListContext
+):
     logger.info(f"Fetching appointments for doctor_id: {context.doctor_id}")
 
-    query = (
+    query: Select = (
         select(AppointmentDBModel)
         .where(AppointmentDBModel.is_deleted.is_(False),
                AppointmentDBModel.doctor_id == context.doctor_id)
@@ -55,13 +60,13 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
         )
     )
 
-    query_count = (
+    query_count: Select = (
         select(func.count(AppointmentDBModel.id))
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.doctor_id == context.doctor_id)
     )
-    cursor_count = await db_session.execute(query_count)
-    total_appointments = cursor_count.scalar()
+    cursor_count: AsyncResult = await db_session.execute(query_count)
+    total_appointments: int = cursor_count.scalar()
 
     if context.limit:
         query = query.limit(context.limit)
@@ -69,8 +74,8 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
         query = query.offset(context.offset)
 
     try:
-        cursor = await db_session.execute(query)
-        patient_appointments = cursor.unique().scalars().all()
+        cursor: AsyncResult = await db_session.execute(query)
+        patient_appointments: List[AppointmentDBModel] = cursor.unique().scalars().all()
     except exc.SQLAlchemyError as sqle:
         logger.error(f'Failed fetching patient appointments: {sqle}')
         message_model = ValidationErrorTelegramSendMessageSchema(
@@ -90,7 +95,7 @@ async def hsn_appointment_list(request: Request, context: HsnAppointmentListCont
         logger.warning("No appointments found")
         return {"data": [], "total": 0}
 
-    results = []
+    results: List[PatientAppointmentFlat] = []
     for appointment in patient_appointments:
         patient_info = PatientFlatForAppointmentList(
             name=contragent_hasher.decrypt(appointment.patient.contragent.name),

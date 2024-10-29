@@ -1,6 +1,6 @@
 from loguru import logger
 from pydantic import ValidationError
-from sqlalchemy import select, RowMapping
+from sqlalchemy import select, RowMapping, Select, Result
 from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
@@ -29,8 +29,11 @@ async def build_patient_info(appointment: RowMapping):
 
 
 @SessionContext()
-async def hsn_appointment_by_id(doctor_id: int, appointment_id: int):
-    query = (
+async def hsn_appointment_by_id(
+        doctor_id: int,
+        appointment_id: int
+) -> PatientAppointmentFlat:
+    query: Select = (
         select(AppointmentDBModel)
         .where(AppointmentDBModel.is_deleted.is_(False),
                AppointmentDBModel.doctor_id == doctor_id,
@@ -55,7 +58,7 @@ async def hsn_appointment_by_id(doctor_id: int, appointment_id: int):
         )
     )
 
-    cursor = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     appointment = cursor.scalars().first()
     if not appointment:
         raise NotFoundException(message="Прием не найден")

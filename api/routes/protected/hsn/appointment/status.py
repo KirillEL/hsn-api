@@ -12,7 +12,10 @@ from fastapi import Request
     summary="Узнать статус приема по его id",
     tags=["Прием"]
 )
-async def get_appointment_status_route(request: Request, patient_appointment_id: int):
+async def get_appointment_status_route(
+        request: Request,
+        patient_appointment_id: int
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

@@ -1,13 +1,14 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
     hsn_query_block_laboratory_test_by_appointment_id
+from core.hsn.appointment.blocks.laboratory_test.model import AppointmentLaboratoryTestBlockResponse
 from .router import block_laboratory_test_router
 from fastapi import Request
 
 
 @block_laboratory_test_router.get(
     "/{appointment_id}",
-    response_model=AppointmentLaboratoryTestBlock,
+    response_model=AppointmentLaboratoryTestBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def get_block_laboratory_test_by_appointment_id_route(

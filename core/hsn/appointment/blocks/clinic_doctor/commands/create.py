@@ -1,6 +1,8 @@
 from typing import Optional
 
-from sqlalchemy import insert, update, select, exc
+from sqlalchemy import insert, update, select, exc, Update
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException
@@ -27,8 +29,8 @@ class HsnCommandAppointmentBlockClinicDoctorCreateContext(BaseModel):
 @SessionContext()
 async def hsn_command_appointment_block_clinic_doctor_create(
         context: HsnCommandAppointmentBlockClinicDoctorCreateContext
-):
-    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+) -> int:
+    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
 
     if not appointment:
         raise NotFoundException(
@@ -36,15 +38,15 @@ async def hsn_command_appointment_block_clinic_doctor_create(
         )
 
     payload = context.model_dump(exclude={'appointment_id'})
-    query = (
+    query: ReturningInsert = (
         insert(AppointmentBlockClinicDoctorDBModel)
         .values(**payload)
         .returning(AppointmentBlockClinicDoctorDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    new_block_clinic_doctor_id = cursor.scalar()
+    cursor: AsyncResult = await db_session.execute(query)
+    new_block_clinic_doctor_id: int = cursor.scalar()
 
-    query_update_appointment = (
+    query_update_appointment: Update = (
         update(AppointmentDBModel)
         .values(
             block_clinic_doctor_id=new_block_clinic_doctor_id

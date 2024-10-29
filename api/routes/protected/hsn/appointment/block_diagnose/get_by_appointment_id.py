@@ -10,7 +10,10 @@ from fastapi import Request
     response_model=AppointmentBlockDiagnoseResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def get_block_diagnose_by_appointment_id_route(request: Request, appointment_id: int):
+async def get_block_diagnose_by_appointment_id_route(
+        request: Request,
+        appointment_id: int
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

@@ -45,7 +45,10 @@ class AppointmentInitializeRequestBody(BaseModel):
     status_code=status.HTTP_201_CREATED,
     tags=["Прием"]
 )
-async def appointment_initialize_route(request: Request, body: AppointmentInitializeRequestBody):
+async def appointment_initialize_route(
+        request: Request,
+        body: AppointmentInitializeRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

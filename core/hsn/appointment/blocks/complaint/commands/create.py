@@ -1,6 +1,8 @@
 from typing import Optional
 
-from sqlalchemy import insert, update, exc
+from sqlalchemy import insert, update, exc, Result, Update
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException
 from shared.db.db_session import db_session, SessionContext
@@ -24,21 +26,22 @@ class HsnCommandAppointmentBlockComplaintCreateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_appointment_block_complaint_create(
-        context: HsnCommandAppointmentBlockComplaintCreateContext) -> int:
-    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+        context: HsnCommandAppointmentBlockComplaintCreateContext
+) -> int:
+    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
         raise NotFoundException("Прием не найден")
 
     payload = context.model_dump(exclude={'appointment_id'})
-    query = (
+    query: ReturningInsert = (
         insert(AppointmentComplaintBlockDBModel)
         .values(**payload)
         .returning(AppointmentComplaintBlockDBModel.id)
     )
-    cursor = await db_session.execute(query)
-    new_complaint_block_id = cursor.scalar()
+    cursor: AsyncResult = await db_session.execute(query)
+    new_complaint_block_id: int = cursor.scalar()
 
-    query_update_appointment = (
+    query_update_appointment: Update = (
         update(AppointmentDBModel)
         .values(
             block_complaint_id=new_complaint_block_id

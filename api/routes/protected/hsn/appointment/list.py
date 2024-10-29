@@ -25,7 +25,10 @@ class GetOwnPatientAppointmentsResponse(BaseModel):
     tags=["Прием"],
     summary="Получить список всех приемов"
 )
-async def get_appointment_list_route(request: Request, params: GetAppointmentListQueryParams = Depends()):
+async def get_appointment_list_route(
+        request: Request,
+        params: GetAppointmentListQueryParams = Depends()
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
     from core.hsn.appointment import HsnAppointmentListContext, hsn_appointment_list

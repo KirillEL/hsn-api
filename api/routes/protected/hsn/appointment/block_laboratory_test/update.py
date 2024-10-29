@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock, \
     HsnCommandBlockLaboratoryTestUpdateContext, hsn_command_block_laboratory_test_update
+from core.hsn.appointment.blocks.laboratory_test.model import AppointmentLaboratoryTestBlockResponse
 from .router import block_laboratory_test_router
 from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
 
@@ -71,7 +72,7 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
 
 @block_laboratory_test_router.patch(
     "/update/{appointment_id}",
-    response_model=AppointmentLaboratoryTestBlock,
+    response_model=AppointmentLaboratoryTestBlockResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def update_block_laboratory_test_route(

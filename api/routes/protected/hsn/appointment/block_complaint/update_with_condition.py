@@ -4,7 +4,8 @@ from pydantic import BaseModel, Field
 
 from core.hsn.appointment.blocks.complaint import HsnCommandBlockComplaintAndClinicalConditionUpdateContext, \
     hsn_command_block_complaint_and_clinical_condition_update
-from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
+from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition, \
+    AppointmentComplaintWithClinicalConditionResponse
 from .router import block_complaint_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request
@@ -54,7 +55,7 @@ class UpdateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
 
 @block_complaint_router.patch(
     "/update_with_condition/{appointment_id}",
-    response_model=AppointmentComplaintWithClinicalCondition,
+    response_model=AppointmentComplaintWithClinicalConditionResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def update_block_complaint_and_clinical_condition_route(

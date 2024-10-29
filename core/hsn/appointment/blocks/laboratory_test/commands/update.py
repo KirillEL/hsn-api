@@ -1,7 +1,9 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import select, update
+from sqlalchemy import select, update, Select, Result
+from sqlalchemy.ext.asyncio import AsyncResult
+from sqlalchemy.sql.dml import ReturningUpdate
 
 from api.exceptions import NotFoundException
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
@@ -54,26 +56,28 @@ class HsnCommandBlockLaboratoryTestUpdateContext(BaseModel):
 @SessionContext()
 async def hsn_command_block_laboratory_test_update(
         context: HsnCommandBlockLaboratoryTestUpdateContext
-):
+) -> AppointmentLaboratoryTestBlock:
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
 
-    query = (
+    query: Select = (
         select(AppointmentDBModel.block_laboratory_test_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor = await db_session.execute(query)
-    block_laboratory_test_id = cursor.scalar()
-    if block_laboratory_test_id is None:
+
+    cursor: AsyncResult = await db_session.execute(query)
+
+    block_laboratory_test_id: int = cursor.scalar()
+    if not block_laboratory_test_id:
         raise NotFoundException(message="У приема нет данного блока!")
 
-    query_update = (
+    query_update: ReturningUpdate = (
         update(AppointmentLaboratoryTestBlockDBModel)
         .values(**payload)
         .where(AppointmentLaboratoryTestBlockDBModel.id == block_laboratory_test_id)
         .returning(AppointmentLaboratoryTestBlockDBModel)
     )
-    cursor = await db_session.execute(query_update)
+    cursor: AsyncResult = await db_session.execute(query_update)
     await db_session.commit()
-    updated_block_laboratory_test = cursor.scalars().first()
+    updated_block_laboratory_test: AppointmentLaboratoryTestBlockDBModel = cursor.scalars().first()
     return AppointmentLaboratoryTestBlock.model_validate(updated_block_laboratory_test)

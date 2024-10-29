@@ -5,7 +5,7 @@ from fastapi import Request
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock, HsnCommandBlockDiagnoseUpdateContext, \
     hsn_command_block_diagnose_update
 from core.hsn.appointment.blocks.diagnose.model import ClassificationFuncClassesType, ClassificationAdjacentReleaseType, \
-    ClassificationNcStageType
+    ClassificationNcStageType, AppointmentBlockDiagnoseResponse
 from .router import block_diagnose_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from pydantic import BaseModel, Field
@@ -45,10 +45,14 @@ class UpdateBlockDiagnoseRequestBody(BaseModel):
 
 @block_diagnose_router.patch(
     "/update/{appointment_id}",
-    response_model=AppointmentDiagnoseBlock,
+    response_model=AppointmentBlockDiagnoseResponse,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
-async def update_block_diagnose_route(request: Request, appointment_id: int, body: UpdateBlockDiagnoseRequestBody):
+async def update_block_diagnose_route(
+        request: Request,
+        appointment_id: int,
+        body: UpdateBlockDiagnoseRequestBody
+):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 

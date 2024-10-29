@@ -1,6 +1,8 @@
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, Result
+from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException, InternalServerException
+from core.hsn.appointment import Appointment
 from shared.db.models import BaseDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
@@ -74,7 +76,9 @@ async def check_clinical_condition_exists(block_clinical_condition_id: int):
 
 
 @SessionContext()
-async def hsn_command_patient_appontment_create(context: HsnCommandPatientAppointmentCreateContext):
+async def hsn_command_patient_appontment_create(
+        context: HsnCommandPatientAppointmentCreateContext
+) -> Appointment:
     await check_block_clinic_doctor_exists(context.block_clinic_doctor_id)
     await check_block_diagnose_exists(context.block_diagnose_id)
     await check_block_laboratory_test_exists(context.block_laboratory_test_id)
@@ -83,7 +87,7 @@ async def hsn_command_patient_appontment_create(context: HsnCommandPatientAppoin
     await check_clinical_condition_exists(context.block_clinical_condition_id)
 
     payload = context.model_dump(exclude={'user_id'})
-    query = (
+    query: ReturningInsert = (
         insert(AppointmentDBModel)
         .values(
             author_id=context.doctor_id,
@@ -91,7 +95,7 @@ async def hsn_command_patient_appontment_create(context: HsnCommandPatientAppoin
         )
         .returning(AppointmentDBModel.id)
     )
-    cursor = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     await db_session.commit()
-    new_appointment_id = cursor.scalar()
+    new_appointment_id: int = cursor.scalar()
     return new_appointment_id
