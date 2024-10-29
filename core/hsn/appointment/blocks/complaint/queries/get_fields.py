@@ -26,7 +26,8 @@ async def hsn_query_block_complaint_fields():
         if field_name != "id" and field_name != "note":
             field_response = AppointmentBlockBooleanFieldsResponse(
                 name=field_name,
-                displayName=display_names.get(field_name, "")
+                displayName=display_names.get(field_name, ""),
+                secondName=""
             )
             field_responses.append(field_response)
 
