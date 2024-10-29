@@ -50,7 +50,8 @@ async def hsn_query_block_clinical_condition_fields():
         if field_name not in exclude_fields:
             field_response = AppointmentBlockBooleanFieldsResponse(
                 name=field_name,
-                displayName=display_names.get(field_name, "")
+                displayName=display_names.get(field_name, ""),
+                secondName=""
             )
             field_responses.append(field_response)
 
