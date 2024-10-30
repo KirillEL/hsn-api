@@ -30,8 +30,6 @@ class HsnCommandBlockDiagnoseUpdateContext(BaseModel):
     fp_tp_note: Optional[str] = None
     ad: Optional[bool] = None
     ad_note: Optional[str] = None
-    cd: Optional[bool] = None
-    cd_note: Optional[str] = None
     hobl_ba: Optional[bool] = None
     hobl_ba_note: Optional[str] = None
     onmk_tia: Optional[bool] = None

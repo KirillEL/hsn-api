@@ -32,8 +32,6 @@ class UpdateBlockDiagnoseRequestBody(BaseModel):
     fp_tp_note: Optional[str] = Field(None, max_length=1000)
     ad: Optional[bool] = Field(False)
     ad_note: Optional[str] = Field(None, max_length=1000)
-    cd: Optional[bool] = Field(False)
-    cd_note: Optional[str] = Field(None, max_length=1000)
     hobl_ba: Optional[bool] = Field(False)
     hobl_ba_note: Optional[str] = Field(None, max_length=1000)
     onmk_tia: Optional[bool] = Field(False)
