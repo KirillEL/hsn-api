@@ -40,7 +40,8 @@ class UpdateBlockDiagnoseRequestBody(BaseModel):
     onmk_tia_note: Optional[str] = Field(None, max_length=1000)
     hbp: Optional[bool] = Field(False)
     hbp_note: Optional[str] = Field(None, max_length=1000)
-    another: Optional[str] = Field(None, max_length=1000)
+    another: Optional[bool] = Field(False)
+    another_note: Optional[str] = Field(None, max_length=1000)
 
 
 @block_diagnose_router.patch(

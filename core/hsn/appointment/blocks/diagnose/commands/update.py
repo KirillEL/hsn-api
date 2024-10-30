@@ -38,7 +38,8 @@ class HsnCommandBlockDiagnoseUpdateContext(BaseModel):
     onmk_tia_note: Optional[str] = None
     hbp: Optional[bool] = None
     hbp_note: Optional[str] = None
-    another: Optional[str] = None
+    another: Optional[bool] = None
+    another_note: Optional[str] = None
 
 
 @SessionContext()
