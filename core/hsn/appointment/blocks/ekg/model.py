@@ -24,10 +24,13 @@ class AppointmentEkgBlock(BaseModel):
     fv: float
     sdla: Optional[float] = None
     lp: Optional[float] = None
+    lp2: Optional[float] = None
     pp: Optional[float] = None
+    pp2: Optional[float] = None
     kdr_lg: Optional[float] = None
     ksr_lg: Optional[float] = None
     kdo_lg: Optional[float] = None
+    kso_lg: Optional[float] = None
     mgp: Optional[float] = None
     zslg: Optional[float] = None
     local_hypokines: Optional[bool] = False
