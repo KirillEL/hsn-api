@@ -29,10 +29,13 @@ class HsnCommandBlockEkgUpdateContext(BaseModel):
     fv: Optional[int] = None
     sdla: Optional[int] = None
     lp: Optional[int] = None
+    lp2: Optional[int] = None
     pp: Optional[int] = None
+    pp2: Optional[int] = None
     kdr_lg: Optional[int] = None
     ksr_lg: Optional[int] = None
     kdo_lg: Optional[int] = None
+    kso_lg: Optional[int] = None
     mgp: Optional[int] = None
     zslg: Optional[int] = None
     local_hypokines: Optional[bool] = None
@@ -52,7 +55,7 @@ async def hsn_command_block_ekg_update(
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     block_ekg_id: int = cursor.scalar()
     if not block_ekg_id:
         raise NotFoundException(message="У приема нет данного блока!")
@@ -63,7 +66,7 @@ async def hsn_command_block_ekg_update(
         .where(AppointmentEkgBlockDBModel.id == block_ekg_id)
         .returning(AppointmentEkgBlockDBModel)
     )
-    cursor: AsyncResult = await db_session.execute(query_update)
+    cursor: Result = await db_session.execute(query_update)
     await db_session.commit()
     updated_block_ekg: AppointmentEkgBlockDBModel = cursor.scalars().first()
     return AppointmentEkgBlock.model_validate(updated_block_ekg)

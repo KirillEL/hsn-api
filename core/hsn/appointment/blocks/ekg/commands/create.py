@@ -31,10 +31,13 @@ class HsnCommandAppointmentBlockEkgCreateContext(BaseModel):
     fv: float
     sdla: Optional[float] = None
     lp: Optional[float] = None
+    lp2: Optional[float] = None
     pp: Optional[float] = None
+    pp2: Optional[float] = None
     kdr_lg: Optional[float] = None
     ksr_lg: Optional[float] = None
     kdo_lg: Optional[float] = None
+    kso_lg: Optional[float] = None
     mgp: Optional[float] = None
     zslg: Optional[float] = None
 
@@ -59,7 +62,7 @@ async def hsn_command_appointment_block_ekg_create(
         .values(**payload)
         .returning(AppointmentEkgBlockDBModel.id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     new_block_ekg_id: int = cursor.scalar()
 
     query_update_appointment: Update = (

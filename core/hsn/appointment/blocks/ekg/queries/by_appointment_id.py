@@ -19,7 +19,7 @@ async def hsn_query_block_ekg_by_appointment_id(
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == appointment_id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     result = cursor.first()
     if not result:
         raise NotFoundException
@@ -36,6 +36,6 @@ async def hsn_query_block_ekg_by_appointment_id(
         select(AppointmentEkgBlockDBModel)
         .where(AppointmentEkgBlockDBModel.id == block_ekg_id)
     )
-    cursor: AsyncResult = await db_session.execute(query_get_block)
+    cursor: Result = await db_session.execute(query_get_block)
     block_ekg: AppointmentEkgBlockDBModel = cursor.scalars().first()
     return AppointmentEkgBlock.model_validate(block_ekg)
