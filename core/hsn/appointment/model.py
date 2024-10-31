@@ -1,13 +1,19 @@
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
+from typing import Optional, List
+
+from core.hsn.appointment.blocks.base_model import AppointmentBlockBooleanTextFieldsResponse, \
+    AppointmentBlockTextDateLaboratoryTestFieldsResponse
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
+from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse, \
+    AppointmentBlockEkgBooleanFieldsResponse
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
+from core.hsn.drug_group.schemas import DrugGroupFieldsResponse, DrugFieldsSchema
 from core.user import UserAuthor
 
 
@@ -72,4 +78,18 @@ class PatientAppointmentFlat(BaseModel):
 
 
 class AppointmentFlatResponse(PatientAppointmentFlat):
+    pass
+
+
+class AppointmentFields(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+    diagnose: List[AppointmentBlockBooleanTextFieldsResponse]
+    complaints: List[AppointmentBlockBooleanFieldsResponse]
+    laboratory_test: AppointmentBlockTextDateLaboratoryTestFieldsResponse
+    ekg: AppointmentBlockEkgBooleanFieldsResponse
+    purpose: List[DrugFieldsSchema]
+
+
+class AppointmentFieldsResponse(AppointmentFields):
     pass

@@ -1,4 +1,5 @@
 from .list import *
+from .get_fields import *
 from .create import *
 from .get_by_id import *
 from .initialize import *
@@ -20,6 +21,5 @@ appointment_router.include_router(block_clinic_doctor_router)
 appointment_router.include_router(block_clinical_condition_router)
 appointment_router.include_router(block_complaint_router)
 appointment_router.include_router(block_purpose_router)
-
 
 __all__ = ['appointment_router']
