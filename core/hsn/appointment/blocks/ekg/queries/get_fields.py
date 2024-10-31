@@ -22,7 +22,7 @@ async def hsn_query_block_ekg_fields():
     }
 
     echo_ekg_float_fields = {
-        "fv", "sdla", "lp", "pp", "kdr_lg", "ksr_lg", "kdo_lg", "mgp", "zslg"
+        "fv", "sdla", "lp", "pp", "kdr_lg", "ksr_lg", "kdo_lg", "kso_lg", "mgp", "zslg"
     }
 
     display_names = {
@@ -47,6 +47,7 @@ async def hsn_query_block_ekg_fields():
         "kdr_lg": "КДР ЛЖ",
         "ksr_lg": "КСР ЛЖ",
         "kdo_lg": "КДО ЛЖ",
+        "kso_lg": "КСО ЛЖ",
         "mgp": "МЖП",
         "zslg": "ЗСЛЖ"
     }
