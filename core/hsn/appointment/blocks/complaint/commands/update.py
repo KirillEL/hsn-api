@@ -15,10 +15,11 @@ class HsnCommandBlockComplaintUpdateContext(BaseModel):
     appointment_id: int
     has_fatigue: Optional[bool] = None
     has_dyspnea: Optional[bool] = None
+    increased_ad: Optional[bool] = None
+    rapid_heartbeat: Optional[bool] = None
     has_swelling_legs: Optional[bool] = None
     has_weakness: Optional[bool] = None
     has_orthopnea: Optional[bool] = None
-    has_heartbeat: Optional[bool] = None
     note: Optional[str] = None
 
 

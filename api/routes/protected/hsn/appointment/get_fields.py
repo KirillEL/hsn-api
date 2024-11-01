@@ -1,4 +1,5 @@
 from api.exceptions import ExceptionResponseSchema
+from core.hsn.appointment.blocks.clinical_condition import hsn_query_block_clinical_condition_fields
 from core.hsn.appointment.blocks.complaint import hsn_query_block_complaint_fields
 from core.hsn.appointment.blocks.diagnose import hsn_query_block_diagnose_fields
 from core.hsn.appointment.blocks.ekg import hsn_query_block_ekg_fields
@@ -23,11 +24,13 @@ async def get_appointment_fields_route(
     laboratory_test = await hsn_query_block_laboratory_test_fields()
     ekg = await hsn_query_block_ekg_fields()
     purpose = await hsn_query_drug_group_fields()
+    clinical_condition = await hsn_query_block_clinical_condition_fields()
     response = AppointmentFieldsResponse(
         diagnose=diagnose_fields,
         complaints=complaints,
         laboratory_test=laboratory_test,
         ekg=ekg,
-        purpose=purpose
+        purpose=purpose,
+        clinical_condition=clinical_condition
     )
     return response

@@ -29,13 +29,14 @@ class AppointmentClinicalConditionBlock(BaseModel):
     tachypnea: Optional[bool] = False
     hepatomegaly: Optional[bool] = False
     other_symptoms: Optional[str] = None
+
     height: Optional[int] = None
     weight: Optional[float] = None
     bmi: Optional[float] = None
     systolic_bp: Optional[int] = None
     diastolic_bp: Optional[int] = None
     heart_rate: Optional[int] = None
-    six_min_walk_distance: Optional[int] = None
+    six_min_walk_distance: Optional[str] = None
 
 
 class AppointmentClinicalConditionBlockResponse(AppointmentClinicalConditionBlock):

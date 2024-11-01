@@ -44,7 +44,7 @@ class HsnCommandAppointmentBlockClinicalConditionCreateContext(BaseModel):
     systolic_bp: Optional[int] = None
     diastolic_bp: Optional[int] = None
     heart_rate: Optional[int] = None
-    six_min_walk_distance: Optional[int] = None
+    six_min_walk_distance: Optional[str] = None
 
 
 @SessionContext()

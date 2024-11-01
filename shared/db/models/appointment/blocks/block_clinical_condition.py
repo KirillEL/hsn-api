@@ -6,9 +6,8 @@ class AppointmentClinicalConditionBlockDBModel(BaseDBModel):
     __tablename__ = 'appointment_block_clinical_conditions'
     __table_args__ = {'schema': 'public'}
 
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 
-    heart_failure_om = Column(Boolean)
     orthopnea = Column(Boolean)
     paroxysmal_nocturnal_dyspnea = Column(Boolean)
     reduced_exercise_tolerance = Column(Boolean)
@@ -32,10 +31,10 @@ class AppointmentClinicalConditionBlockDBModel(BaseDBModel):
     other_symptoms = Column(String)
 
     # Показатели пациента
-    height = Column(Integer)  # Рост в см
-    weight = Column(Float)  # Вес в кг
+    height = Column(Integer, nullable=False)  # Рост в см
+    weight = Column(Float, nullable=False)  # Вес в кг
     bmi = Column(Float)  # ИМТ, вычисляемое
-    systolic_bp = Column(Integer)  # Систолическое артериальное давление
-    diastolic_bp = Column(Integer)  # Диастолическое артериальное давление
-    heart_rate = Column(Integer)  # ЧСС
-    six_min_walk_distance = Column(Integer)
+    systolic_bp = Column(Integer, nullable=False)  # Систолическое артериальное давление
+    diastolic_bp = Column(Integer, nullable=False)  # Диастолическое артериальное давление
+    heart_rate = Column(Integer, nullable=False)  # ЧСС
+    six_min_walk_distance = Column(String(40))

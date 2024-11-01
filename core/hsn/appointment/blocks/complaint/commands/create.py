@@ -17,10 +17,11 @@ class HsnCommandAppointmentBlockComplaintCreateContext(BaseModel):
     appointment_id: int
     has_fatigue: Optional[bool] = False
     has_dyspnea: Optional[bool] = False
+    increased_ad: Optional[bool] = False
+    rapid_heartbeat: Optional[bool] = False
     has_swelling_legs: Optional[bool] = False
     has_weakness: Optional[bool] = False
     has_orthopnea: Optional[bool] = False
-    has_heartbeat: Optional[bool] = True
     note: Optional[str] = False
 
 
@@ -38,7 +39,7 @@ async def hsn_command_appointment_block_complaint_create(
         .values(**payload)
         .returning(AppointmentComplaintBlockDBModel.id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     new_complaint_block_id: int = cursor.scalar()
 
     query_update_appointment: Update = (

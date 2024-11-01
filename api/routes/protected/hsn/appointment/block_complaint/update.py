@@ -12,10 +12,11 @@ from pydantic import BaseModel, Field
 class UpdateBlockComplaintRequestBody(BaseModel):
     has_fatigue: Optional[bool] = Field(False)
     has_dyspnea: Optional[bool] = Field(False)
+    increased_ad: Optional[bool] = Field(False)
+    rapid_heartbeat: Optional[bool] = Field(False)
     has_swelling_legs: Optional[bool] = Field(False)
     has_weakness: Optional[bool] = Field(False)
     has_orthopnea: Optional[bool] = Field(False)
-    has_heartbeat: Optional[bool] = Field(True)
     note: Optional[str] = Field(None, max_length=1000, examples=["Your note here"],
                                 description="Optional note, can be omitted.")
 

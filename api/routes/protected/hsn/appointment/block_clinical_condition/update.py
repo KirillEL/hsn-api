@@ -40,7 +40,7 @@ class UpdateBlockClinicalConditionRequestBody(BaseModel):
     systolic_bp: Optional[int] = Field(None, gt=0)
     diastolic_bp: Optional[int] = Field(None, gt=0)
     heart_rate: Optional[int] = Field(None, gt=0)
-    six_min_walk_distance: Optional[int] = Field(None, gt=0)
+    six_min_walk_distance: Optional[str] = Field(None, max_length=40)
 
 
 @block_clinical_condition_router.patch(

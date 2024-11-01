@@ -26,39 +26,26 @@ class HsnCommandAppointmentBlockLaboratoryTestCreateContext(BaseModel):
     hbalc_date: Optional[str] = None
 
     eritrocit: Optional[float] = None
-    eritrocit_date: Optional[str] = None
     hemoglobin: Optional[float] = None
-    hemoglobin_date: Optional[str] = None
+    oak_date: Optional[str] = None
 
     tg: Optional[float] = None
-    tg_date: Optional[str] = None
     lpvp: Optional[float] = None
-    lpvp_date: Optional[str] = None
     lpnp: Optional[float] = None
-    lpnp_date: Optional[str] = None
     general_hc: Optional[float] = None
-    general_hc_date: Optional[str] = None
     natriy: Optional[float] = None
-    natriy_date: Optional[str] = None
     kaliy: Optional[float] = None
-    kaliy_date: Optional[str] = None
     glukoza: Optional[float] = None
-    glukoza_date: Optional[str] = None
     mochevaya_kislota: Optional[float] = None
-    mochevaya_kislota_date: Optional[str] = None
     skf: Optional[float] = None
-    skf_date: Optional[str] = None
     kreatinin: Optional[float] = None
-    kreatinin_date: Optional[str] = None
+    bk_date: Optional[str] = None
 
     protein: Optional[float] = None
-    protein_date: Optional[str] = None
     urine_eritrocit: Optional[float] = None
-    urine_eritrocit_date: Optional[str] = None
     urine_leycocit: Optional[float] = None
-    urine_leycocit_date: Optional[str] = None
     microalbumuria: Optional[float] = None
-    microalbumuria_date: Optional[str] = None
+    am_date: Optional[str] = None
     note: Optional[str] = None
 
 
@@ -78,7 +65,7 @@ async def hsn_command_appointment_block_laboratory_test_create(
         .values(**payload)
         .returning(AppointmentLaboratoryTestBlockDBModel.id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     new_block_laboratory_test_id: int = cursor.scalar()
 
     query_update_appointment: Update = (

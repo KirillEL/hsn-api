@@ -89,6 +89,7 @@ class AppointmentFields(BaseModel):
     laboratory_test: AppointmentBlockTextDateLaboratoryTestFieldsResponse
     ekg: AppointmentBlockEkgBooleanFieldsResponse
     purpose: List[DrugFieldsSchema]
+    clinical_condition: List[AppointmentBlockBooleanFieldsResponse]
 
 
 class AppointmentFieldsResponse(AppointmentFields):
