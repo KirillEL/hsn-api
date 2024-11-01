@@ -23,7 +23,6 @@ def upgrade():
     op.execute("""
     CREATE TABLE public.appointment_block_clinical_conditions (
         id SERIAL PRIMARY KEY,
-        heart_failure_om BOOLEAN,
         orthopnea BOOLEAN,
         paroxysmal_nocturnal_dyspnea BOOLEAN,
         reduced_exercise_tolerance BOOLEAN,
@@ -45,13 +44,13 @@ def upgrade():
         tachypnea BOOLEAN,
         hepatomegaly BOOLEAN,
         other_symptoms TEXT,
-        height INTEGER,
-        weight FLOAT,
+        height INTEGER NOT NULL,
+        weight FLOAT NOT NULL,
         bmi FLOAT,
-        systolic_bp INTEGER,
-        diastolic_bp INTEGER,
-        heart_rate INTEGER,
-        six_min_walk_distance INTEGER,
+        systolic_bp INTEGER NOT NULL,
+        diastolic_bp INTEGER NOT NULL,
+        heart_rate INTEGER NOT NULL,
+        six_min_walk_distance varchar(40),
         note text
     );
     """)

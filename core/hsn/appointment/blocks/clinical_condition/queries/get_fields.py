@@ -10,7 +10,6 @@ async def hsn_query_block_clinical_condition_fields():
     field_responses = []
 
     display_names = {
-        "heart_failure_om": "Ясные глаза",
         "orthopnea": "Ортопноэ",
         "paroxysmal_nocturnal_dyspnea": "Пароксизмальная ночная одышка",
         "reduced_exercise_tolerance": "Снижение толерантности к нагрузкам",

@@ -32,13 +32,13 @@ class CreateBlockClinicalConditionRequestBody(BaseModel):
     hepatomegaly: Optional[bool] = Field(False)
     other_symptoms: Optional[str] = Field(None, max_length=1000)
 
-    height: Optional[int] = Field(None, gt=0)
-    weight: Optional[float] = Field(None, gt=0)
+    height: int = Field(gt=0)
+    weight: float = Field(gt=0)
     bmi: Optional[float] = Field(None, gt=0)
-    systolic_bp: Optional[int] = Field(None, gt=0)
-    diastolic_bp: Optional[int] = Field(None, gt=0)
-    heart_rate: Optional[int] = Field(None, gt=0)
-    six_min_walk_distance: Optional[int] = Field(None, gt=0)
+    systolic_bp: int = Field(gt=0)
+    diastolic_bp: int = Field(gt=0)
+    heart_rate: int = Field(gt=0)
+    six_min_walk_distance: Optional[str] = Field(max_length=40)
 
 
 @block_clinical_condition_router.post(

@@ -11,10 +11,11 @@ class AppointmentComplaintBlock(BaseModel):
     id: int
     has_fatigue: Optional[bool] = False
     has_dyspnea: Optional[bool] = False
+    increased_ad: Optional[bool] = False
+    rapid_heartbeat: Optional[bool] = False
     has_swelling_legs: Optional[bool] = False
     has_weakness: Optional[bool] = False
     has_orthopnea: Optional[bool] = False
-    has_heartbeat: Optional[bool] = True
     note: Optional[str] = None
 
 

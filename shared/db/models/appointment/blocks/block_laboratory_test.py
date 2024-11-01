@@ -10,45 +10,33 @@ class AppointmentLaboratoryTestBlockDBModel(BaseDBModel):
 
     # гормональный анализ крови
     nt_pro_bnp = Column(Float)
-    nt_pro_bnp_date = Column(Text)
+    nt_pro_bnp_date = Column(String(12))
     hbalc = Column(Float)
-    hbalc_date = Column(Text)
+    hbalc_date = Column(String(12))
 
     # общий анализ крови
     eritrocit = Column(Float)
-    eritrocit_date = Column(Text)
     hemoglobin = Column(Float)
-    hemoglobin_date = Column(Text)
+    oak_date = Column(String(12))
 
     # биохим анализ крови
     tg = Column(Float)
-    tg_date = Column(Text)
     lpvp = Column(Float)
-    lpvp_date = Column(Text)
     lpnp = Column(Float)
-    lpnp_date = Column(Text)
     general_hc = Column(Float)
-    general_hc_date = Column(Text)
     natriy = Column(Float)
-    natriy_date = Column(Text)
     kaliy = Column(Float)
-    kaliy_date = Column(Text)
     glukoza = Column(Float)
-    glukoza_date = Column(Text)
     mochevaya_kislota = Column(Float)
-    mochevaya_kislota_date = Column(Text)
     skf = Column(Float)
-    skf_date = Column(Text)
     kreatinin = Column(Float)
-    kreatinin_date = Column(Text)
+    bk_date = Column(String(12))
 
     # общий анализ мочи
     protein = Column(Float)
-    protein_date = Column(Text)
     urine_eritrocit = Column(Float)
-    urine_eritrocit_date = Column(Text)
     urine_leycocit = Column(Float)
-    urine_leycocit_date = Column(Text)
     microalbumuria = Column(Float)
-    microalbumuria_date = Column(Text)
+    am_date = Column(String(12))
+
     note = Column(Text)

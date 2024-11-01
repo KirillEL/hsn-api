@@ -13,10 +13,11 @@ class CreateBlockComplaintRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
     has_fatigue: bool = Field(False)
     has_dyspnea: bool = Field(False)
+    increased_ad: bool = Field(False)
+    rapid_heartbeat: bool = Field(False)
     has_swelling_legs: bool = Field(False)
     has_weakness: bool = Field(False)
     has_orthopnea: bool = Field(False)
-    has_heartbeat: bool = Field(True)
     note: str = Field(None, max_length=1000, examples=["Your note here"], description="Optional note, can be omitted.")
 
 
