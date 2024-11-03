@@ -5,8 +5,6 @@ from openpyxl import Workbook
 from api.exceptions import NotFoundException
 from core.hsn.appointment import hsn_appointment_list, HsnAppointmentListContext
 
-app = FastAPI()
-
 # Заголовки Excel-файла
 EXCEL_HEADERS = [
     "ID", "ID Врача", "ФИО", "Дата приема", "Дата след приема",
@@ -71,7 +69,6 @@ def extract_diagnose_info(block):
 
 
 # Главная функция для экспорта в Excel
-@app.get("/export-appointments")
 async def export_all_appointments(request: Request, doctor_id: int):
     context = HsnAppointmentListContext(doctor_id=doctor_id)
     result = await hsn_appointment_list(request, context)
