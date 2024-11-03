@@ -15,7 +15,7 @@ from shared.db.queries import db_query_entity_by_id
 
 class HsnCommandAppointmentBlockClinicalConditionCreateContext(BaseModel):
     appointment_id: int
-    heart_failure_om: Optional[bool] = False
+    #heart_failure_om: Optional[bool] = False
     orthopnea: Optional[bool] = False
     paroxysmal_nocturnal_dyspnea: Optional[bool] = False
     reduced_exercise_tolerance: Optional[bool] = False
