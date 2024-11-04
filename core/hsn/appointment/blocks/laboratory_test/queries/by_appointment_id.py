@@ -32,7 +32,7 @@ async def hsn_query_block_laboratory_test_by_appointment_id(
         .where(AppointmentDBModel.id == appointment_id)
     )
     cursor: Result = await db_session.execute(query)
-    block_laboratory_test_id: int = cursor.first()
+    block_laboratory_test_id: int = cursor.scalar()
 
     if not block_laboratory_test_id:
         raise NotFoundException(message="У приема c id:{} нет данного блока".format(appointment_id))

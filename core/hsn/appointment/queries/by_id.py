@@ -61,11 +61,11 @@ async def hsn_appointment_by_id(
     cursor: Result = await db_session.execute(query)
     appointment: AppointmentDBModel = cursor.scalars().first()
     if not appointment:
-        raise NotFoundException(message="Прием не найден")
+        raise NotFoundException(message="Прием c id:{} не найден".format(appointment_id))
 
     if appointment.doctor_id != doctor_id:
         raise ForbiddenException(
-            message="У вас нет прав для доступа к этому приему"
+            message="У вас нет прав для доступа к приему с id:{}".format(appointment_id)
         )
 
     patient_info = await build_patient_info(appointment)
