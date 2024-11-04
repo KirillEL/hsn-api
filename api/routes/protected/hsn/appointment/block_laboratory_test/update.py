@@ -53,6 +53,7 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
                 parsed_date = datetime.strptime(value, "%d.%m.%Y")
                 if parsed_date > datetime.now():
                     raise ValidationException(message="Даты не могут быть позже текущего дня")
+                return value
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
 
