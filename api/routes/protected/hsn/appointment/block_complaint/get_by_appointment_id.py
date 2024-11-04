@@ -14,4 +14,5 @@ async def get_block_complaint_by_appointment_id_route(request: Request, appointm
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    return await hsn_query_block_complaint_by_appointment_id(appointment_id)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_query_block_complaint_by_appointment_id(doctor_id,appointment_id)

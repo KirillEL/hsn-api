@@ -2,6 +2,7 @@ from sqlalchemy import select, exc
 from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, InternalServerException
+from api.exceptions.base import ForbiddenException
 from shared.db.models import MedicinesPrescriptionDBModel, DrugDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
@@ -10,15 +11,22 @@ from shared.db.queries import db_query_entity_by_id
 
 
 @SessionContext()
-async def hsn_query_purposes_by_appointment_id(appointment_id: int):
+async def hsn_query_purposes_by_appointment_id(doctor_id: int, appointment_id: int):
     results_dict = {}
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
     if not appointment:
-        raise NotFoundException(message="Прием не найден")
+        raise NotFoundException(message="Прием c id: {} не найден".format(appointment_id))
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(appointment_id))
+
     query = (
         select(AppointmentPurposeDBModel)
-        .options(selectinload(AppointmentPurposeDBModel.medicine_prescriptions).selectinload(
-            MedicinesPrescriptionDBModel.drug).selectinload(DrugDBModel.drug_group))
+        .options(
+            selectinload(AppointmentPurposeDBModel.medicine_prescriptions)
+            .selectinload(MedicinesPrescriptionDBModel.drug)
+            .selectinload(DrugDBModel.drug_group)
+        )
         .where(AppointmentPurposeDBModel.appointment_id == appointment_id)
         .where(AppointmentPurposeDBModel.is_deleted.is_(False))
     )

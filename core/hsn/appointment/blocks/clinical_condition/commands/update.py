@@ -1,16 +1,18 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import select, update, Select
+from sqlalchemy import select, update, Select, Result
 from sqlalchemy.ext.asyncio import AsyncResult
 from sqlalchemy.sql.dml import ReturningUpdate
 
 from api.exceptions import NotFoundException
+from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
 from shared.db.db_session import db_session, SessionContext
+from shared.db.queries import db_query_entity_by_id
 
 
 class HsnCommandBlockClinicalConditionUpdateContext(BaseModel):
@@ -48,19 +50,29 @@ class HsnCommandBlockClinicalConditionUpdateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_block_clinical_condition_update(
+        doctor_id: int,
         context: HsnCommandBlockClinicalConditionUpdateContext
 ) -> AppointmentClinicalConditionBlock:
     payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+
+    if not appointment:
+        raise NotFoundException("Прием с id: {} не найден".format(context.appointment_id))
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException("У вас нет доступа к приему с id: {}".format(context.appointment_id))
 
     query: Select = (
         select(AppointmentDBModel.block_clinical_condition_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == context.appointment_id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     block_clinical_condition_id: int = cursor.scalar()
+
     if not block_clinical_condition_id:
-        raise NotFoundException(message="У приема нет данного блока!")
+        raise NotFoundException(message="У приема c id:{} нет данного блока".format(context.appointment_id))
 
     query_update: ReturningUpdate = (
         update(AppointmentClinicalConditionBlockDBModel)
@@ -68,7 +80,7 @@ async def hsn_command_block_clinical_condition_update(
         .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
         .returning(AppointmentClinicalConditionBlockDBModel)
     )
-    cursor: AsyncResult = await db_session.execute(query_update)
+    cursor: Result = await db_session.execute(query_update)
     await db_session.commit()
     updated_block: AppointmentClinicalConditionBlockDBModel = cursor.scalars().first()
     return AppointmentClinicalConditionBlock.model_validate(updated_block)

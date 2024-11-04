@@ -8,29 +8,32 @@ from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_ekg import AppointmentEkgBlockDBModel
 from sqlalchemy import select, Select, Result, Row
 
+from shared.db.queries import db_query_entity_by_id
+
 
 @SessionContext()
 async def hsn_query_block_ekg_by_appointment_id(
         doctor_id: int,
         appointment_id: int
 ) -> AppointmentEkgBlock:
+    appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
+
+    if not appointment:
+        raise NotFoundException("Прием с id:{} не найден".format(appointment_id))
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(appointment_id))
+
     query: Select = (
-        select(AppointmentDBModel.block_ekg_id, AppointmentDBModel.doctor_id)
+        select(AppointmentDBModel.block_ekg_id)
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == appointment_id)
     )
     cursor: Result = await db_session.execute(query)
-    result = cursor.first()
-    if not result:
-        raise NotFoundException
-
-    block_ekg_id, appointment_doctor_id = result
-
-    if appointment_doctor_id != doctor_id:
-        raise ForbiddenException
+    block_ekg_id = cursor.scalar()
 
     if not block_ekg_id:
-        raise NotFoundException(message="К приему пока не привязан данный блок")
+        raise NotFoundException(message="У приема с id:{} нет данного блока".format(appointment_id))
 
     query_get_block: Select = (
         select(AppointmentEkgBlockDBModel)

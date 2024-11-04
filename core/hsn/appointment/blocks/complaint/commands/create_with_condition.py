@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncResult
 from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException
-from api.exceptions.base import BlockAlreadyExistsException
+from api.exceptions.base import BlockAlreadyExistsException, ForbiddenException
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
@@ -103,20 +103,26 @@ async def check_block_clinical_condition_exists_in_appointment(appointment_id: i
 
 @SessionContext()
 async def hsn_command_block_complaint_and_clinical_condition_create(
+        doctor_id: int,
         context: HsnCommandBlockComplaintAndClinicalCondtionCreateContext
 ) -> dict[str, int]:
     appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
-        raise NotFoundException(message="Прием не найден")
+        raise NotFoundException(message="Прием c id: {} не найден".format(context.appointment_id))
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
 
     payloads = context.create_payloads()
+
     query_insert_block_complaint: ReturningInsert = (
         insert(AppointmentComplaintBlockDBModel)
         .values(payloads["block_complaint"])
         .returning(AppointmentComplaintBlockDBModel.id)
     )
-    cursor: AsyncResult = await db_session.execute(query_insert_block_complaint)
+    cursor: Result = await db_session.execute(query_insert_block_complaint)
     new_block_complaint_id: int = cursor.scalar()
+
     await check_block_complaint_exists_in_appointment(new_block_complaint_id)
 
     query_insert_block_clinical_condidtion: ReturningInsert = (
@@ -124,8 +130,9 @@ async def hsn_command_block_complaint_and_clinical_condition_create(
         .values(payloads["clinical_condition"])
         .returning(AppointmentClinicalConditionBlockDBModel.id)
     )
-    cursor: AsyncResult = await db_session.execute(query_insert_block_clinical_condidtion)
+    cursor: Result = await db_session.execute(query_insert_block_clinical_condidtion)
     new_block_clinical_condition_id: int = cursor.scalar()
+
     await check_block_clinical_condition_exists_in_appointment(new_block_clinical_condition_id)
 
     query_update_appointment: Update = (

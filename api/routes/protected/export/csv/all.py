@@ -8,7 +8,7 @@ from fastapi import Request
     "/all",
     responses={
         '200': {
-            "content": {"text/xlsx": {}},
+            "content": {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}},
             "description": "CSV файл с пациентами",
         },
         '400': {"model": ExceptionResponseSchema}

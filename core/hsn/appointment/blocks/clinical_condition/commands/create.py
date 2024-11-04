@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncResult
 from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException
+from api.exceptions.base import ForbiddenException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
@@ -15,7 +16,7 @@ from shared.db.queries import db_query_entity_by_id
 
 class HsnCommandAppointmentBlockClinicalConditionCreateContext(BaseModel):
     appointment_id: int
-    #heart_failure_om: Optional[bool] = False
+    # heart_failure_om: Optional[bool] = False
     orthopnea: Optional[bool] = False
     paroxysmal_nocturnal_dyspnea: Optional[bool] = False
     reduced_exercise_tolerance: Optional[bool] = False
@@ -49,10 +50,16 @@ class HsnCommandAppointmentBlockClinicalConditionCreateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_appointment_block_clinical_condition_create(
-        context: HsnCommandAppointmentBlockClinicalConditionCreateContext) -> int:
+        doctor_id: int,
+        context: HsnCommandAppointmentBlockClinicalConditionCreateContext
+) -> int:
     appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+
     if not appointment:
-        raise NotFoundException("Прием не найден")
+        raise NotFoundException("Прием c id: {} не найден".format(context.appointment_id))
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id: {}".format(context.appointment_id))
 
     payload = context.model_dump(exclude={'appointment_id'})
     query: ReturningInsert = (
@@ -60,7 +67,7 @@ async def hsn_command_appointment_block_clinical_condition_create(
         .values(**payload)
         .returning(AppointmentClinicalConditionBlockDBModel.id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     new_block_clinical_condition_id: int = cursor.scalar()
 
     query_update_appointment: Update = (

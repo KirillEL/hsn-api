@@ -4,6 +4,7 @@ from sqlalchemy import select, RowMapping, Select, Result
 from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
+from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -36,7 +37,6 @@ async def hsn_appointment_by_id(
     query: Select = (
         select(AppointmentDBModel)
         .where(AppointmentDBModel.is_deleted.is_(False),
-               AppointmentDBModel.doctor_id == doctor_id,
                AppointmentDBModel.id == appointment_id)
     )
 
@@ -59,9 +59,14 @@ async def hsn_appointment_by_id(
     )
 
     cursor: Result = await db_session.execute(query)
-    appointment = cursor.scalars().first()
+    appointment: AppointmentDBModel = cursor.scalars().first()
     if not appointment:
         raise NotFoundException(message="Прием не найден")
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException(
+            message="У вас нет прав для доступа к этому приему"
+        )
 
     patient_info = await build_patient_info(appointment)
 

@@ -39,4 +39,4 @@ async def update_block_clinic_doctor_route(
         appointment_id=appointment_id,
         **body.model_dump()
     )
-    return await hsn_block_clinic_doctor_update(context, doctor_id)
+    return await hsn_block_clinic_doctor_update(doctor_id, context)

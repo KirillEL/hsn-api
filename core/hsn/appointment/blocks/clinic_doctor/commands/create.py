@@ -1,11 +1,11 @@
 from typing import Optional
 
-from sqlalchemy import insert, update, select, exc, Update
+from sqlalchemy import insert, update, select, exc, Update, Result
 from sqlalchemy.ext.asyncio import AsyncResult
 from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException, InternalServerException
-from api.exceptions.base import UnprocessableEntityException
+from api.exceptions.base import UnprocessableEntityException, ForbiddenException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_clinic_doctor import AppointmentBlockClinicDoctorDBModel
@@ -28,22 +28,25 @@ class HsnCommandAppointmentBlockClinicDoctorCreateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_appointment_block_clinic_doctor_create(
+        doctor_id: int,
         context: HsnCommandAppointmentBlockClinicDoctorCreateContext
 ) -> int:
     appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
 
     if not appointment:
-        raise NotFoundException(
-            message="Прием не найден"
-        )
+        raise NotFoundException("Прием с id:{} не найден".format(context.appointment_id))
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
 
     payload = context.model_dump(exclude={'appointment_id'})
+
     query: ReturningInsert = (
         insert(AppointmentBlockClinicDoctorDBModel)
         .values(**payload)
         .returning(AppointmentBlockClinicDoctorDBModel.id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     new_block_clinic_doctor_id: int = cursor.scalar()
 
     query_update_appointment: Update = (

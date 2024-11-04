@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncResult
 from sqlalchemy.sql.dml import ReturningInsert
 
 from api.exceptions import NotFoundException
+from api.exceptions.base import ForbiddenException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
@@ -27,11 +28,16 @@ class HsnCommandAppointmentBlockComplaintCreateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_appointment_block_complaint_create(
+        doctor_id: int,
         context: HsnCommandAppointmentBlockComplaintCreateContext
 ) -> int:
     appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
-        raise NotFoundException("Прием не найден")
+        raise NotFoundException("Прием c id: {} не найден".format(context.appointment_id))
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
+
 
     payload = context.model_dump(exclude={'appointment_id'})
     query: ReturningInsert = (

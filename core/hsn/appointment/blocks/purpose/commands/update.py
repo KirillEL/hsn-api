@@ -4,6 +4,7 @@ from sqlalchemy import select, update, exc, insert
 from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, InternalServerException
+from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
 from core.hsn.appointment.blocks.purpose.model import MedicinePrescriptionData, MedicinePrescriptionUpdateSchema
 from shared.db.models import MedicinesPrescriptionDBModel
@@ -63,12 +64,17 @@ async def create_medicine_prescription(appointment_purpose_id: int, doctor_id: i
 async def hsn_appointment_purpose_update(context: HsnAppointmentPurposeUpdateContext):
     appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
-        raise NotFoundException(message="Прием не найден")
+        raise NotFoundException(message="Прием c id:{} не найден".format(context.appointment_id))
+
+    if appointment.doctor_id != context.doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
 
     query_get_appointment_purpose = (
         select(AppointmentPurposeDBModel.id)
-        .where(AppointmentPurposeDBModel.is_deleted.is_(False),
-               AppointmentPurposeDBModel.appointment_id == context.appointment_id)
+        .where(
+            AppointmentPurposeDBModel.is_deleted.is_(False),
+            AppointmentPurposeDBModel.appointment_id == context.appointment_id
+        )
     )
 
     cursor = await db_session.execute(query_get_appointment_purpose)

@@ -13,4 +13,5 @@ async def get_purposes_by_appointment_id_route(request: Request, appointment_id:
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
-    return await hsn_query_purposes_by_appointment_id(appointment_id)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_query_purposes_by_appointment_id(doctor_id, appointment_id)

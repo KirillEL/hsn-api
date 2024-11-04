@@ -59,4 +59,5 @@ async def create_block_ekg_route(request: Request, body: CreateBlockEkgRequestBo
         raise DoctorNotAssignedException
 
     context = HsnCommandAppointmentBlockEkgCreateContext(**body.model_dump())
-    return await hsn_command_appointment_block_ekg_create(context)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_command_appointment_block_ekg_create(doctor_id, context)

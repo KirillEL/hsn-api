@@ -53,5 +53,6 @@ async def create_block_clinical_condition_route(
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
+    doctor_id: int = request.user.doctor.id
     context = HsnCommandAppointmentBlockClinicalConditionCreateContext(**body.model_dump())
-    return await hsn_command_appointment_block_clinical_condition_create(context)
+    return await hsn_command_appointment_block_clinical_condition_create(doctor_id, context)

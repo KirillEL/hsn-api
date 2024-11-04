@@ -72,4 +72,5 @@ async def create_block_complaint_and_clinical_condition_route(
     context = HsnCommandBlockComplaintAndClinicalCondtionCreateContext(
         **body.model_dump()
     )
-    return await hsn_command_block_complaint_and_clinical_condition_create(context)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_command_block_complaint_and_clinical_condition_create(doctor_id, context)

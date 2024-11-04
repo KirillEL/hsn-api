@@ -66,4 +66,5 @@ async def create_block_laboratory_test_route(
         raise DoctorNotAssignedException
 
     context = HsnCommandAppointmentBlockLaboratoryTestCreateContext(**body.model_dump())
-    return await hsn_command_appointment_block_laboratory_test_create(context)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_command_appointment_block_laboratory_test_create(doctor_id, context)

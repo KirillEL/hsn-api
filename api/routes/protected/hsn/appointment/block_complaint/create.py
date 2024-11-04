@@ -34,4 +34,5 @@ async def create_block_complaint_route(
         raise DoctorNotAssignedException
 
     context = HsnCommandAppointmentBlockComplaintCreateContext(**body.model_dump())
-    return await hsn_command_appointment_block_complaint_create(context)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_command_appointment_block_complaint_create(doctor_id, context)

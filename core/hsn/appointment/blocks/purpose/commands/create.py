@@ -1,6 +1,7 @@
 from loguru import logger
 
 from api.exceptions import NotFoundException
+from api.exceptions.base import ForbiddenException
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -9,6 +10,7 @@ from sqlalchemy import insert, select, exc
 from shared.db.models import MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
+from shared.db.queries import db_query_entity_by_id
 
 
 class MedicineContext(BaseModel):
@@ -36,6 +38,14 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
 
 @SessionContext()
 async def hsn_command_appointment_purpose_create(context: HsnAppointmentPurposeCreateContext):
+    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+
+    if not appointment:
+        raise NotFoundException("Прием с id:{} не найден".format(context.appointment_id))
+
+    if appointment.doctor_id != context.doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
+
     query_create_purpose_block = (
         insert(AppointmentPurposeDBModel)
         .values(

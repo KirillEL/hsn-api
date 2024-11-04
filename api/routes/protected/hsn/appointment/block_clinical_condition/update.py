@@ -60,4 +60,5 @@ async def update_block_clinical_condition_route(
         appointment_id=appointment_id,
         **body.model_dump()
     )
-    return await hsn_command_block_clinical_condition_update(context)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_command_block_clinical_condition_update(doctor_id,context)
