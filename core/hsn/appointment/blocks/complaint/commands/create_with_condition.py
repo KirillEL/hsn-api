@@ -22,7 +22,7 @@ class HsnCommandBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
     has_swelling_legs: Optional[bool] = False
     has_weakness: Optional[bool] = False
     has_orthopnea: Optional[bool] = False
-    has_heartbeat: Optional[bool] = True
+    #has_heartbeat: Optional[bool] = True
     note: Optional[str] = False
 
     heart_failure_om: Optional[bool] = False
@@ -59,7 +59,7 @@ class HsnCommandBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
     def create_payloads(self) -> Dict[str, Dict[str, Any]]:
         symptoms_payload = {key: getattr(self, key) for key in [
             'has_fatigue', 'has_dyspnea', 'has_swelling_legs', 'has_weakness',
-            'has_orthopnea', 'has_heartbeat', 'note'
+            'has_orthopnea', 'note'
         ]}
 
         clinical_conditions_payload = {key: getattr(self, key) for key in [
