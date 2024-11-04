@@ -54,7 +54,7 @@ class HsnCommandBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
     systolic_bp: Optional[int] = None
     diastolic_bp: Optional[int] = None
     heart_rate: Optional[int] = None
-    six_min_walk_distance: Optional[int] = None
+    six_min_walk_distance: Optional[str] = None
 
     def create_payloads(self) -> Dict[str, Dict[str, Any]]:
         symptoms_payload = {key: getattr(self, key) for key in [
