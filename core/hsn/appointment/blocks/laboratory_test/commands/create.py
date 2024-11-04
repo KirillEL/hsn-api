@@ -64,7 +64,7 @@ async def hsn_command_appointment_block_laboratory_test_create(
     if appointment.doctor_id != doctor_id:
         raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
 
-    payload = context.model_dump(exclude={'appointment_id'})
+    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
     query: ReturningInsert = (
         insert(AppointmentLaboratoryTestBlockDBModel)
         .values(**payload)
