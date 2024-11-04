@@ -49,9 +49,10 @@ class UpdateBlockLaboratoryTestRequestBody(BaseModel):
     @field_validator('nt_pro_bnp_date', 'hbalc_date', 'oak_date', 'bk_date', 'am_date')
     def check_date_format(cls, value):
         try:
-            parsed_date = datetime.strptime(value, "%d.%m.%Y")
-            if parsed_date > datetime.now():
-                raise ValidationException(message="Даты не могут быть позже текущего дня")
+            if value:
+                parsed_date = datetime.strptime(value, "%d.%m.%Y")
+                if parsed_date > datetime.now():
+                    raise ValidationException(message="Даты не могут быть позже текущего дня")
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
 
