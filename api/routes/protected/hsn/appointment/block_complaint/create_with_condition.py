@@ -25,7 +25,7 @@ class CreateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     has_orthopnea: bool = Field(False)
     note: str = Field(None, max_length=1000, examples=["Your note here"], description="Optional note, can be omitted.")
 
-    heart_failure_om: Optional[bool] = Field(False)
+    #heart_failure_om: Optional[bool] = Field(False)
     orthopnea: Optional[bool] = Field(False)
     paroxysmal_nocturnal_dyspnea: Optional[bool] = Field(False)
     reduced_exercise_tolerance: Optional[bool] = Field(False)

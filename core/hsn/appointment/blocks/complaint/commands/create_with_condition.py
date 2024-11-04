@@ -22,10 +22,10 @@ class HsnCommandBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
     has_swelling_legs: Optional[bool] = False
     has_weakness: Optional[bool] = False
     has_orthopnea: Optional[bool] = False
-    #has_heartbeat: Optional[bool] = True
+    # has_heartbeat: Optional[bool] = True
     note: Optional[str] = False
 
-    heart_failure_om: Optional[bool] = False
+    # heart_failure_om: Optional[bool] = False
     orthopnea: Optional[bool] = False
     paroxysmal_nocturnal_dyspnea: Optional[bool] = False
     reduced_exercise_tolerance: Optional[bool] = False
@@ -63,7 +63,7 @@ class HsnCommandBlockComplaintAndClinicalCondtionCreateContext(BaseModel):
         ]}
 
         clinical_conditions_payload = {key: getattr(self, key) for key in [
-            'heart_failure_om', 'orthopnea', 'paroxysmal_nocturnal_dyspnea',
+            'orthopnea', 'paroxysmal_nocturnal_dyspnea',
             'reduced_exercise_tolerance', 'weakness_fatigue', 'peripheral_edema',
             'ascites', 'hydrothorax', 'hydropericardium', 'night_cough',
             'weight_gain_over_2kg', 'weight_loss', 'depression', 'third_heart_sound',
