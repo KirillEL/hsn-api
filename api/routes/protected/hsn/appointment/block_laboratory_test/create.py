@@ -15,13 +15,13 @@ from fastapi import Request
 class CreateBlockLaboratoryTestRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
     nt_pro_bnp: Optional[float] = Field(None, gt=0)
-    nt_pro_bnp_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    nt_pro_bnp_date: Optional[str] = Field(None)
     hbalc: Optional[float] = Field(None, gt=0)
-    hbalc_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    hbalc_date: Optional[str] = Field(None)
 
     eritrocit: Optional[float] = Field(None, gt=0)
     hemoglobin: Optional[float] = Field(None, gt=0)
-    oak_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    oak_date: Optional[str] = Field(None)
 
     tg: Optional[float] = Field(None,gt=0)
     lpvp: Optional[float] = Field(None,gt=0)
@@ -33,22 +33,23 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
     mochevaya_kislota: Optional[float] = Field(None,gt=0)
     skf: Optional[float] = Field(None,gt=0)
     kreatinin: Optional[float] = Field(None,gt=0)
-    bk_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    bk_date: Optional[str] = Field(None)
 
     protein: Optional[float] = Field(None,gt=0)
     urine_eritrocit: Optional[float] = Field(None,gt=0)
     urine_leycocit: Optional[float] = Field(None,gt=0)
     microalbumuria: Optional[float] = Field(None,gt=0)
-    am_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    am_date: Optional[str] = Field(None)
     note: Optional[str] = Field(None, max_length=1000)
 
     @field_validator('nt_pro_bnp_date', 'hbalc_date', 'bk_date', 'oak_date', 'am_date')
     def check_date_format(cls, value):
         try:
-            parsed_date = datetime.strptime(value, "%d.%m.%Y")
-            if parsed_date > datetime.now():
-                raise ValidationException(message="Даты не могут быть позднее текущего дня")
-            return value
+            if value:
+                parsed_date = datetime.strptime(value, "%d.%m.%Y")
+                if parsed_date > datetime.now():
+                    raise ValidationException(message="Даты не могут быть позднее текущего дня")
+                return value
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
 
