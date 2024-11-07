@@ -15,8 +15,8 @@ from shared.db.queries import db_query_entity_by_id
 async def hsn_query_block_clinical_condition_by_appointment_id(
         doctor_id: int,
         appointment_id: int
-) -> AppointmentClinicalConditionBlock:
-    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
+) -> AppointmentClinicalConditionBlock | None:
+    appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
     if not appointment:
         raise NotFoundException(
             message="Прием с id: {} не найден".format(appointment_id)
@@ -35,8 +35,9 @@ async def hsn_query_block_clinical_condition_by_appointment_id(
     cursor: Result = await db_session.execute(query)
 
     block_clinical_condition_id: int = cursor.scalar()
+
     if not block_clinical_condition_id:
-        raise NotFoundException(message="У приема c id: {} нет данного блока".format(appointment_id))
+        return None
 
     query_get_block: Select = (
         select(AppointmentClinicalConditionBlockDBModel)

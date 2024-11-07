@@ -15,7 +15,7 @@ from shared.db.queries import db_query_entity_by_id
 async def hsn_query_block_ekg_by_appointment_id(
         doctor_id: int,
         appointment_id: int
-) -> AppointmentEkgBlock:
+) -> AppointmentEkgBlock | None:
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
 
     if not appointment:
@@ -33,7 +33,7 @@ async def hsn_query_block_ekg_by_appointment_id(
     block_ekg_id = cursor.scalar()
 
     if not block_ekg_id:
-        raise NotFoundException(message="У приема с id:{} нет данного блока".format(appointment_id))
+        return None
 
     query_get_block: Select = (
         select(AppointmentEkgBlockDBModel)

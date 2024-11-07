@@ -67,7 +67,7 @@ async def hsn_command_block_laboratory_test_update(
         .where(AppointmentDBModel.id == context.appointment_id)
     )
 
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
 
     block_laboratory_test_id: int = cursor.scalar()
     if not block_laboratory_test_id:
@@ -79,7 +79,7 @@ async def hsn_command_block_laboratory_test_update(
         .where(AppointmentLaboratoryTestBlockDBModel.id == block_laboratory_test_id)
         .returning(AppointmentLaboratoryTestBlockDBModel)
     )
-    cursor: AsyncResult = await db_session.execute(query_update)
+    cursor: Result = await db_session.execute(query_update)
     await db_session.commit()
     updated_block_laboratory_test: AppointmentLaboratoryTestBlockDBModel = cursor.scalars().first()
     return AppointmentLaboratoryTestBlock.model_validate(updated_block_laboratory_test)

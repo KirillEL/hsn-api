@@ -7,7 +7,7 @@ from fastapi import Request
 
 @block_complaint_router.get(
     "/{appointment_id}",
-    response_model=AppointmentComplaintBlockResponse,
+    response_model=AppointmentComplaintBlockResponse | None,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def get_block_complaint_by_appointment_id_route(request: Request, appointment_id: int):

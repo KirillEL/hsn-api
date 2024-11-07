@@ -15,7 +15,7 @@ from shared.db.queries import db_query_entity_by_id
 async def hsn_get_block_clinic_doctor_by_appointment_id(
         doctor_id: int,
         appointment_id: int,
-) -> AppointmentClinicDoctorBlock:
+) -> AppointmentClinicDoctorBlock | None:
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
 
     if not appointment:
@@ -29,11 +29,11 @@ async def hsn_get_block_clinic_doctor_by_appointment_id(
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.id == appointment_id)
     )
-    cursor: AsyncResult = await db_session.execute(query)
+    cursor: Result = await db_session.execute(query)
     block_clinic_doctor_id = cursor.scalar()
 
     if not block_clinic_doctor_id:
-        raise NotFoundException(message="У приема c id:{} нет данного блока".format(appointment_id))
+        return None
 
     query_get_block: Select = (
         select(AppointmentBlockClinicDoctorDBModel)

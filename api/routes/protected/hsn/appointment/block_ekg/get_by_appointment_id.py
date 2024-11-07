@@ -7,7 +7,7 @@ from fastapi import Request
 
 @block_ekg_router.get(
     "/{appointment_id}",
-    response_model=AppointmentEkgBlockResponse,
+    response_model=AppointmentEkgBlockResponse | None,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def get_block_ekg_by_appointment_id_route(request: Request, appointment_id: int):

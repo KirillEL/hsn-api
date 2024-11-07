@@ -9,7 +9,7 @@ from fastapi import Request
 
 @block_clinic_doctor_router.get(
     "/{appointment_id}",
-    response_model=AppointmentClinicDoctorBlockResponse,
+    response_model=AppointmentClinicDoctorBlockResponse | None,
     responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def get_block_clinic_doctor_by_appointment_id_route(

@@ -11,7 +11,10 @@ from shared.db.queries import db_query_entity_by_id
 
 
 @SessionContext()
-async def hsn_query_purposes_by_appointment_id(doctor_id: int, appointment_id: int):
+async def hsn_query_purposes_by_appointment_id(
+        doctor_id: int,
+        appointment_id: int
+):
     results_dict = {}
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
     if not appointment:
@@ -33,7 +36,7 @@ async def hsn_query_purposes_by_appointment_id(doctor_id: int, appointment_id: i
     cursor = await db_session.execute(query)
     purposes = cursor.scalars().all()
     if len(purposes) == 0:
-        raise NotFoundException(message="У приема нет блока назначений лекарственных препаратов")
+        return None
 
     for purpose in purposes:
         for med_prescription in purpose.medicine_prescriptions:
