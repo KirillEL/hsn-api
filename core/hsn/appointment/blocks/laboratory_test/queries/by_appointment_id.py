@@ -41,6 +41,6 @@ async def hsn_query_block_laboratory_test_by_appointment_id(
         select(AppointmentLaboratoryTestBlockDBModel)
         .where(AppointmentLaboratoryTestBlockDBModel.id == block_laboratory_test_id)
     )
-    cursor: AsyncResult = await db_session.execute(query_get_block)
+    cursor: Result = await db_session.execute(query_get_block)
     block_laboratory_test: AppointmentLaboratoryTestBlock = cursor.scalars().first()
     return AppointmentLaboratoryTestBlock.model_validate(block_laboratory_test)
