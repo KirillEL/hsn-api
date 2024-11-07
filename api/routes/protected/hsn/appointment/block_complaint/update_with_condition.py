@@ -15,13 +15,15 @@ class UpdateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     has_fatigue: Optional[bool] = Field(None)
     has_dyspnea: Optional[bool] = Field(None)
     has_swelling_legs: Optional[bool] = Field(None)
+    increased_ad: Optional[bool] = Field(None)
+    rapid_heartbeat: Optional[bool] = Field(None)
     has_weakness: Optional[bool] = Field(None)
     has_orthopnea: Optional[bool] = Field(None)
-    has_heartbeat: Optional[bool] = Field(None)
+    #has_heartbeat: Optional[bool] = Field(None)
     note: Optional[str] = Field(None, max_length=1000, examples=["Your note here"],
                                 description="Optional note, can be omitted.")
 
-    heart_failure_om: Optional[bool] = Field(None)
+    #heart_failure_om: Optional[bool] = Field(None)
     orthopnea: Optional[bool] = Field(None)
     paroxysmal_nocturnal_dyspnea: Optional[bool] = Field(None)
     reduced_exercise_tolerance: Optional[bool] = Field(None)
@@ -50,7 +52,7 @@ class UpdateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     systolic_bp: Optional[int] = Field(None, gt=0)
     diastolic_bp: Optional[int] = Field(None, gt=0)
     heart_rate: Optional[int] = Field(None, gt=0)
-    six_min_walk_distance: Optional[int] = Field(None, gt=0)
+    six_min_walk_distance: Optional[str] = Field(None, max_length=40)
 
 
 @block_complaint_router.patch(
@@ -71,4 +73,5 @@ async def update_block_complaint_and_clinical_condition_route(
         appointment_id=appointment_id,
         **body.model_dump()
     )
-    return await hsn_command_block_complaint_and_clinical_condition_update(context)
+    doctor_id: int = request.user.doctor.id
+    return await hsn_command_block_complaint_and_clinical_condition_update(doctor_id, context)

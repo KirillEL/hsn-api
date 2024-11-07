@@ -1,9 +1,11 @@
 from typing import Optional, Dict, Any, Type
 
+from loguru import logger
 from sqlalchemy import update, select, Select, Result
 from sqlalchemy.sql.dml import ReturningUpdate
 
 from api.exceptions import NotFoundException
+from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.blocks.block_complaint import AppointmentComplaintBlockDBModel
@@ -21,12 +23,14 @@ class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
     has_fatigue: Optional[bool] = None
     has_dyspnea: Optional[bool] = None
     has_swelling_legs: Optional[bool] = None
+    increased_ad: Optional[bool] = None
+    rapid_heartbeat: Optional[bool] = None
     has_weakness: Optional[bool] = None
     has_orthopnea: Optional[bool] = None
-    has_heartbeat: Optional[bool] = None
+    #has_heartbeat: Optional[bool] = None
     note: Optional[str] = None
 
-    heart_failure_om: Optional[bool] = None
+    #heart_failure_om: Optional[bool] = None
     orthopnea: Optional[bool] = None
     paroxysmal_nocturnal_dyspnea: Optional[bool] = None
     reduced_exercise_tolerance: Optional[bool] = None
@@ -55,15 +59,15 @@ class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
     systolic_bp: Optional[int] = None
     diastolic_bp: Optional[int] = None
     heart_rate: Optional[int] = None
-    six_min_walk_distance: Optional[int] = None
+    six_min_walk_distance: Optional[str] = None
 
     def create_payloads(self) -> Dict[str, Dict[str, Any]]:
         symptoms_keys = [
             'has_fatigue', 'has_dyspnea', 'has_swelling_legs', 'has_weakness',
-            'has_orthopnea', 'has_heartbeat', 'note'
+            'has_orthopnea', 'increased_ad', 'rapid_heartbeat', 'note'
         ]
         clinical_conditions_keys = [
-            'heart_failure_om', 'orthopnea', 'paroxysmal_nocturnal_dyspnea',
+            'orthopnea', 'paroxysmal_nocturnal_dyspnea',
             'reduced_exercise_tolerance', 'weakness_fatigue', 'peripheral_edema',
             'ascites', 'hydrothorax', 'hydropericardium', 'night_cough',
             'weight_gain_over_2kg', 'weight_loss', 'depression', 'third_heart_sound',
@@ -88,14 +92,20 @@ class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_block_complaint_and_clinical_condition_update(
+        doctor_id: int,
         context: HsnCommandBlockComplaintAndClinicalConditionUpdateContext
 ) -> AppointmentComplaintWithClinicalCondition:
-    user_id: int = context.user_id
+
     appointment_id: int = context.appointment_id
     payloads = context.create_payloads()
+    logger.error(f'payloads: {payloads}')
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
     if not appointment:
-        raise NotFoundException("Прием не найден")
+        raise NotFoundException("Прием c id:{} не найден".format(context.appointment_id))
+
+    if appointment.doctor_id != doctor_id:
+        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
+
 
     # 1
     query_get_block_complaint_id: Select = (
@@ -114,25 +124,29 @@ async def hsn_command_block_complaint_and_clinical_condition_update(
     cursor: Result = await db_session.execute(query_get_block_clinical_condition_id)
     block_clinical_condition_id: int = cursor.scalar()
     if not block_clinical_condition_id:
-        raise NotFoundException(message="У приема не привязан еще блок клинического состояния!")
+        raise NotFoundException(message="У приема c id:{} не привязан еще блок клинического состояния!".format(context.appointment_id))
 
-    query_update_block_complaint: ReturningUpdate = (
-        update(AppointmentComplaintBlockDBModel)
-        .values(payloads["block_complaint"])
-        .where(AppointmentComplaintBlockDBModel.id == block_complaint_id)
-        .returning(AppointmentComplaintBlockDBModel)
-    )
-    cursor: Result = await db_session.execute(query_update_block_complaint)
-    updated_block_complaint = cursor.scalars().first()
+    updated_block_complaint = None
+    updated_block_clinical_condition = None
+    if payloads["block_complaint"]:
+        query_update_block_complaint: ReturningUpdate = (
+            update(AppointmentComplaintBlockDBModel)
+            .values(payloads["block_complaint"])
+            .where(AppointmentComplaintBlockDBModel.id == block_complaint_id)
+            .returning(AppointmentComplaintBlockDBModel)
+        )
+        cursor: Result = await db_session.execute(query_update_block_complaint)
+        updated_block_complaint = cursor.scalars().first()
 
-    query_update_block_clinical_condition: ReturningUpdate = (
-        update(AppointmentClinicalConditionBlockDBModel)
-        .values(payloads["block_clinical_condition"])
-        .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
-        .returning(AppointmentClinicalConditionBlockDBModel)
-    )
-    cursor: Result = await db_session.execute(query_update_block_clinical_condition)
-    updated_block_clinical_condition = cursor.scalars().first()
+    if payloads["block_clinical_condition"]:
+        query_update_block_clinical_condition: ReturningUpdate = (
+            update(AppointmentClinicalConditionBlockDBModel)
+            .values(payloads["block_clinical_condition"])
+            .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
+            .returning(AppointmentClinicalConditionBlockDBModel)
+        )
+        cursor: Result = await db_session.execute(query_update_block_clinical_condition)
+        updated_block_clinical_condition = cursor.scalars().first()
 
     await db_session.commit()
     response = AppointmentComplaintWithClinicalCondition(

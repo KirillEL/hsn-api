@@ -40,8 +40,8 @@ class AppointmentBlockEkgBooleanFieldsResponse(BaseModel):
 
 
 class AppointmentComplaintWithClinicalCondition(BaseModel):
-    block_complaint: AppointmentComplaintBlock
-    block_clinical_condition: AppointmentClinicalConditionBlock
+    block_complaint: Optional[AppointmentComplaintBlock] = None
+    block_clinical_condition: Optional[AppointmentClinicalConditionBlock] = None
 
 
 class AppointmentComplaintWithClinicalConditionResponse(AppointmentComplaintWithClinicalCondition):

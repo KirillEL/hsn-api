@@ -24,7 +24,7 @@ class Config(BaseSettings):
     DB_PORT: int
     DB_NAME: str
     DB_URI: str
-    DB_TEST_URI: str
+    DB_TEST_URI: Optional[str] = "postgresql+asyncpg://postgres:Kirik2281@host.docker.internal:5432/hsn_db"
 
     ADMIN_PASS: str
 
