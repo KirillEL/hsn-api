@@ -28,6 +28,7 @@ class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
     has_weakness: Optional[bool] = None
     has_orthopnea: Optional[bool] = None
     #has_heartbeat: Optional[bool] = None
+    heart_problems: Optional[bool] = None
     note: Optional[str] = None
 
     #heart_failure_om: Optional[bool] = None
@@ -64,7 +65,7 @@ class HsnCommandBlockComplaintAndClinicalConditionUpdateContext(BaseModel):
     def create_payloads(self) -> Dict[str, Dict[str, Any]]:
         symptoms_keys = [
             'has_fatigue', 'has_dyspnea', 'has_swelling_legs', 'has_weakness',
-            'has_orthopnea', 'increased_ad', 'rapid_heartbeat', 'note'
+            'has_orthopnea','heart_problems', 'increased_ad', 'rapid_heartbeat', 'note'
         ]
         clinical_conditions_keys = [
             'orthopnea', 'paroxysmal_nocturnal_dyspnea',

@@ -15,4 +15,5 @@ class AppointmentComplaintBlockDBModel(BaseDBModel):
     has_weakness = Column(Boolean, nullable=False, server_default=text("false"))
     has_orthopnea = Column(Boolean, nullable=False, server_default=text("false"))
     # has_heartbeat = Column(Boolean, nullable=False, server_default=text("true"))
+    heart_problems = Column(Boolean, nullable=False, server_default=text("false"))
     note = Column(Text)

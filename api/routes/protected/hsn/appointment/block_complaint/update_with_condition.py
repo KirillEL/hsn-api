@@ -20,6 +20,7 @@ class UpdateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     has_weakness: Optional[bool] = Field(None)
     has_orthopnea: Optional[bool] = Field(None)
     #has_heartbeat: Optional[bool] = Field(None)
+    heart_problems: Optional[bool] = Field(None)
     note: Optional[str] = Field(None, max_length=1000, examples=["Your note here"],
                                 description="Optional note, can be omitted.")
 

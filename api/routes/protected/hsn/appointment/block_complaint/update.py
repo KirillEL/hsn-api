@@ -17,6 +17,7 @@ class UpdateBlockComplaintRequestBody(BaseModel):
     has_swelling_legs: Optional[bool] = Field(False)
     has_weakness: Optional[bool] = Field(False)
     has_orthopnea: Optional[bool] = Field(False)
+    heart_problems: Optional[bool] = Field(False)
     note: Optional[str] = Field(None, max_length=1000, examples=["Your note here"],
                                 description="Optional note, can be omitted.")
 

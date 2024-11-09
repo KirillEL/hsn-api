@@ -22,6 +22,7 @@ class HsnCommandBlockComplaintUpdateContext(BaseModel):
     has_swelling_legs: Optional[bool] = None
     has_weakness: Optional[bool] = None
     has_orthopnea: Optional[bool] = None
+    heart_problems: Optional[bool] = None
     note: Optional[str] = None
 
 

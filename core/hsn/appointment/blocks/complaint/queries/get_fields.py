@@ -19,6 +19,7 @@ async def hsn_query_block_complaint_fields():
         "has_swelling_legs": "Отеки",
         "has_weakness": "Слабость",
         "has_orthopnea": "Ортопноэ",
+        "heart_problems": "Перебои в области сердца",
         "note": ""
     }
 

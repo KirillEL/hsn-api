@@ -6,7 +6,7 @@ from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalCo
 
 
 class AppointmentComplaintBlock(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
 
     id: int
     has_fatigue: Optional[bool] = False
@@ -16,6 +16,7 @@ class AppointmentComplaintBlock(BaseModel):
     has_swelling_legs: Optional[bool] = False
     has_weakness: Optional[bool] = False
     has_orthopnea: Optional[bool] = False
+    heart_problems: Optional[bool] = False
     note: Optional[str] = None
 
 

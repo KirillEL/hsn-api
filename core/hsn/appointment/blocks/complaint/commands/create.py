@@ -23,6 +23,7 @@ class HsnCommandAppointmentBlockComplaintCreateContext(BaseModel):
     has_swelling_legs: Optional[bool] = False
     has_weakness: Optional[bool] = False
     has_orthopnea: Optional[bool] = False
+    heart_problems: Optional[bool] = False
     note: Optional[str] = False
 
 
