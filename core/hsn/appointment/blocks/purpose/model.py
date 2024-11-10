@@ -31,7 +31,7 @@ class MedicineGroupFlat(BaseModel):
 
     id: int
     name: str
-    drug_group_name: str
+    drug_group_name: Optional[str] = None
 
 
 class MedicinePrescriptionFlat(BaseModel):
