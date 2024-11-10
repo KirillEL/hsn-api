@@ -5,7 +5,7 @@ from api.exceptions.base import ForbiddenException
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field
 from typing import Optional
-from sqlalchemy import insert, select, exc
+from sqlalchemy import insert, select, exc, Result
 
 from shared.db.models import MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -38,7 +38,7 @@ async def check_medicine_prescription_exists(medicine_prescription_id: int):
 
 @SessionContext()
 async def hsn_command_appointment_purpose_create(context: HsnAppointmentPurposeCreateContext):
-    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
 
     if not appointment:
         raise NotFoundException("Прием с id:{} не найден".format(context.appointment_id))
@@ -54,7 +54,7 @@ async def hsn_command_appointment_purpose_create(context: HsnAppointmentPurposeC
         )
         .returning(AppointmentPurposeDBModel.id)
     )
-    cursor = await db_session.execute(query_create_purpose_block)
+    cursor: Result = await db_session.execute(query_create_purpose_block)
     new_purpose_block_id = cursor.scalar()
 
     for med_prescription in context.medicine_prescriptions:
@@ -65,6 +65,7 @@ async def hsn_command_appointment_purpose_create(context: HsnAppointmentPurposeC
                 appointment_purpose_id=new_purpose_block_id,
                 dosa=med_prescription.dosa,
                 drug_id=med_prescription.drug_id,
+                note=med_prescription.note
             )
         )
         await db_session.execute(query)
