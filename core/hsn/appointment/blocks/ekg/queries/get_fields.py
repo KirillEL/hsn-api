@@ -60,7 +60,7 @@ async def hsn_query_block_ekg_fields():
             field_response = AppointmentBlockBooleanFieldsResponse(
                 name=field_name,
                 displayName=display_names.get(field_name, ""),
-                secondName=display_names.get(field_name, "") if field_name == "lp" or field_name == "pp" else ""
+                secondName="lp2" if field_name == "lp" else "pp2" if field_name == "pp" else ""
             )
             if field_name in ekg_fields:
                 response.ekg.append(field_response)
