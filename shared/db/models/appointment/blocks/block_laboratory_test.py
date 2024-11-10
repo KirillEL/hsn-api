@@ -33,10 +33,10 @@ class AppointmentLaboratoryTestBlockDBModel(BaseDBModel):
     bk_date = Column(String(12))
 
     # общий анализ мочи
-    protein = Column(Float)
-    urine_eritrocit = Column(Float)
-    urine_leycocit = Column(Float)
-    microalbumuria = Column(Float)
+    protein = Column(String(50))
+    urine_eritrocit = Column(String(50))
+    urine_leycocit = Column(String(50))
+    microalbumuria = Column(String(50))
     am_date = Column(String(12))
 
     note = Column(Text)

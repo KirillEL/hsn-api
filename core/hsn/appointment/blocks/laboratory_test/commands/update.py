@@ -37,10 +37,10 @@ class HsnCommandBlockLaboratoryTestUpdateContext(BaseModel):
     kreatinin: Optional[float] = None
     bk_date: Optional[str] = None
 
-    protein: Optional[float] = None
-    urine_eritrocit: Optional[float] = None
-    urine_leycocit: Optional[float] = None
-    microalbumuria: Optional[float] = None
+    protein: Optional[str] = None
+    urine_eritrocit: Optional[str] = None
+    urine_leycocit: Optional[str] = None
+    microalbumuria: Optional[str] = None
     am_date: Optional[str] = None
 
     note: Optional[str] = None

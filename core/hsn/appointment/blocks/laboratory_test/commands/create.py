@@ -41,10 +41,10 @@ class HsnCommandAppointmentBlockLaboratoryTestCreateContext(BaseModel):
     kreatinin: Optional[float] = None
     bk_date: Optional[str] = None
 
-    protein: Optional[float] = None
-    urine_eritrocit: Optional[float] = None
-    urine_leycocit: Optional[float] = None
-    microalbumuria: Optional[float] = None
+    protein: Optional[str] = None
+    urine_eritrocit: Optional[str] = None
+    urine_leycocit: Optional[str] = None
+    microalbumuria: Optional[str] = None
     am_date: Optional[str] = None
     note: Optional[str] = None
 
@@ -54,7 +54,7 @@ async def hsn_command_appointment_block_laboratory_test_create(
         doctor_id: int,
         context: HsnCommandAppointmentBlockLaboratoryTestCreateContext
 ) -> int:
-    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
 
     if not appointment:
         raise NotFoundException(

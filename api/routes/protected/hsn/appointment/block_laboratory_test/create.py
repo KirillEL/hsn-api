@@ -35,10 +35,10 @@ class CreateBlockLaboratoryTestRequestBody(BaseModel):
     kreatinin: Optional[float] = Field(None,gt=0)
     bk_date: Optional[str] = Field(None)
 
-    protein: Optional[float] = Field(None,gt=0)
-    urine_eritrocit: Optional[float] = Field(None,gt=0)
-    urine_leycocit: Optional[float] = Field(None,gt=0)
-    microalbumuria: Optional[float] = Field(None,gt=0)
+    protein: Optional[str] = Field(None)
+    urine_eritrocit: Optional[str] = Field(None)
+    urine_leycocit: Optional[str] = Field(None)
+    microalbumuria: Optional[str] = Field(None)
     am_date: Optional[str] = Field(None)
     note: Optional[str] = Field(None, max_length=1000)
 
