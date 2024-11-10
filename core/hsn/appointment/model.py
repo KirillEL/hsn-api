@@ -81,6 +81,47 @@ class AppointmentFlatResponse(PatientAppointmentFlat):
     pass
 
 
+class PatientInfoDto(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    last_name: str
+    patronymic: Optional[str] = None
+    gender: str
+    location: str
+    district: str
+    address: str
+    phone: str
+    clinic: str
+
+
+class PatientAppointmentByIdDto(BaseModel):
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+
+    id: int
+    doctor_id: int
+    patient: PatientInfoDto
+    date: str
+    date_next: Optional[str] = None
+
+    block_clinic_doctor: Optional[AppointmentClinicDoctorBlock] = None
+    block_diagnose: Optional[AppointmentDiagnoseBlock] = None
+    block_laboratory_test: Optional[AppointmentLaboratoryTestBlock] = None
+    block_ekg: Optional[AppointmentEkgBlock] = None
+    block_complaint: Optional[AppointmentComplaintBlock] = None
+    block_clinical_condition: Optional[AppointmentClinicalConditionBlock] = None
+    purposes: Optional[list[AppointmentPurposeFlat]] = None
+
+    status: str
+
+
+class PatientAppointmentByIdResponse(PatientAppointmentByIdDto):
+    pass
+
+
+
+
 class AppointmentFields(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra='ignore')
 

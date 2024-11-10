@@ -65,7 +65,7 @@ async def hsn_appointment_list(
         .where(AppointmentDBModel.is_deleted.is_(False))
         .where(AppointmentDBModel.doctor_id == context.doctor_id)
     )
-    cursor_count: AsyncResult = await db_session.execute(query_count)
+    cursor_count: Result = await db_session.execute(query_count)
     total_appointments: int = cursor_count.scalar()
 
     if context.limit:
@@ -73,9 +73,11 @@ async def hsn_appointment_list(
     if context.offset:
         query = query.offset(context.offset)
 
+    query = query.order_by(AppointmentDBModel.id.desc())
+
     try:
-        cursor: AsyncResult = await db_session.execute(query)
-        patient_appointments: List[AppointmentDBModel] = cursor.unique().scalars().all()
+        cursor: Result = await db_session.execute(query)
+        patient_appointments = cursor.unique().scalars().all()
     except exc.SQLAlchemyError as sqle:
         logger.error(f'Failed fetching patient appointments: {sqle}')
         message_model = ValidationErrorTelegramSendMessageSchema(

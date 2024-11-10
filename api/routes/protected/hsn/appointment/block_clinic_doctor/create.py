@@ -1,12 +1,12 @@
 from typing import Optional
 
-from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
+from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException, ValidationException
 from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType, LgotaDrugsType
 from .router import block_clinic_doctor_router
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock, \
     hsn_command_appointment_block_clinic_doctor_create, HsnCommandAppointmentBlockClinicDoctorCreateContext
-from pydantic import BaseModel, Field
-from datetime import date as tdate
+from pydantic import BaseModel, Field, field_validator
+from datetime import date as tdate, datetime
 from fastapi import Request
 
 
@@ -19,6 +19,14 @@ class CreateBlockClinicDoctorRequestBody(BaseModel):
     has_hospitalization: bool = Field(False)
     count_hospitalization: Optional[int] = Field(None, gt=0)
     last_hospitalization_date: Optional[tdate] = Field(None)
+
+    @field_validator('last_hospitalization_date')
+    def check_date_format(cls, value):
+        try:
+            datetime.strptime(value, "%d.%m.%Y")
+            return value
+        except ValueError:
+            raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
 
 
 @block_clinic_doctor_router.post(

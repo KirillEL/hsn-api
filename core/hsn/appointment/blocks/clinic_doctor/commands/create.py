@@ -23,7 +23,7 @@ class HsnCommandAppointmentBlockClinicDoctorCreateContext(BaseModel):
     lgota_drugs: str
     has_hospitalization: Optional[bool] = False
     count_hospitalization: Optional[int] = None
-    last_hospitalization_date: Optional[tdate] = None
+    last_hospitalization_date: Optional[str] = None
 
 
 @SessionContext()
@@ -31,7 +31,7 @@ async def hsn_command_appointment_block_clinic_doctor_create(
         doctor_id: int,
         context: HsnCommandAppointmentBlockClinicDoctorCreateContext
 ) -> int:
-    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
 
     if not appointment:
         raise NotFoundException("Прием с id:{} не найден".format(context.appointment_id))

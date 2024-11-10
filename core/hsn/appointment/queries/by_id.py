@@ -5,7 +5,8 @@ from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
 from api.exceptions.base import ForbiddenException
-from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
+from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList, PatientAppointmentByIdDto, \
+    PatientInfoDto
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
@@ -13,7 +14,7 @@ from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 from utils import contragent_hasher
 
 
-async def build_patient_info(appointment: RowMapping):
+async def build_patient_info(appointment: AppointmentDBModel):
     appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
     appointment.patient.contragent.last_name = contragent_hasher.decrypt(
         appointment.patient.contragent.last_name)
@@ -33,7 +34,7 @@ async def build_patient_info(appointment: RowMapping):
 async def hsn_appointment_by_id(
         doctor_id: int,
         appointment_id: int
-) -> PatientAppointmentFlat:
+):
     query: Select = (
         select(AppointmentDBModel)
         .where(AppointmentDBModel.is_deleted.is_(False),
@@ -70,10 +71,22 @@ async def hsn_appointment_by_id(
 
     patient_info = await build_patient_info(appointment)
 
-    appointment_flat = PatientAppointmentFlat(
+
+    appointment_model = PatientAppointmentByIdDto(
         id=appointment.id,
-        full_name=f"{patient_info.last_name} {patient_info.name} {patient_info.patronymic}",
         doctor_id=appointment.doctor_id,
+        patient=PatientInfoDto(
+            id=appointment.patient.id,
+            name=patient_info.name,
+            last_name=patient_info.last_name,
+            patronymic=patient_info.patronymic or "",
+            gender=appointment.patient.gender,
+            location=appointment.patient.location,
+            district=appointment.patient.district,
+            address=appointment.patient.address,
+            phone=appointment.patient.phone,
+            clinic=appointment.patient.clinic,
+        ),
         date=appointment.date,
         date_next=str(appointment.date_next) if appointment.date_next else None,
         block_clinic_doctor=appointment.block_clinic_doctor,
@@ -85,4 +98,5 @@ async def hsn_appointment_by_id(
         purposes=appointment.purposes,
         status=appointment.status
     )
-    return PatientAppointmentFlat.model_validate(appointment_flat)
+
+    return appointment_model
