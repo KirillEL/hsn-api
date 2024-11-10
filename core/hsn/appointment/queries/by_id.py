@@ -5,9 +5,11 @@ from sqlalchemy.orm import selectinload
 
 from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
 from api.exceptions.base import ForbiddenException
+from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
+from core.hsn.appointment.blocks.purpose.model import MedicinePrescriptionFlat, MedicineGroupFlat
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList, PatientAppointmentByIdDto, \
     PatientInfoDto
-from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel
+from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel, DrugDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
@@ -56,6 +58,7 @@ async def hsn_appointment_by_id(
                 AppointmentPurposeDBModel.medicine_prescriptions
             )
             .selectinload(MedicinesPrescriptionDBModel.drug)
+            .selectinload(DrugDBModel.drug_group)
         )
     )
 
@@ -95,7 +98,23 @@ async def hsn_appointment_by_id(
         block_ekg=appointment.block_ekg,
         block_complaint=appointment.block_complaint,
         block_clinical_condition=appointment.block_clinical_condition,
-        purposes=appointment.purposes,
+        purposes=[
+            AppointmentPurposeFlat(
+                id=model.id,
+                medicine_prescriptions=[
+                    MedicinePrescriptionFlat(
+                        id=mp.id,
+                        drug=MedicineGroupFlat(
+                            id=mp.drug.id,
+                            name=mp.drug.name,
+                            drug_group_name=mp.drug.drug_group.name
+                        ),
+                        dosa=mp.dosa,
+                        note=mp.note
+                    ) for mp in model.medicine_prescriptions
+                ]
+            ) for model in appointment.purposes
+        ],
         status=appointment.status
     )
 
