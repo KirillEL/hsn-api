@@ -8,7 +8,7 @@ from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, Pat
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field, ValidationError
 from typing import Optional
-from sqlalchemy import insert, select, exc, Select
+from sqlalchemy import insert, select, exc, Select, Result
 from shared.db.models.contragent import ContragentDBModel
 from shared.db.models.patient import PatientDBModel
 from core.hsn.patient import Patient
@@ -168,7 +168,7 @@ async def hsn_patient_create(
         .returning(PatientDBModel.id)
     )
     try:
-        cursor: AsyncResult = await db_session.execute(query)
+        cursor: Result = await db_session.execute(query)
         await db_session.commit()
         patient_id: int = cursor.scalar()
         tg_bot.send_message(
