@@ -13,14 +13,14 @@ async def hsn_query_block_complaint_fields():
 
     display_names = {
         "has_fatigue": "Утомляемость",
-        "has_dyspnea": "Одышка",
-        "increased_ad": "Повышение АД",
         "rapid_heartbeat": "Учащенное сердцебиение",
-        "has_swelling_legs": "Отеки",
         "has_weakness": "Слабость",
+        "has_dyspnea": "Одышка",
         "has_orthopnea": "Ортопноэ",
+        "has_swelling_legs": "Отеки",
+        "increased_ad": "Повышение АД",
         "heart_problems": "Перебои в области сердца",
-        "note": ""
+        "note": "Примечание"
     }
 
     for column in inspector.columns.values():

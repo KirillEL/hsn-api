@@ -32,7 +32,7 @@ async def hsn_command_appointment_block_complaint_create(
         doctor_id: int,
         context: HsnCommandAppointmentBlockComplaintCreateContext
 ) -> int:
-    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
         raise NotFoundException("Прием c id: {} не найден".format(context.appointment_id))
 
