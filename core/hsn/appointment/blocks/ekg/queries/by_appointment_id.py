@@ -30,7 +30,7 @@ async def hsn_query_block_ekg_by_appointment_id(
         .where(AppointmentDBModel.id == appointment_id)
     )
     cursor: Result = await db_session.execute(query)
-    block_ekg_id = cursor.scalar()
+    block_ekg_id: int = cursor.scalar()
 
     if not block_ekg_id:
         return None

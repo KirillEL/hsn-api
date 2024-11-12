@@ -10,7 +10,7 @@ from fastapi import Request
 
 class CreateBlockEkgRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
-    date_ekg: str = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    date_ekg: str = Field(default=None)
     sinus_ritm: bool = Field(False)
     av_blokada: bool = Field(False)
     hypertrofia_lg: bool = Field(False)
@@ -22,8 +22,8 @@ class CreateBlockEkgRequestBody(BaseModel):
     trepetanie_predcerdiy: bool = Field(False)
     another_changes: Optional[str] = Field(None, max_length=1000)
 
-    date_echo_ekg: str = Field(default=datetime.today().strftime("%d.%m.%Y"))
-    fv: float = Field(gt=0)
+    date_echo_ekg: str = Field(default=None)
+    fv: float = Field(None, gt=0)
     sdla: Optional[float] = Field(None, gt=0)
     lp: Optional[float] = Field(None, gt=0)
     lp2: Optional[float] = Field(None, gt=0)
@@ -36,7 +36,9 @@ class CreateBlockEkgRequestBody(BaseModel):
     mgp: Optional[float] = Field(None, gt=0)
     zslg: Optional[float] = Field(None, gt=0)
     local_hypokines: bool = Field(False)
+    difusal_hypokines: bool = Field(False)
     distol_disfunction: bool = Field(False)
+    valvular_lesions: bool = Field(False)
     anevrizma: bool = Field(False)
     note: Optional[str] = Field(None, max_length=1000)
 

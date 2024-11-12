@@ -6,7 +6,7 @@ from datetime import date as tdate
 
 
 class AppointmentEkgBlock(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
 
     id: int
     date_ekg: str

@@ -28,6 +28,7 @@ class HsnCommandAppointmentBlockEkgCreateContext(BaseModel):
     fabrilycia_predcerdiy: Optional[bool] = False
     trepetanie_predcerdiy: Optional[bool] = False
     another_changes: Optional[str] = None
+
     date_echo_ekg: str
     fv: float
     sdla: Optional[float] = None
@@ -43,7 +44,9 @@ class HsnCommandAppointmentBlockEkgCreateContext(BaseModel):
     zslg: Optional[float] = None
 
     local_hypokines: Optional[bool] = False
+    difusal_hypokines: Optional[bool] = False
     distol_disfunction: Optional[bool] = False
+    valvular_lesions: Optional[bool] = False
     anevrizma: Optional[bool] = False
     note: Optional[str] = None
 
@@ -53,7 +56,7 @@ async def hsn_command_appointment_block_ekg_create(
         doctor_id: int,
         context: HsnCommandAppointmentBlockEkgCreateContext
 ) -> int:
-    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
     if not appointment:
         raise NotFoundException(message="Прием c id:{} не найден".format(context.appointment_id))
 

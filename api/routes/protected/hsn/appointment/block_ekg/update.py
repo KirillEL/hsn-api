@@ -12,7 +12,7 @@ from .router import block_ekg_router
 
 
 class UpdateBlockEkgRequestBody(BaseModel):
-    date_ekg: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    date_ekg: Optional[str] = Field(default=None)
     sinus_ritm: Optional[bool] = Field(False)
     av_blokada: Optional[bool] = Field(False)
     hypertrofia_lg: Optional[bool] = Field(False)
@@ -24,7 +24,7 @@ class UpdateBlockEkgRequestBody(BaseModel):
     trepetanie_predcerdiy: Optional[bool] = Field(False)
     another_changes: Optional[str] = Field(None, max_length=1000)
 
-    date_echo_ekg: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    date_echo_ekg: Optional[str] = Field(default=None)
     fv: Optional[float] = Field(None, gt=0)
     sdla: Optional[float] = Field(None, gt=0)
     lp: Optional[float] = Field(None, gt=0)
@@ -38,7 +38,9 @@ class UpdateBlockEkgRequestBody(BaseModel):
     mgp: Optional[float] = Field(None, gt=0)
     zslg: Optional[float] = Field(None, gt=0)
     local_hypokines: Optional[bool] = Field(False)
+    difusal_hypokines: Optional[bool] = Field(False)
     distol_disfunction: Optional[bool] = Field(False)
+    valvular_lesions: Optional[bool] = Field(False)
     anevrizma: Optional[bool] = Field(False)
     note: Optional[str] = Field(None, max_length=1000)
 

@@ -27,21 +27,24 @@ class HsnCommandBlockEkgUpdateContext(BaseModel):
     fabrilycia_predcerdiy: Optional[bool] = None
     trepetanie_predcerdiy: Optional[bool] = None
     another_changes: Optional[str] = None
+
     date_echo_ekg: Optional[str] = None
-    fv: Optional[int] = None
-    sdla: Optional[int] = None
-    lp: Optional[int] = None
-    lp2: Optional[int] = None
-    pp: Optional[int] = None
-    pp2: Optional[int] = None
-    kdr_lg: Optional[int] = None
-    ksr_lg: Optional[int] = None
-    kdo_lg: Optional[int] = None
-    kso_lg: Optional[int] = None
-    mgp: Optional[int] = None
-    zslg: Optional[int] = None
+    fv: Optional[float] = None
+    sdla: Optional[float] = None
+    lp: Optional[float] = None
+    lp2: Optional[float] = None
+    pp: Optional[float] = None
+    pp2: Optional[float] = None
+    kdr_lg: Optional[float] = None
+    ksr_lg: Optional[float] = None
+    kdo_lg: Optional[float] = None
+    kso_lg: Optional[float] = None
+    mgp: Optional[float] = None
+    zslg: Optional[float] = None
     local_hypokines: Optional[bool] = None
+    difusal_hypokines: Optional[bool] = None
     distol_disfunction: Optional[bool] = None
+    valvular_lesions: Optional[bool] = None
     anevrizma: Optional[bool] = None
     note: Optional[str] = None
 
