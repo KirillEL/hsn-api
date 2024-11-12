@@ -1,5 +1,7 @@
 from datetime import date as tdate, datetime
 from enum import Enum
+
+from shared.db.queries import db_query_entity_by_id
 from tg_api import tg_bot
 from sqlalchemy import desc, asc, func, text, exc
 from loguru import logger
@@ -48,6 +50,9 @@ async def hsn_query_own_patients(request: Request,
                                  order: str = None) -> DictPatientResponse:
     contragent_alias = aliased(ContragentDBModel)
 
+    doctor_model = await db_query_entity_by_id(DoctorDBModel, doctor_id)
+    doctor_cabinet_id = doctor_model.cabinet_id
+
     query = (
         select(PatientDBModel)
         .where(
@@ -60,6 +65,8 @@ async def hsn_query_own_patients(request: Request,
             selectinload(PatientDBModel.contragent)
         )
     )
+
+
 
     query_count = (
         select(func.count(PatientDBModel.id))
@@ -81,6 +88,8 @@ async def hsn_query_own_patients(request: Request,
         query = query.where(full_name_expr.ilike(f'%{full_name[0]}%'))
         query_count = query_count.where(full_name_expr.ilike(f'%{full_name[0]}%'))
 
+
+    query = query.where(PatientDBModel.cabinet_id == doctor_cabinet_id)
     query = apply_ordering(query, PatientDBModel, columnKey, order)
     if columnKey == 'full_name':
         query = apply_ordering(query, full_name_expr, columnKey, order)
