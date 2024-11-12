@@ -90,6 +90,7 @@ async def hsn_query_own_patients(request: Request,
 
 
     query = query.where(PatientDBModel.cabinet_id == doctor_cabinet_id)
+    query = query.order_by(PatientDBModel.created_by.desc())
     query = apply_ordering(query, PatientDBModel, columnKey, order)
     if columnKey == 'full_name':
         query = apply_ordering(query, full_name_expr, columnKey, order)
