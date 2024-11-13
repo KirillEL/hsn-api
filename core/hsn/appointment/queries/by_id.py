@@ -83,6 +83,7 @@ async def hsn_appointment_by_id(
             name=patient_info.name,
             last_name=patient_info.last_name,
             patronymic=patient_info.patronymic or "",
+            birth_date=contragent_hasher.decrypt(appointment.patient.contragent.birth_date),
             gender=appointment.patient.gender,
             location=appointment.patient.location,
             district=appointment.patient.district,

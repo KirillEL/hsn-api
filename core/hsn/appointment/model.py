@@ -88,6 +88,7 @@ class PatientInfoDto(BaseModel):
     name: str
     last_name: str
     patronymic: Optional[str] = None
+    birth_date: str
     gender: str
     location: str
     district: str
