@@ -17,7 +17,7 @@ from shared.db.queries import db_query_entity_by_id
 
 class HsnCommandAppointmentBlockEkgCreateContext(BaseModel):
     appointment_id: int
-    date_ekg: str
+    date_ekg: Optional[str] = None
     sinus_ritm: Optional[bool] = False
     av_blokada: Optional[bool] = False
     hypertrofia_lg: Optional[bool] = False

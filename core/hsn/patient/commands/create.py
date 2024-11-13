@@ -133,8 +133,9 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
         .returning(ContragentDBModel.id)
     )
     cursor = await db_session.execute(query)
-    await db_session.commit()
+    await db_session.flush()
     new_contragent_id = cursor.scalar()
+    logger.info("CREATED CONTRAGENT ID: {}".format(new_contragent_id))
     return new_contragent_id
 
 
@@ -153,9 +154,7 @@ async def hsn_patient_create(
         'birth_date': context.birth_date,
         'dod': context.dod if context.dod else None
     }
-    logger.debug(f'contragent_payload: {contragent_payload}')
     new_contragent_id: int = await create_contragent(contragent_payload)
-    logger.info(f'контрагент создан успешно!')
 
     query: ReturningInsert = (
         insert(PatientDBModel)
@@ -167,35 +166,22 @@ async def hsn_patient_create(
         )
         .returning(PatientDBModel.id)
     )
-    try:
-        cursor: Result = await db_session.execute(query)
-        await db_session.commit()
-        patient_id: int = cursor.scalar()
-        tg_bot.send_message(
-            message=f"Пациент успешно создан"
-        )
-    except exc.SQLAlchemyError as sqle:
-        logger.error(f"Failed to create patient: {sqle}")
-        tg_bot.send_message(
-            message=f"Не удалось создать пациента: {str(sqle)}"
-        )
-        raise InternalServerException(
-            message="Failed to create patient"
-        )
+
+    cursor: Result = await db_session.execute(query)
+    await db_session.commit()
+    patient_id: int = cursor.scalar()
+    logger.info("CREATED PATIENT ID: {}".format(patient_id))
+
 
     query_get: Select = (
         select(PatientDBModel)
         .options(selectinload(PatientDBModel.contragent))
         .where(PatientDBModel.id == patient_id)
     )
-    try:
-        cursor: AsyncResult = await db_session.execute(query_get)
-        patient: PatientDBModel = cursor.scalars().first()
-    except exc.SQLAlchemyError as sqle:
-        logger.error(f"Server error: {sqle}")
-        raise InternalServerException(
-            message="Server failed to get patient by id"
-        )
+
+    cursor: Result = await db_session.execute(query_get)
+    patient: PatientDBModel = cursor.scalars().first()
+
 
     patient_response = await convert_to_patient_response(patient)
 

@@ -59,6 +59,7 @@ class SessionContext:
             try:
                 result = await func(*args, **kwargs)
             except Exception as e:
+                await db_session.rollback()
                 raise e
             finally:
                 await db_session.remove()

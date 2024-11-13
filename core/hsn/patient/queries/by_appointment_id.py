@@ -35,14 +35,10 @@ async def hsn_query_patient_by_appointment_id(
         )
         .where(AppointmentDBModel.id == appointment_id)
     )
-    try:
-        cursor = await db_session.execute(query)
-        appointment = cursor.scalars().first()
-    except exc.SQLAlchemyError as sqle:
-        logger.error(f"Failed to get appointment: {sqle}")
-        raise InternalServerException(
-            message="Ошибка сервера"
-        )
+
+    cursor = await db_session.execute(query)
+    appointment = cursor.scalars().first()
+
 
     patient_response = await convert_to_patient_response(appointment.patient, type="without")
 

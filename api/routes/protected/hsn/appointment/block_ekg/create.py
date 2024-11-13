@@ -10,7 +10,7 @@ from fastapi import Request
 
 class CreateBlockEkgRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
-    date_ekg: str = Field(default=None)
+    date_ekg: Optional[str] = Field(default=None)
     sinus_ritm: bool = Field(False)
     av_blokada: bool = Field(False)
     hypertrofia_lg: bool = Field(False)
@@ -45,7 +45,8 @@ class CreateBlockEkgRequestBody(BaseModel):
     @field_validator('date_ekg', 'date_echo_ekg')
     def check_date_format(cls, value):
         try:
-            datetime.strptime(value, "%d.%m.%Y")
+            if value:
+                datetime.strptime(value, "%d.%m.%Y")
             return value
         except ValueError:
             raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
