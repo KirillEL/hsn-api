@@ -39,19 +39,21 @@ class LocationType(Enum):
 
 
 @SessionContext()
-async def hsn_query_own_patients(request: Request,
-                                 doctor_id: int,
-                                 limit: int = None,
-                                 offset: int = None,
-                                 gender: str = None,
-                                 full_name: str = None,
-                                 location: str = None,
-                                 columnKey: str = None,
-                                 order: str = None) -> DictPatientResponse:
+async def hsn_query_own_patients(
+        request: Request,
+        doctor_id: int,
+        limit: int = None,
+        offset: int = None,
+        gender: str = None,
+        full_name: str = None,
+        location: str = None,
+        columnKey: str = None,
+        order: str = None
+)-> DictPatientResponse:
     contragent_alias = aliased(ContragentDBModel)
 
-    doctor_model = await db_query_entity_by_id(DoctorDBModel, doctor_id)
-    doctor_cabinet_id = doctor_model.cabinet_id
+    doctor_model: DoctorDBModel = await db_query_entity_by_id(DoctorDBModel, doctor_id)
+    doctor_cabinet_id: int = doctor_model.cabinet_id
 
     query = (
         select(PatientDBModel)
@@ -61,12 +63,12 @@ async def hsn_query_own_patients(request: Request,
         )
         .options(
             selectinload(PatientDBModel.cabinet)
-            .selectinload(CabinetDBModel.doctors),
+                .selectinload(CabinetDBModel.doctors)
+        )
+        .options(
             selectinload(PatientDBModel.contragent)
         )
     )
-
-
 
     query_count = (
         select(func.count(PatientDBModel.id))
@@ -88,7 +90,6 @@ async def hsn_query_own_patients(request: Request,
         query = query.where(full_name_expr.ilike(f'%{full_name[0]}%'))
         query_count = query_count.where(full_name_expr.ilike(f'%{full_name[0]}%'))
 
-
     query = query.where(PatientDBModel.cabinet_id == doctor_cabinet_id)
     query = apply_ordering(query, PatientDBModel, columnKey, order)
     if columnKey == 'full_name':
@@ -100,28 +101,15 @@ async def hsn_query_own_patients(request: Request,
     if offset:
         query = query.offset(offset)
 
+    query = query.order_by(desc(PatientDBModel.created_at))
+
     total_count_result = await db_session.execute(query_count)
     total_count = total_count_result.scalar()
 
-    try:
-        cursor = await db_session.execute(query)
-        patients = cursor.unique().scalars().all()
-    except exc.SQLAlchemyError as sqle:
-        logger.error(f"Failed to get list patients: {sqle}")
-        message_model = ValidationErrorTelegramSendMessageSchema(
-            message="*Ошибка при получении списка пациентов*",
-            doctor_id=request.user.doctor.id,
-            doctor_name=request.user.doctor.name,
-            doctor_last_name=request.user.doctor.last_name,
-            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            description=sqle
-        )
-        tg_bot.send_message(
-            message=str(message_model)
-        )
-        raise InternalServerException(
-            message="Ошибка сервера: не удалось выполнить запрос для получения списка пациентов"
-        )
+
+    cursor = await db_session.execute(query)
+    patients = cursor.unique().scalars().all()
+
 
     converted_patients = [await convert_to_patient_response(patient) for patient in patients]
 

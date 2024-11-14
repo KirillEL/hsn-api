@@ -4,7 +4,7 @@ from shared.db.db_session import db_session
 from shared.db.types import DBModelType
 
 
-async def db_query_entity_by_id(db_model: Type[DBModelType], entity_id: int) -> Type[DBModelType]:
+async def db_query_entity_by_id(db_model: Type[DBModelType], entity_id: int) -> DBModelType:
     query = (
         select(db_model)
         .where(db_model.id == entity_id)

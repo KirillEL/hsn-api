@@ -74,28 +74,28 @@ async def lifespan(_app: FastAPI):
     yield
 
 
-def init_logger() -> None:
-    logger.remove()
-
-    logger.add(
-        "logs/logs.log",
-        rotation="10 MB",
-        retention="10 days",
-        compression="zip",
-        level="INFO",
-        format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
-    )
-
-    logger.add(
-        sys.stdout,
-        level="DEBUG",
-        filter=lambda record: record["level"].name in ["DEBUG", "ERROR"],
-        format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
-    )
+# def init_logger() -> None:
+#     logger.remove()
+#
+#     logger.add(
+#         "logs/logs.log",
+#         rotation="10 MB",
+#         retention="10 days",
+#         compression="zip",
+#         level="INFO",
+#         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+#     )
+#
+#     logger.add(
+#         sys.stdout,
+#         level="DEBUG",
+#         filter=lambda record: record["level"].name in ["DEBUG", "ERROR"],
+#         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+#     )
 
 
 def init_application() -> FastAPI:
-    init_logger()
+    #init_logger()
     application = FastAPI(
         title="HSN",
         description="HSN_API",

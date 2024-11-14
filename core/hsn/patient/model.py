@@ -153,3 +153,14 @@ class PatientTableResponse(BaseModel):
 class DictPatientResponse(TypedDict):
     data: List[PatientResponse | PatientWithoutFullNameResponse]
     total: int
+
+
+class PatientAppointmentHistoryDto(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+    id: int
+    date: str
+
+
+class PatientAppointmentHistoryResponse(PatientAppointmentHistoryDto):
+    pass

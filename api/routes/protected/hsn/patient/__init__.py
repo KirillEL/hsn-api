@@ -1,4 +1,5 @@
 from .list import *
+from .history_appointment import *
 from .create import *
 from .get_available_columns import *
 from .get_by_id import *

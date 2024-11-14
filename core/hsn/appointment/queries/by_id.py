@@ -9,6 +9,7 @@ from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
 from core.hsn.appointment.blocks.purpose.model import MedicinePrescriptionFlat, MedicineGroupFlat
 from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList, PatientAppointmentByIdDto, \
     PatientInfoDto
+from core.hsn.patient import Patient
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel, DrugDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.db_session import db_session, SessionContext
@@ -37,33 +38,36 @@ async def hsn_appointment_by_id(
         doctor_id: int,
         appointment_id: int
 ):
+
     query: Select = (
         select(AppointmentDBModel)
-        .where(AppointmentDBModel.is_deleted.is_(False),
-               AppointmentDBModel.id == appointment_id)
-    )
-
-    query = (
-        query.options(
-            selectinload(AppointmentDBModel.block_clinic_doctor),
+        .where(
+            AppointmentDBModel.is_deleted.is_(False),
+            AppointmentDBModel.id == appointment_id)
+        .options(
             selectinload(AppointmentDBModel.patient)
-            .selectinload(PatientDBModel.contragent),
-            selectinload(AppointmentDBModel.block_clinical_condition),
-            selectinload(AppointmentDBModel.block_diagnose),
-            selectinload(AppointmentDBModel.block_ekg),
+            .selectinload(PatientDBModel.contragent)
+        )
+        .options(
             selectinload(AppointmentDBModel.block_complaint),
+            selectinload(AppointmentDBModel.block_ekg),
+            selectinload(AppointmentDBModel.block_diagnose),
             selectinload(AppointmentDBModel.block_laboratory_test),
+            selectinload(AppointmentDBModel.block_complaint),
+            selectinload(AppointmentDBModel.block_clinical_condition),
+        )
+        .options(
             selectinload(AppointmentDBModel.purposes)
-            .selectinload(
-                AppointmentPurposeDBModel.medicine_prescriptions
-            )
+            .selectinload(AppointmentPurposeDBModel.medicine_prescriptions)
             .selectinload(MedicinesPrescriptionDBModel.drug)
             .selectinload(DrugDBModel.drug_group)
         )
     )
 
+
     cursor: Result = await db_session.execute(query)
     appointment: AppointmentDBModel = cursor.scalars().first()
+
     if not appointment:
         raise NotFoundException(message="Прием c id:{} не найден".format(appointment_id))
 
