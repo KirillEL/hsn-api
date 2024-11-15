@@ -17,6 +17,7 @@ from api.routes import main_router
 from api.exceptions import CustomException
 from shared.db.db_session import engine
 from shared.db.models import UserDBModel
+from shared.redis import redis_service
 from .middlewares import AuthMiddleware, AuthBackend
 from core.on_startup import hsn_create_admin, hsn_create_role_doctor, create_med_prescriptions
 
@@ -71,31 +72,15 @@ def init_listeners(app_: FastAPI) -> None:
 async def lifespan(_app: FastAPI):
     await hsn_create_admin()
     await hsn_create_role_doctor()
+    #await redis_service.connect()
     yield
+    #await redis_service.close()
 
 
-# def init_logger() -> None:
-#     logger.remove()
-#
-#     logger.add(
-#         "logs/logs.log",
-#         rotation="10 MB",
-#         retention="10 days",
-#         compression="zip",
-#         level="INFO",
-#         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
-#     )
-#
-#     logger.add(
-#         sys.stdout,
-#         level="DEBUG",
-#         filter=lambda record: record["level"].name in ["DEBUG", "ERROR"],
-#         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
-#     )
+
 
 
 def init_application() -> FastAPI:
-    #init_logger()
     application = FastAPI(
         title="HSN",
         description="HSN_API",

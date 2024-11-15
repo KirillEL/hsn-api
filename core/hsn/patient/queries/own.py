@@ -2,6 +2,7 @@ from datetime import date as tdate, datetime
 from enum import Enum
 
 from shared.db.queries import db_query_entity_by_id
+from shared.redis import redis_service
 from tg_api import tg_bot
 from sqlalchemy import desc, asc, func, text, exc
 from loguru import logger
@@ -50,6 +51,16 @@ async def hsn_query_own_patients(
         columnKey: str = None,
         order: str = None
 )-> DictPatientResponse:
+    redis_key: str = "patients:all"
+
+    cached_patients = await redis_service.get_data(redis_key)
+    if cached_patients:
+        return DictPatientResponse(
+            data=cached_patients,
+            total=len(cached_patients),
+        )
+
+
     contragent_alias = aliased(ContragentDBModel)
 
     doctor_model: DoctorDBModel = await db_query_entity_by_id(DoctorDBModel, doctor_id)
@@ -72,8 +83,7 @@ async def hsn_query_own_patients(
 
     query_count = (
         select(func.count(PatientDBModel.id))
-        .join(contragent_alias, PatientDBModel.contragent_id == contragent_alias.id)
-        .where(DoctorDBModel.id == doctor_id)
+        .where(PatientDBModel.cabinet_id == doctor_cabinet_id)
     )
 
     if gender:
@@ -108,10 +118,15 @@ async def hsn_query_own_patients(
 
 
     cursor = await db_session.execute(query)
-    patients = cursor.unique().scalars().all()
+    patients = cursor.scalars().all()
 
 
     converted_patients = [await convert_to_patient_response(patient) for patient in patients]
+
+    serialized_patients = [patient.to_dict() for patient in converted_patients]
+
+    await redis_service.set_data_with_ttl(redis_key, serialized_patients, expire=300)
+
 
     return DictPatientResponse(
         data=converted_patients,

@@ -34,6 +34,8 @@ class Config(BaseSettings):
     JWT_SECRET: str
     JWT_ALGORITHM: str
 
+    REDIS_HOST: str
+
 
 class LocalConfig(Config):
     pass

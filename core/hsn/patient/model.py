@@ -118,11 +118,59 @@ class BasePatientResponse(BaseModel):
 class PatientResponse(BasePatientResponse):
     full_name: str
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "gender": self.gender,
+            "full_name": self.full_name,
+            "age": self.age,
+            "birth_date": self.birth_date,
+            "dod": self.dod,
+            "location": self.location,
+            "district": self.district,
+            "address": self.address,
+            "phone": self.phone,
+            "clinic": self.clinic,
+            "referring_doctor": self.referring_doctor,
+            "referring_clinic_organization": self.referring_clinic_organization,
+            "disability": self.disability,
+            "lgota_drugs": self.lgota_drugs,
+            "has_hospitalization": self.has_hospitalization,
+            "count_hospitalization": self.count_hospitalization,
+            "last_hospitalization_date": self.last_hospitalization_date,
+            "patient_note": self.patient_note,
+        }
+
 
 class PatientWithoutFullNameResponse(BasePatientResponse):
     name: str
     last_name: str
     patronymic: Optional[str] = None
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "last_name": self.last_name,
+            "patronymic": self.patronymic,
+            "gender": self.gender,
+            "age": self.age,
+            "birth_date": self.birth_date,
+            "dod": self.dod,
+            "location": self.location,
+            "district": self.district,
+            "address": self.address,
+            "phone": self.phone,
+            "clinic": self.clinic,
+            "referring_doctor": self.referring_doctor,
+            "referring_clinic_organization": self.referring_clinic_organization,
+            "disability": self.disability,
+            "lgota_drugs": self.lgota_drugs,
+            "has_hospitalization": self.has_hospitalization,
+            "count_hospitalization": self.count_hospitalization,
+            "last_hospitalization_date": self.last_hospitalization_date,
+            "patient_note": self.patient_note,
+        }
 
 
 class PatientAvailableColumnsResponse(BaseModel):
