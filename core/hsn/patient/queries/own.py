@@ -50,40 +50,29 @@ async def hsn_query_own_patients(
         location: str = None,
         columnKey: str = None,
         order: str = None
-)-> DictPatientResponse:
-    redis_key: str = "patients:all"
+) -> DictPatientResponse:
+    contragent_alias = aliased(ContragentDBModel)
+    doctor_model: DoctorDBModel = await db_query_entity_by_id(DoctorDBModel, doctor_id)
+
+    redis_key = f"patients:doctor:{doctor_id}:gender:{gender}:location:{location}:name:{full_name}:offset:{offset}:limit:{limit}:order:{order}:{columnKey}"
 
     cached_patients = await redis_service.get_data(redis_key)
     if cached_patients:
+        # Если данные в кэше есть, возвращаем их напрямую
         return DictPatientResponse(
-            data=cached_patients,
-            total=len(cached_patients),
+            data=cached_patients["data"],
+            total=cached_patients["total"],
         )
 
-
-    contragent_alias = aliased(ContragentDBModel)
-
-    doctor_model: DoctorDBModel = await db_query_entity_by_id(DoctorDBModel, doctor_id)
-    doctor_cabinet_id: int = doctor_model.cabinet_id
+    query_count = select(func.count(PatientDBModel.id)).where(PatientDBModel.cabinet_id == doctor_model.cabinet_id)
 
     query = (
         select(PatientDBModel)
-        .where(
-            PatientDBModel.is_deleted.is_(False),
-            DoctorDBModel.id == doctor_id
-        )
+        .where(PatientDBModel.is_deleted.is_(False))
         .options(
-            selectinload(PatientDBModel.cabinet)
-                .selectinload(CabinetDBModel.doctors)
-        )
-        .options(
+            selectinload(PatientDBModel.cabinet).selectinload(CabinetDBModel.doctors),
             selectinload(PatientDBModel.contragent)
         )
-    )
-
-    query_count = (
-        select(func.count(PatientDBModel.id))
-        .where(PatientDBModel.cabinet_id == doctor_cabinet_id)
     )
 
     if gender:
@@ -95,38 +84,30 @@ async def hsn_query_own_patients(
         query_count = query_count.where(PatientDBModel.location == location[0])
 
     if full_name:
-        full_name_expr = func.concat(contragent_alias.last_name, ' ', contragent_alias.name, ' ',
-                                     contragent_alias.patronymic)
+        full_name_expr = func.concat(contragent_alias.last_name, ' ', contragent_alias.name, ' ', contragent_alias.patronymic)
         query = query.where(full_name_expr.ilike(f'%{full_name[0]}%'))
         query_count = query_count.where(full_name_expr.ilike(f'%{full_name[0]}%'))
 
-    query = query.where(PatientDBModel.cabinet_id == doctor_cabinet_id)
     query = apply_ordering(query, PatientDBModel, columnKey, order)
-    if columnKey == 'full_name':
-        query = apply_ordering(query, full_name_expr, columnKey, order)
-
     if limit:
         query = query.limit(limit)
-
     if offset:
         query = query.offset(offset)
-
-    query = query.order_by(desc(PatientDBModel.created_at))
 
     total_count_result = await db_session.execute(query_count)
     total_count = total_count_result.scalar()
 
-
     cursor = await db_session.execute(query)
     patients = cursor.scalars().all()
-
-
     converted_patients = [await convert_to_patient_response(patient) for patient in patients]
 
     serialized_patients = [patient.to_dict() for patient in converted_patients]
 
-    await redis_service.set_data_with_ttl(redis_key, serialized_patients, expire=300)
-
+    # Сохранение результатов в Redis с TTL
+    await redis_service.set_data_with_ttl(redis_key, {
+        "data": serialized_patients,
+        "total": total_count
+    }, expire=300)
 
     return DictPatientResponse(
         data=converted_patients,
