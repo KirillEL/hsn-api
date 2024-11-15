@@ -3,14 +3,18 @@ from fastapi import FastAPI, Request
 from starlette.responses import StreamingResponse
 from openpyxl import Workbook
 from api.exceptions import NotFoundException
-from core.hsn.appointment import hsn_appointment_list, HsnAppointmentListContext
+from core.hsn.appointment import hsn_query_appointment_with_blocks_list, HsnAppointmentListContext
+from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
+from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
+from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
 
 # Заголовки Excel-файла
 EXCEL_HEADERS = [
     "ID", "ID Врача", "ФИО", "Дата приема", "Дата след приема",
-    # block_clinic_doctor
-    "Направивший врач", "Организация", "Кат инвалидности", "Льгота препараты",
-    "Госпитализации", "Кол-во госпитализаций", "Дата последней госпитализации",
+    # patient info
+    #"Направивший врач", "Организация", "Кат инвалидности", "Льгота препараты",
+    #"Госпитализации", "Кол-во госпитализаций", "Дата последней госпитализации",
     # block_diagnose
     "Диагноз", "Класс. по функц классу", "Класс. по фракции выброса",
     "Класс. по стадии НК", "Кардиомиопатия", "Примечание", "ИБС ПИКС", "Примечание",
@@ -68,14 +72,79 @@ def extract_diagnose_info(block):
     ]
 
 
+def extract_laboratory_test_info(block: AppointmentLaboratoryTestBlock):
+    return [
+        block.nt_pro_bnp, block.nt_pro_bnp_date,
+        block.hbalc, block.hbalc_date,
+        block.eritrocit, block.hemoglobin,
+        block.oak_date, block.tg,
+        block.lpvp, block.lpnp,
+        block.general_hc, block.natriy,
+        block.kaliy, block.glukoza,
+        block.mochevaya_kislota, block.skf,
+        block.kreatinin, block.bk_date,
+        block.protein, block.urine_eritrocit,
+        block.urine_leycocit, block.microalbumuria,
+        block.am_date, block.note
+    ]
+
+def extract_complaint_info(block: AppointmentComplaintBlock):
+    return [
+        block.has_fatigue, block.has_dyspnea,
+        block.increased_ad, block.rapid_heartbeat,
+        block.has_swelling_legs, block.has_weakness,
+        block.has_orthopnea, block.heart_problems,
+        block.note
+    ]
+
+def extract_block_clinical_condition_info(block: AppointmentClinicalConditionBlock):
+    return [
+        block.orthopnea, block.paroxysmal_nocturnal_dyspnea,
+        block.reduced_exercise_tolerance, block.weakness_fatigue,
+        block.peripheral_edema, block.ascites,
+        block.hydrothorax, block.hydropericardium,
+        block.night_cough, block.weight_gain_over_2kg,
+        block.weight_loss, block.depression,
+        block.third_heart_sound, block.apical_impulse_displacement_left,
+        block.moist_rales_in_lungs, block.heart_murmurs,
+        block.tachycardia, block.irregular_pulse,
+        block.tachypnea, block.hepatomegaly,
+        block.other_symptoms, block.height,
+        block.weight, block.bmi, block.systolic_bp,
+        block.diastolic_bp, block.heart_rate,
+        block.six_min_walk_distance
+    ]
+
+def extract_block_ekg_info(block: AppointmentEkgBlock):
+    return [
+        block.date_ekg, block.sinus_ritm,
+        block.av_blokada, block.hypertrofia_lg,
+        block.ritm_eks, block.av_uzlovaya_tahikardia,
+        block.superventrikulyrnaya_tahikardia,
+        block.zheludochnaya_tahikardia,
+        block.fabrilycia_predcerdiy,
+        block.trepetanie_predcerdiy,
+        block.another_changes,
+        block.date_echo_ekg,
+        block.fv, block.sdla, block.lp,
+        block.lp2, block.pp, block.pp2,
+        block.kdr_lg, block.ksr_lg,
+        block.kdo_lg, block.kso_lg,
+        block.mgp, block.zslg,
+        block.local_hypokines, block.difusal_hypokines,
+        block.distol_disfunction, block.valvular_lesions,
+        block.anevrizma, block.note
+    ]
+
 # Главная функция для экспорта в Excel
 async def export_all_appointments(request: Request, doctor_id: int):
     context = HsnAppointmentListContext(doctor_id=doctor_id)
-    result = await hsn_appointment_list(request, context)
-    if not result["data"]:
+    result = await hsn_query_appointment_with_blocks_list(context)
+
+    if not result:
         raise NotFoundException
 
-    appointments = result["data"]
+    appointments = result
 
     # Создаем новый Excel-файл
     wb = Workbook()
@@ -90,9 +159,11 @@ async def export_all_appointments(request: Request, doctor_id: int):
         if appointment.status == "completed":
             row = []
             row.extend(extract_general_info(appointment))
-            row.extend(extract_clinic_doctor_info(appointment.block_clinic_doctor))
             row.extend(extract_diagnose_info(appointment.block_diagnose))
-            # Добавьте остальные блоки данных
+            row.extend(extract_laboratory_test_info(appointment.block_laboratory_test))
+            row.extend(extract_block_ekg_info(appointment.block_ekg))
+            row.extend(extract_complaint_info(appointment.block_complaint))
+            row.extend(extract_block_clinical_condition_info(appointment.block_clinical_condition))
             ws.append(row)
 
     # Сохраняем Excel-файл в буфер

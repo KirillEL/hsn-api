@@ -11,7 +11,7 @@ from sqlalchemy.orm import joinedload, contains_eager, selectinload
 from fastapi import Request
 from api.exceptions import NotFoundException, BadRequestException, ValidationException, InternalServerException
 from core.hsn.appointment import Appointment
-from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
+from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList, AppointmentsListDto
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel, DrugDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -30,7 +30,7 @@ class HsnAppointmentListContext(BaseModel):
 
 
 @SessionContext()
-async def hsn_appointment_list(
+async def hsn_query_appointment_list(
         request: Request,
         context: HsnAppointmentListContext
 ):
@@ -40,25 +40,10 @@ async def hsn_appointment_list(
         select(AppointmentDBModel)
         .where(AppointmentDBModel.is_deleted.is_(False),
                AppointmentDBModel.doctor_id == context.doctor_id)
-    )
-
-    query = query.options(
-        selectinload(AppointmentDBModel.block_clinic_doctor),
-        selectinload(AppointmentDBModel.patient)
-        .selectinload(PatientDBModel.contragent),
-        selectinload(AppointmentDBModel.block_clinical_condition),
-        selectinload(AppointmentDBModel.block_diagnose),
-        selectinload(AppointmentDBModel.block_ekg),
-        selectinload(AppointmentDBModel.block_complaint),
-        selectinload(AppointmentDBModel.block_laboratory_test),
-        selectinload(AppointmentDBModel.purposes)
-        .selectinload(
-            AppointmentPurposeDBModel.medicine_prescriptions
+        .options(
+            selectinload(AppointmentDBModel.patient)
+            .selectinload(PatientDBModel.contragent)
         )
-        .selectinload(
-            MedicinesPrescriptionDBModel.drug
-        )
-        .selectinload(DrugDBModel.drug_group)
     )
 
     query_count: Select = (
@@ -76,29 +61,14 @@ async def hsn_appointment_list(
 
     query = query.order_by(AppointmentDBModel.id.desc())
 
-    try:
-        cursor: Result = await db_session.execute(query)
-        patient_appointments = cursor.unique().scalars().all()
-    except exc.SQLAlchemyError as sqle:
-        logger.error(f'Failed fetching patient appointments: {sqle}')
-        message_model = ValidationErrorTelegramSendMessageSchema(
-            message="*Не удалось получить список приемов*",
-            doctor_id=context.doctor_id,
-            doctor_name=request.user.doctor.name,
-            doctor_last_name=request.user.doctor.last_name,
-            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            description=str(sqle)
-        )
-        tg_bot.send_message(
-            message=str(message_model)
-        )
-        raise InternalServerException
+    cursor: Result = await db_session.execute(query)
+    patient_appointments = cursor.unique().scalars().all()
 
     if not patient_appointments:
         logger.warning("No appointments found")
         return {"data": [], "total": 0}
 
-    results: List[PatientAppointmentFlat] = []
+    results: List[AppointmentsListDto] = []
     for appointment in patient_appointments:
         patient_info = PatientFlatForAppointmentList(
             name=contragent_hasher.decrypt(appointment.patient.contragent.name),
@@ -107,19 +77,12 @@ async def hsn_appointment_list(
                 appointment.patient.contragent.patronymic) if appointment.patient.contragent.patronymic else ""
         )
 
-        appointment_flat = PatientAppointmentFlat(
+        appointment_flat = AppointmentsListDto(
             id=appointment.id,
             full_name=f'{patient_info.name} {patient_info.last_name} {patient_info.patronymic or ""}'.rstrip(),
             doctor_id=appointment.doctor_id,
             date=appointment.date,
             date_next=str(appointment.date_next) if appointment.date_next else None,
-            block_clinic_doctor=appointment.block_clinic_doctor,
-            block_diagnose=appointment.block_diagnose,
-            block_laboratory_test=appointment.block_laboratory_test,
-            block_ekg=appointment.block_ekg,
-            block_complaint=appointment.block_complaint,
-            block_clinical_condition=appointment.block_clinical_condition,
-            purposes=appointment.purposes,
             status=appointment.status
         )
         results.append(appointment_flat)
