@@ -77,6 +77,19 @@ class PatientAppointmentFlat(BaseModel):
     status: str
 
 
+class AppointmentsListDto(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    doctor_id: int
+    full_name: str
+    date: str
+    date_next: Optional[str] = None
+    status: str
+
+class AppointmentListResponse(AppointmentsListDto):
+    pass
+
+
 class AppointmentFlatResponse(PatientAppointmentFlat):
     pass
 
