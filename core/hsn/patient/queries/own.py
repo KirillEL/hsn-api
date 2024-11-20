@@ -58,7 +58,6 @@ async def hsn_query_own_patients(
 
     cached_patients = await redis_service.get_data(redis_key)
     if cached_patients:
-        # Если данные в кэше есть, возвращаем их напрямую
         return DictPatientResponse(
             data=cached_patients["data"],
             total=cached_patients["total"],
@@ -68,11 +67,13 @@ async def hsn_query_own_patients(
 
     query = (
         select(PatientDBModel)
-        .where(PatientDBModel.is_deleted.is_(False))
         .options(
             selectinload(PatientDBModel.cabinet).selectinload(CabinetDBModel.doctors),
             selectinload(PatientDBModel.contragent)
         )
+        .where(PatientDBModel.is_deleted.is_(False))
+        .where(PatientDBModel.cabinet_id == doctor_model.cabinet_id)
+
     )
 
     if gender:
@@ -103,7 +104,6 @@ async def hsn_query_own_patients(
 
     serialized_patients = [patient.to_dict() for patient in converted_patients]
 
-    # Сохранение результатов в Redis с TTL
     await redis_service.set_data_with_ttl(redis_key, {
         "data": serialized_patients,
         "total": total_count
