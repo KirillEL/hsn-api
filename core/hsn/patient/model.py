@@ -94,6 +94,13 @@ class PatientFlat(BaseModel):
     cabinet: Optional[CabinetFlat] = None
 
 
+class PatientAppointmentHistoryDto(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+    id: int
+    date: str
+
+
 class BasePatientResponse(BaseModel):
     id: int
     gender: str
@@ -173,6 +180,11 @@ class PatientWithoutFullNameResponse(BasePatientResponse):
         }
 
 
+class PatientWithAppointmentHistoryResponse(PatientWithoutFullNameResponse):
+    appointment_histories: Optional[list[PatientAppointmentHistoryDto]] = []
+
+
+
 class PatientAvailableColumnsResponse(BaseModel):
     title: str
     value: str
@@ -202,12 +214,6 @@ class DictPatientResponse(TypedDict):
     data: List[PatientResponse | PatientWithoutFullNameResponse]
     total: int
 
-
-class PatientAppointmentHistoryDto(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
-
-    id: int
-    date: str
 
 
 class PatientAppointmentHistoryResponse(PatientAppointmentHistoryDto):
