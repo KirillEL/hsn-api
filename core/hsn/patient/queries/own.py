@@ -1,24 +1,18 @@
-from datetime import date as tdate, datetime
 from enum import Enum
 
 from shared.db.queries import db_query_entity_by_id
 from shared.redis import redis_service
-from tg_api import tg_bot
-from sqlalchemy import desc, asc, func, text, exc
 from loguru import logger
 
-from api.exceptions import InternalServerException
 from utils import contragent_hasher
 from ..helper import apply_ordering
-from api.exceptions.base import ValidationErrorTelegramSendMessageSchema
 from core.hsn.patient.commands.create import convert_to_patient_response
-from shared.db.models import ContragentDBModel
 from shared.db.models.cabinet import CabinetDBModel
 from shared.db.models.patient import PatientDBModel
 from shared.db.models.doctor import DoctorDBModel
 from shared.db.db_session import db_session, SessionContext
 from sqlalchemy import select
-from sqlalchemy.orm import aliased, selectinload
+from sqlalchemy.orm import selectinload
 from fastapi import Request
 from ..model import DictPatientResponse
 
@@ -40,6 +34,36 @@ class LocationType(Enum):
     ANOTHER = "другое"
 
 
+async def check_query_params(
+    redis_key: str,
+    name: str,
+    last_name: str,
+    patronymic: str,
+    birth: str,
+    limit: int,
+    offset: int,
+) -> str:
+    if name:
+        redis_key += f":name:{name}"
+
+    if last_name:
+        redis_key += f":last_name:{last_name}"
+
+    if patronymic:
+        redis_key += f":patronymic:{patronymic}"
+
+    if birth:
+        redis_key += f":birth:{birth}"
+
+    if limit:
+        redis_key += f":limit:{limit}"
+
+    if offset:
+        redis_key += f":offset:{offset}"
+
+    return redis_key
+
+
 @SessionContext()
 async def hsn_query_own_patients(
     request: Request,
@@ -53,27 +77,15 @@ async def hsn_query_own_patients(
     columnKey: str = None,
     order: str = None,
 ) -> DictPatientResponse:
-    contragent_alias = aliased(ContragentDBModel)
     doctor_model: DoctorDBModel = await db_query_entity_by_id(DoctorDBModel, doctor_id)
 
     logger.debug(f"doctor_id: {doctor_id}")
 
     redis_key: str = f"patients:doctor:{doctor_id}"
 
-    if name:
-        redis_key += f":name:{name}"
-    if last_name:
-        redis_key += f":last_name:{last_name}"
-    if patronymic:
-        redis_key += f":patronymic:{patronymic}"
-    if birth:
-        redis_key += f":birth:{birth}"
-
-    if limit:
-        redis_key += f":limit:{limit}"
-
-    if offset:
-        redis_key += f":offset:{offset}"
+    redis_key = await check_query_params(
+        redis_key, name, last_name, patronymic, birth, limit, offset
+    )
 
     cached_patients = await redis_service.get_data(redis_key)
     if cached_patients:

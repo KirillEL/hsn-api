@@ -1,16 +1,6 @@
 version: '3.7'
 
 services:
-  #hsn_nginx:
-  #build:
-  # context: .nginx/
-  #dockerfile: Dockerfile
-  #container_name: hsn_nginx
-  #ports:
-  #  - "1111:1111"
-  # restart: on-failure
-  # networks:
-  #   - hsn_network
 
   hsn_api:
     build:
@@ -79,7 +69,6 @@ services:
     restart: always
     networks:
       - hsn_network
-
 
 networks:
   hsn_network:
