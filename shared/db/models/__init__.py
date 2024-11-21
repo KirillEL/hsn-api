@@ -11,5 +11,3 @@ from .medicines_prescription import *
 from .analyses import *
 from .researchs import *
 from .clinical_assesment import *
-
-

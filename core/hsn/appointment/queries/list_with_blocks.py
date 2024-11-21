@@ -4,7 +4,10 @@ from sqlalchemy import select, desc
 from sqlalchemy.orm import selectinload
 
 from core.hsn.appointment import HsnAppointmentListContext
-from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList
+from core.hsn.appointment.model import (
+    PatientAppointmentFlat,
+    PatientFlatForAppointmentList,
+)
 from shared.db.db_session import SessionContext, db_session
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel, DrugDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -13,22 +16,21 @@ from utils import contragent_hasher
 
 
 @SessionContext()
-async def hsn_query_appointment_with_blocks_list(
-        context: HsnAppointmentListContext
-):
+async def hsn_query_appointment_with_blocks_list(context: HsnAppointmentListContext):
     query = (
         select(AppointmentDBModel)
         .where(AppointmentDBModel.doctor_id == context.doctor_id)
         .options(
-            selectinload(AppointmentDBModel.patient)
-            .selectinload(PatientDBModel.contragent)
+            selectinload(AppointmentDBModel.patient).selectinload(
+                PatientDBModel.contragent
+            )
         )
         .options(
             selectinload(AppointmentDBModel.block_complaint),
             selectinload(AppointmentDBModel.block_ekg),
             selectinload(AppointmentDBModel.block_diagnose),
             selectinload(AppointmentDBModel.block_laboratory_test),
-            selectinload(AppointmentDBModel.block_clinical_condition)
+            selectinload(AppointmentDBModel.block_clinical_condition),
         )
         .options(
             selectinload(AppointmentDBModel.purposes)
@@ -47,9 +49,14 @@ async def hsn_query_appointment_with_blocks_list(
     for appointment in patient_appointments:
         patient_info = PatientFlatForAppointmentList(
             name=contragent_hasher.decrypt(appointment.patient.contragent.name),
-            last_name=contragent_hasher.decrypt(appointment.patient.contragent.last_name),
-            patronymic=contragent_hasher.decrypt(
-                appointment.patient.contragent.patronymic) if appointment.patient.contragent.patronymic else ""
+            last_name=contragent_hasher.decrypt(
+                appointment.patient.contragent.last_name
+            ),
+            patronymic=(
+                contragent_hasher.decrypt(appointment.patient.contragent.patronymic)
+                if appointment.patient.contragent.patronymic
+                else ""
+            ),
         )
 
         appointment_flat = PatientAppointmentFlat(
@@ -64,9 +71,8 @@ async def hsn_query_appointment_with_blocks_list(
             block_complaint=appointment.block_complaint,
             block_clinical_condition=appointment.block_clinical_condition,
             purposes=appointment.purposes,
-            status=appointment.status
+            status=appointment.status,
         )
         results.append(appointment_flat)
 
     return results
-

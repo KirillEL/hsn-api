@@ -9,5 +9,4 @@ main_router.include_router(public_router)
 main_router.include_router(protected_router)
 
 
-
 __all__ = ["main_router"]

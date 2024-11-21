@@ -23,9 +23,9 @@ class TelegramBot:
         if self.is_enabled:
             url: str = f"{self.base_url}/sendMessage"
             payload: dict[str, Any] = {
-                'chat_id': self.chat_id,
-                'text': message,
-                'parse_mode': parse_mode
+                "chat_id": self.chat_id,
+                "text": message,
+                "parse_mode": parse_mode,
             }
             try:
                 response = requests.post(url, data=payload)
@@ -41,5 +41,5 @@ class TelegramBot:
 tg_bot: TelegramBot = TelegramBot(
     bot_token=config.TG_BOT_TOKEN,
     is_enabled=config.IS_BOT_ENABLED,
-    chat_id=config.TG_CHAT_ID
+    chat_id=config.TG_CHAT_ID,
 )

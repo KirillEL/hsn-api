@@ -9,11 +9,15 @@ from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import UnprocessableEntityException, ForbiddenException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
+from shared.db.models.appointment.blocks.block_laboratory_test import (
+    AppointmentLaboratoryTestBlockDBModel,
+)
 from pydantic import BaseModel
 from typing import Optional
 
-from shared.db.models.appointment.blocks.block_laboratory_test import AppointmentLaboratoryTestBlockDBModel
+from shared.db.models.appointment.blocks.block_laboratory_test import (
+    AppointmentLaboratoryTestBlockDBModel,
+)
 from shared.db.queries import db_query_entity_by_id
 
 
@@ -51,10 +55,11 @@ class HsnCommandAppointmentBlockLaboratoryTestCreateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_appointment_block_laboratory_test_create(
-        doctor_id: int,
-        context: HsnCommandAppointmentBlockLaboratoryTestCreateContext
+    doctor_id: int, context: HsnCommandAppointmentBlockLaboratoryTestCreateContext
 ) -> int:
-    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(
+        AppointmentDBModel, context.appointment_id
+    )
 
     if not appointment:
         raise NotFoundException(
@@ -62,9 +67,11 @@ async def hsn_command_appointment_block_laboratory_test_create(
         )
 
     if appointment.doctor_id != doctor_id:
-        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
+        raise ForbiddenException(
+            "У вас нет прав для доступа к приему с id:{}".format(context.appointment_id)
+        )
 
-    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+    payload = context.model_dump(exclude={"appointment_id"}, exclude_none=True)
     query: ReturningInsert = (
         insert(AppointmentLaboratoryTestBlockDBModel)
         .values(**payload)
@@ -75,9 +82,7 @@ async def hsn_command_appointment_block_laboratory_test_create(
 
     query_update_appointment: Update = (
         update(AppointmentDBModel)
-        .values(
-            block_laboratory_test_id=new_block_laboratory_test_id
-        )
+        .values(block_laboratory_test_id=new_block_laboratory_test_id)
         .where(AppointmentDBModel.id == context.appointment_id)
     )
     await db_session.execute(query_update_appointment)

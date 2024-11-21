@@ -12,10 +12,7 @@ from loguru import logger
 
 @SessionContext()
 async def hsn_patient_appointment_get_by_doctor_id(doctor_id: int):
-    query = (
-        select(AppointmentDBModel)
-        .where(AppointmentDBModel.doctor_id == doctor_id)
-    )
+    query = select(AppointmentDBModel).where(AppointmentDBModel.doctor_id == doctor_id)
     cursor = await db_session.execute(query)
     patient_appointments = cursor.scalars().all()
 

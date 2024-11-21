@@ -1,6 +1,4 @@
 from .model import Doctor
 
 
-__all__ = [
-    'Doctor'
-]
+__all__ = ["Doctor"]

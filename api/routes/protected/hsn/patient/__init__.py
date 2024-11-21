@@ -10,6 +10,4 @@ from .get_by_appointment_id import *
 from .router import patient_router
 
 
-__all__ = [
-	'patient_router'
-]
+__all__ = ["patient_router"]

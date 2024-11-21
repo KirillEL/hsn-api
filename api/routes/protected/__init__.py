@@ -5,8 +5,9 @@ from .hsn.appointment import appointment_router
 from api.dependencies import PermissionDependency, IsAuthenticated
 from .export.csv import csv_router
 
-protected_router: APIRouter = APIRouter(prefix="/api/v1",
-                                        dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+protected_router: APIRouter = APIRouter(
+    prefix="/api/v1", dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
+)
 
 protected_router.include_router(user_router, tags=["Пользователь"])
 protected_router.include_router(patient_router)

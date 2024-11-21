@@ -5,6 +5,7 @@ Revises: b977397a4d79
 Create Date: 2024-03-26 15:09:34.691093
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,14 +13,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '2318f2994dcf'
-down_revision: Union[str, None] = 'b977397a4d79'
+revision: str = "2318f2994dcf"
+down_revision: Union[str, None] = "b977397a4d79"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute('''
+    op.execute(
+        """
     create table public.appointment_block_diagnoses (
     id serial constraint appointment_block_diagnose_id_pk primary key,
     diagnose text not null,
@@ -49,8 +51,9 @@ def upgrade() -> None:
     another boolean not null default false,
     another_note text
     );
-    ''')
+    """
+    )
 
 
 def downgrade() -> None:
-    op.execute('drop table public.appointment_block_diagnoses;')
+    op.execute("drop table public.appointment_block_diagnoses;")

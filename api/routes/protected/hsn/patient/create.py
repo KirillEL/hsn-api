@@ -15,7 +15,14 @@ from shared.db.db_session import db_session
 from .router import patient_router
 from core.hsn.patient import Patient, HsnPatientCreateContext, hsn_patient_create
 from api.exceptions import ExceptionResponseSchema, ValidationException
-from pydantic import BaseModel, Field, validator, field_validator, model_validator, ValidationError
+from pydantic import (
+    BaseModel,
+    Field,
+    validator,
+    field_validator,
+    model_validator,
+    ValidationError,
+)
 
 
 class CreatePatientRequestBody(BaseModel):
@@ -36,7 +43,9 @@ class CreatePatientRequestBody(BaseModel):
     lgota_drugs: LgotaDrugsType = Field(LgotaDrugsType.NO.value)
     has_hospitalization: bool
     count_hospitalization: Optional[int] = Field(None)
-    last_hospitalization_date: Optional[str] = Field(default=datetime.today().strftime("%d.%m.%Y"))
+    last_hospitalization_date: Optional[str] = Field(
+        default=datetime.today().strftime("%d.%m.%Y")
+    )
     patient_note: Optional[str] = Field(None, max_length=1000)
 
 
@@ -47,9 +56,16 @@ class ModelValidator(CreatePatientRequestBody):
             try:
                 parsed_date = datetime.strptime(v, "%d.%m.%Y")
             except ValueError:
-                raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
-            if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
-                raise ValidationException(message="Дата последней госпитализации не должна быть позже чем текущая дата")
+                raise ValidationException(
+                    message="Дата должна быть в формате ДД.ММ.ГГГГ"
+                )
+            if (
+                cls.__fields__.get("last_hospitalization_date")
+                and parsed_date > datetime.now()
+            ):
+                raise ValidationException(
+                    message="Дата последней госпитализации не должна быть позже чем текущая дата"
+                )
         return v
 
     @field_validator("phone")
@@ -76,12 +92,9 @@ class ModelValidator(CreatePatientRequestBody):
     response_model=PatientResponse,
     responses={"400": {"model": ExceptionResponseSchema}},
     summary="Создание нового пациента",
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
-async def patient_create_route(
-        request: Request,
-        body: CreatePatientRequestBody
-):
+async def patient_create_route(request: Request, body: CreatePatientRequestBody):
     try:
         validated_body = ModelValidator.model_validate(body.model_dump())
         context = HsnPatientCreateContext(
@@ -97,11 +110,9 @@ async def patient_create_route(
             doctor_id=request.user.doctor.id,
             doctor_name=request.user.doctor.name,
             doctor_last_name=request.user.doctor.last_name,
-            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            description=str(ve.message)
+            date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            description=str(ve.message),
         )
         logger.error(str(message_model))
-        tg_bot.send_message(
-            message=str(message_model)
-        )
+        tg_bot.send_message(message=str(message_model))
         raise ve

@@ -14,21 +14,20 @@ class HsnPatientColumnsCreateContext(BaseModel):
     table_columns: list[TableColumns]
 
 
-async def create_default_columns_settings(user_id:int):
-    query = (
-        select(PatientTableColumnsDBModel)
-        .where(PatientTableColumnsDBModel.user_id == user_id)
+async def create_default_columns_settings(user_id: int):
+    query = select(PatientTableColumnsDBModel).where(
+        PatientTableColumnsDBModel.user_id == user_id
     )
     cursor = await db_session.execute(query)
     exists = cursor.scalars().first()
     if not exists:
-        default_columns = [{"dataIndex": column["dataIndex"], "hidden": False} for column in default_payload]
+        default_columns = [
+            {"dataIndex": column["dataIndex"], "hidden": False}
+            for column in default_payload
+        ]
         query = (
             insert(PatientTableColumnsDBModel)
-            .values(
-                user_id=user_id,
-                table_columns=default_columns
-            )
+            .values(user_id=user_id, table_columns=default_columns)
             .returning(PatientTableColumnsDBModel.id)
         )
         cursor = await db_session.execute(query)
@@ -36,15 +35,14 @@ async def create_default_columns_settings(user_id:int):
         return cursor.scalar_one()
     return exists.id
 
+
 @SessionContext()
 async def hsn_patient_columns_create(context: HsnPatientColumnsCreateContext):
     created_default_columns_id = await create_default_columns_settings(context.user_id)
     serialized_columns = [column.dict() for column in context.table_columns]
     query = (
         update(PatientTableColumnsDBModel)
-        .values(
-            table_columns=serialized_columns
-        )
+        .values(table_columns=serialized_columns)
         .where(PatientTableColumnsDBModel.id == created_default_columns_id)
         .returning(PatientTableColumnsDBModel)
     )

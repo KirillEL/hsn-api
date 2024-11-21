@@ -9,9 +9,18 @@ from loguru import logger
 from sqlalchemy import select, func, exc, Select, Result
 from sqlalchemy.orm import joinedload, contains_eager, selectinload
 from fastapi import Request
-from api.exceptions import NotFoundException, BadRequestException, ValidationException, InternalServerException
+from api.exceptions import (
+    NotFoundException,
+    BadRequestException,
+    ValidationException,
+    InternalServerException,
+)
 from core.hsn.appointment import Appointment
-from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList, AppointmentsListDto
+from core.hsn.appointment.model import (
+    PatientAppointmentFlat,
+    PatientFlatForAppointmentList,
+    AppointmentsListDto,
+)
 from core.hsn.patient.commands.create import convert_to_patient_response
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel, DrugDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -31,18 +40,20 @@ class HsnAppointmentListContext(BaseModel):
 
 @SessionContext()
 async def hsn_query_appointment_list(
-        request: Request,
-        context: HsnAppointmentListContext
+    request: Request, context: HsnAppointmentListContext
 ):
     logger.info(f"Fetching appointments for doctor_id: {context.doctor_id}")
 
     query: Select = (
         select(AppointmentDBModel)
-        .where(AppointmentDBModel.is_deleted.is_(False),
-               AppointmentDBModel.doctor_id == context.doctor_id)
+        .where(
+            AppointmentDBModel.is_deleted.is_(False),
+            AppointmentDBModel.doctor_id == context.doctor_id,
+        )
         .options(
-            selectinload(AppointmentDBModel.patient)
-            .selectinload(PatientDBModel.contragent)
+            selectinload(AppointmentDBModel.patient).selectinload(
+                PatientDBModel.contragent
+            )
         )
     )
 
@@ -72,9 +83,14 @@ async def hsn_query_appointment_list(
     for appointment in patient_appointments:
         patient_info = PatientFlatForAppointmentList(
             name=contragent_hasher.decrypt(appointment.patient.contragent.name),
-            last_name=contragent_hasher.decrypt(appointment.patient.contragent.last_name),
-            patronymic=contragent_hasher.decrypt(
-                appointment.patient.contragent.patronymic) if appointment.patient.contragent.patronymic else ""
+            last_name=contragent_hasher.decrypt(
+                appointment.patient.contragent.last_name
+            ),
+            patronymic=(
+                contragent_hasher.decrypt(appointment.patient.contragent.patronymic)
+                if appointment.patient.contragent.patronymic
+                else ""
+            ),
         )
 
         appointment_flat = AppointmentsListDto(
@@ -83,7 +99,7 @@ async def hsn_query_appointment_list(
             doctor_id=appointment.doctor_id,
             date=appointment.date,
             date_next=str(appointment.date_next) if appointment.date_next else None,
-            status=appointment.status
+            status=appointment.status,
         )
         results.append(appointment_flat)
 

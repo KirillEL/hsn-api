@@ -4,9 +4,8 @@ from pydantic import BaseModel, ConfigDict
 from datetime import date as tdate
 
 
-
 class AppointmentEkgBlock(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     id: int
     date_ekg: Optional[str] = None

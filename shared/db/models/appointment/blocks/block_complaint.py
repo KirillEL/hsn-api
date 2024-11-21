@@ -3,8 +3,8 @@ from shared.db.models.BASE import BaseDBModel
 
 
 class AppointmentComplaintBlockDBModel(BaseDBModel):
-    __tablename__ = 'appointment_block_complaints'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "appointment_block_complaints"
+    __table_args__ = {"schema": "public"}
 
     id = Column(Integer, primary_key=True, nullable=False)
     has_fatigue = Column(Boolean, nullable=False, server_default=text("false"))

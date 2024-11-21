@@ -51,18 +51,23 @@ class HsnCommandBlockEkgUpdateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_block_ekg_update(
-        doctor_id: int,
-        context: HsnCommandBlockEkgUpdateContext
+    doctor_id: int, context: HsnCommandBlockEkgUpdateContext
 ) -> AppointmentEkgBlock:
-    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(
+        AppointmentDBModel, context.appointment_id
+    )
 
     if not appointment:
-        raise NotFoundException("Прием с id:{} не найден".format(context.appointment_id))
+        raise NotFoundException(
+            "Прием с id:{} не найден".format(context.appointment_id)
+        )
 
     if appointment.doctor_id != doctor_id:
-        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
+        raise ForbiddenException(
+            "У вас нет прав для доступа к приему с id:{}".format(context.appointment_id)
+        )
 
-    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+    payload = context.model_dump(exclude={"appointment_id"}, exclude_none=True)
 
     query: Select = (
         select(AppointmentDBModel.block_ekg_id)
@@ -73,7 +78,9 @@ async def hsn_command_block_ekg_update(
     block_ekg_id: int = cursor.scalar()
 
     if not block_ekg_id:
-        raise NotFoundException(message="У приема c id:{} нет данного блока".format(context.appointment_id))
+        raise NotFoundException(
+            message="У приема c id:{} нет данного блока".format(context.appointment_id)
+        )
 
     query_update: ReturningUpdate = (
         update(AppointmentEkgBlockDBModel)

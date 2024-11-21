@@ -2,10 +2,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from core.hsn.appointment.blocks.complaint import HsnCommandBlockComplaintAndClinicalConditionUpdateContext, \
-    hsn_command_block_complaint_and_clinical_condition_update
-from core.hsn.appointment.blocks.complaint.model import AppointmentComplaintWithClinicalCondition, \
-    AppointmentComplaintWithClinicalConditionResponse
+from core.hsn.appointment.blocks.complaint import (
+    HsnCommandBlockComplaintAndClinicalConditionUpdateContext,
+    hsn_command_block_complaint_and_clinical_condition_update,
+)
+from core.hsn.appointment.blocks.complaint.model import (
+    AppointmentComplaintWithClinicalCondition,
+    AppointmentComplaintWithClinicalConditionResponse,
+)
 from .router import block_complaint_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request
@@ -19,12 +23,16 @@ class UpdateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
     rapid_heartbeat: Optional[bool] = Field(None)
     has_weakness: Optional[bool] = Field(None)
     has_orthopnea: Optional[bool] = Field(None)
-    #has_heartbeat: Optional[bool] = Field(None)
+    # has_heartbeat: Optional[bool] = Field(None)
     heart_problems: Optional[bool] = Field(None)
-    note: Optional[str] = Field(None, max_length=1000, examples=["Your note here"],
-                                description="Optional note, can be omitted.")
+    note: Optional[str] = Field(
+        None,
+        max_length=1000,
+        examples=["Your note here"],
+        description="Optional note, can be omitted.",
+    )
 
-    #heart_failure_om: Optional[bool] = Field(None)
+    # heart_failure_om: Optional[bool] = Field(None)
     orthopnea: Optional[bool] = Field(None)
     paroxysmal_nocturnal_dyspnea: Optional[bool] = Field(None)
     reduced_exercise_tolerance: Optional[bool] = Field(None)
@@ -59,20 +67,20 @@ class UpdateBlockComplaintAndClinicalConditionRequestBody(BaseModel):
 @block_complaint_router.patch(
     "/update_with_condition/{appointment_id}",
     response_model=AppointmentComplaintWithClinicalConditionResponse,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_block_complaint_and_clinical_condition_route(
-        request: Request,
-        appointment_id: int,
-        body: UpdateBlockComplaintAndClinicalConditionRequestBody
+    request: Request,
+    appointment_id: int,
+    body: UpdateBlockComplaintAndClinicalConditionRequestBody,
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
     context = HsnCommandBlockComplaintAndClinicalConditionUpdateContext(
-        user_id=request.user.id,
-        appointment_id=appointment_id,
-        **body.model_dump()
+        user_id=request.user.id, appointment_id=appointment_id, **body.model_dump()
     )
     doctor_id: int = request.user.doctor.id
-    return await hsn_command_block_complaint_and_clinical_condition_update(doctor_id, context)
+    return await hsn_command_block_complaint_and_clinical_condition_update(
+        doctor_id, context
+    )

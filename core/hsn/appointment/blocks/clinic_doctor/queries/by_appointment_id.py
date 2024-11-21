@@ -5,7 +5,9 @@ from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_clinic_doctor import AppointmentBlockClinicDoctorDBModel
+from shared.db.models.appointment.blocks.block_clinic_doctor import (
+    AppointmentBlockClinicDoctorDBModel,
+)
 from sqlalchemy import select, Select, Result
 
 from shared.db.queries import db_query_entity_by_id
@@ -13,8 +15,8 @@ from shared.db.queries import db_query_entity_by_id
 
 @SessionContext()
 async def hsn_get_block_clinic_doctor_by_appointment_id(
-        doctor_id: int,
-        appointment_id: int,
+    doctor_id: int,
+    appointment_id: int,
 ) -> AppointmentClinicDoctorBlock | None:
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
 
@@ -22,7 +24,9 @@ async def hsn_get_block_clinic_doctor_by_appointment_id(
         raise NotFoundException("Прием с id:{} не найден".format(appointment_id))
 
     if appointment.doctor_id != doctor_id:
-        raise ForbiddenException("У приема нет прав для доступа к приему с id:{}".format(appointment_id))
+        raise ForbiddenException(
+            "У приема нет прав для доступа к приему с id:{}".format(appointment_id)
+        )
 
     query: Select = (
         select(AppointmentDBModel.block_clinic_doctor_id)
@@ -35,9 +39,8 @@ async def hsn_get_block_clinic_doctor_by_appointment_id(
     if not block_clinic_doctor_id:
         return None
 
-    query_get_block: Select = (
-        select(AppointmentBlockClinicDoctorDBModel)
-        .where(AppointmentBlockClinicDoctorDBModel.id == block_clinic_doctor_id)
+    query_get_block: Select = select(AppointmentBlockClinicDoctorDBModel).where(
+        AppointmentBlockClinicDoctorDBModel.id == block_clinic_doctor_id
     )
     cursor: Result = await db_session.execute(query_get_block)
     block_clinic_doctor: AppointmentBlockClinicDoctorDBModel = cursor.scalars().first()

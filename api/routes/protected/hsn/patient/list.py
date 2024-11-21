@@ -5,8 +5,13 @@ from typing import Optional, List
 from fastapi import Request, Depends, Query
 from pydantic import BaseModel, Field, parse_obj_as
 
-from core.hsn.patient.model import Patient, PatientFlat, PatientResponse, PatientWithoutFullNameResponse, \
-    DictPatientResponse
+from core.hsn.patient.model import (
+    Patient,
+    PatientFlat,
+    PatientResponse,
+    PatientWithoutFullNameResponse,
+    DictPatientResponse,
+)
 from core.hsn.patient.queries.own import hsn_query_own_patients, GenderType
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
@@ -34,21 +39,21 @@ class GetOwnPatientsQueryParams(BaseModel):
 
 
 @patient_router.get(
-    '',
+    "",
     response_model=DictPatientResponse,
-    responses={'400': {"model": ExceptionResponseSchema}},
-    summary='Получить своих пациентов'
+    responses={"400": {"model": ExceptionResponseSchema}},
+    summary="Получить своих пациентов",
 )
 async def get_own_patients_route(
-        request: Request,
-        limit: Optional[int] = Query(None),
-        offset: Optional[int] = Query(None),
-        name: Optional[str] = Query(None),
-        last_name: Optional[str] = Query(None),
-        patronymic: Optional[str] = Query(None),
-        birth: Optional[str] = Query(None),
-        columnKey: Optional[str] = Query(None, alias="sortParams[columnKey]"),
-        order: Optional[str] = Query(None, alias="sortParams[order]")
+    request: Request,
+    limit: Optional[int] = Query(None),
+    offset: Optional[int] = Query(None),
+    name: Optional[str] = Query(None),
+    last_name: Optional[str] = Query(None),
+    patronymic: Optional[str] = Query(None),
+    birth: Optional[str] = Query(None),
+    columnKey: Optional[str] = Query(None, alias="sortParams[columnKey]"),
+    order: Optional[str] = Query(None, alias="sortParams[order]"),
 ):
     params = GetOwnPatientsQueryParams(
         limit=limit,
@@ -58,7 +63,7 @@ async def get_own_patients_route(
         patronymic=patronymic,
         birth=birth,
         columnKey=columnKey,
-        order=order
+        order=order,
     )
     if not request.user.doctor:
         raise DoctorNotAssignedException
@@ -73,5 +78,5 @@ async def get_own_patients_route(
         patronymic=params.patronymic,
         birth=params.birth,
         columnKey=params.columnKey,
-        order=params.order
+        order=params.order,
     )

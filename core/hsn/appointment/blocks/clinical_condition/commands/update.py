@@ -8,9 +8,13 @@ from sqlalchemy.sql.dml import ReturningUpdate
 from api.exceptions import NotFoundException
 from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+)
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_clinical_condition import AppointmentClinicalConditionBlockDBModel
+from shared.db.models.appointment.blocks.block_clinical_condition import (
+    AppointmentClinicalConditionBlockDBModel,
+)
 from shared.db.db_session import db_session, SessionContext
 from shared.db.queries import db_query_entity_by_id
 
@@ -50,18 +54,23 @@ class HsnCommandBlockClinicalConditionUpdateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_block_clinical_condition_update(
-        doctor_id: int,
-        context: HsnCommandBlockClinicalConditionUpdateContext
+    doctor_id: int, context: HsnCommandBlockClinicalConditionUpdateContext
 ) -> AppointmentClinicalConditionBlock:
-    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+    payload = context.model_dump(exclude={"appointment_id"}, exclude_none=True)
 
-    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(
+        AppointmentDBModel, context.appointment_id
+    )
 
     if not appointment:
-        raise NotFoundException("Прием с id: {} не найден".format(context.appointment_id))
+        raise NotFoundException(
+            "Прием с id: {} не найден".format(context.appointment_id)
+        )
 
     if appointment.doctor_id != doctor_id:
-        raise ForbiddenException("У вас нет доступа к приему с id: {}".format(context.appointment_id))
+        raise ForbiddenException(
+            "У вас нет доступа к приему с id: {}".format(context.appointment_id)
+        )
 
     query: Select = (
         select(AppointmentDBModel.block_clinical_condition_id)
@@ -72,12 +81,16 @@ async def hsn_command_block_clinical_condition_update(
     block_clinical_condition_id: int = cursor.scalar()
 
     if not block_clinical_condition_id:
-        raise NotFoundException(message="У приема c id:{} нет данного блока".format(context.appointment_id))
+        raise NotFoundException(
+            message="У приема c id:{} нет данного блока".format(context.appointment_id)
+        )
 
     query_update: ReturningUpdate = (
         update(AppointmentClinicalConditionBlockDBModel)
         .values(**payload)
-        .where(AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id)
+        .where(
+            AppointmentClinicalConditionBlockDBModel.id == block_clinical_condition_id
+        )
         .returning(AppointmentClinicalConditionBlockDBModel)
     )
     cursor: Result = await db_session.execute(query_update)

@@ -11,4 +11,6 @@ class CabinetDeleteContext(BaseModel):
 
 @SessionContext()
 async def hsn_cabinet_delete(context: CabinetDeleteContext):
-    return await db_base_entity_delete(db_model=CabinetDBModel, entity_id=context.id, user_id=context.user_id)
+    return await db_base_entity_delete(
+        db_model=CabinetDBModel, entity_id=context.id, user_id=context.user_id
+    )

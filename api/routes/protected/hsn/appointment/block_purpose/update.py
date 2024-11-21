@@ -1,5 +1,8 @@
-from core.hsn.appointment.blocks.purpose import HsnAppointmentPurposeUpdateContext, hsn_appointment_purpose_update, \
-    AppointmentPurposeFlat
+from core.hsn.appointment.blocks.purpose import (
+    HsnAppointmentPurposeUpdateContext,
+    hsn_appointment_purpose_update,
+    AppointmentPurposeFlat,
+)
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from pydantic import BaseModel, Field
@@ -20,12 +23,10 @@ class UpdateBlockPurposeRequestBody(BaseModel):
 @block_purpose_router.patch(
     "/update/{appointment_id}",
     response_model=AppointmentPurposeFlat,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_block_purpose_route(
-        request: Request,
-        appointment_id: int,
-        body: UpdateBlockPurposeRequestBody
+    request: Request, appointment_id: int, body: UpdateBlockPurposeRequestBody
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException
@@ -33,6 +34,6 @@ async def update_block_purpose_route(
     context = HsnAppointmentPurposeUpdateContext(
         doctor_id=request.user.doctor.id,
         appointment_id=appointment_id,
-        medicine_prescriptions=body.medicine_prescriptions
+        medicine_prescriptions=body.medicine_prescriptions,
     )
     return await hsn_appointment_purpose_update(context)

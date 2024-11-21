@@ -2,13 +2,19 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 
-from core.hsn.appointment.blocks.base_model import AppointmentBlockBooleanTextFieldsResponse, \
-    AppointmentBlockTextDateLaboratoryTestFieldsResponse
+from core.hsn.appointment.blocks.base_model import (
+    AppointmentBlockBooleanTextFieldsResponse,
+    AppointmentBlockTextDateLaboratoryTestFieldsResponse,
+)
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+)
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
-from core.hsn.appointment.blocks.complaint.model import AppointmentBlockBooleanFieldsResponse, \
-    AppointmentBlockEkgBooleanFieldsResponse
+from core.hsn.appointment.blocks.complaint.model import (
+    AppointmentBlockBooleanFieldsResponse,
+    AppointmentBlockEkgBooleanFieldsResponse,
+)
 from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
@@ -86,6 +92,7 @@ class AppointmentsListDto(BaseModel):
     date_next: Optional[str] = None
     status: str
 
+
 class AppointmentListResponse(AppointmentsListDto):
     pass
 
@@ -117,7 +124,6 @@ class PatientInfoDto(BaseModel):
     last_hospitalization_date: Optional[str] = None
 
 
-
 class PatientAppointmentByIdDto(BaseModel):
     model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
 
@@ -142,10 +148,8 @@ class PatientAppointmentByIdResponse(PatientAppointmentByIdDto):
     pass
 
 
-
-
 class AppointmentFields(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     diagnose: List[AppointmentBlockBooleanTextFieldsResponse]
     complaints: List[AppointmentBlockBooleanFieldsResponse]

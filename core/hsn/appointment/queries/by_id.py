@@ -3,12 +3,24 @@ from pydantic import ValidationError
 from sqlalchemy import select, RowMapping, Select, Result
 from sqlalchemy.orm import selectinload
 
-from api.exceptions import NotFoundException, ValidationException, BadRequestException, InternalServerException
+from api.exceptions import (
+    NotFoundException,
+    ValidationException,
+    BadRequestException,
+    InternalServerException,
+)
 from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat
-from core.hsn.appointment.blocks.purpose.model import MedicinePrescriptionFlat, MedicineGroupFlat
-from core.hsn.appointment.model import PatientAppointmentFlat, PatientFlatForAppointmentList, PatientAppointmentByIdDto, \
-    PatientInfoDto
+from core.hsn.appointment.blocks.purpose.model import (
+    MedicinePrescriptionFlat,
+    MedicineGroupFlat,
+)
+from core.hsn.appointment.model import (
+    PatientAppointmentFlat,
+    PatientFlatForAppointmentList,
+    PatientAppointmentByIdDto,
+    PatientInfoDto,
+)
 from core.hsn.patient import Patient
 from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel, DrugDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
@@ -18,35 +30,38 @@ from utils import contragent_hasher
 
 
 async def build_patient_info(appointment: AppointmentDBModel):
-    appointment.patient.contragent.name = contragent_hasher.decrypt(appointment.patient.contragent.name)
+    appointment.patient.contragent.name = contragent_hasher.decrypt(
+        appointment.patient.contragent.name
+    )
     appointment.patient.contragent.last_name = contragent_hasher.decrypt(
-        appointment.patient.contragent.last_name)
+        appointment.patient.contragent.last_name
+    )
     if appointment.patient.contragent.patronymic:
         appointment.patient.contragent.patronymic = contragent_hasher.decrypt(
-            appointment.patient.contragent.patronymic)
+            appointment.patient.contragent.patronymic
+        )
 
     patient_info = PatientFlatForAppointmentList(
         name=appointment.patient.contragent.name,
         last_name=appointment.patient.contragent.last_name,
-        patronymic=appointment.patient.contragent.patronymic
+        patronymic=appointment.patient.contragent.patronymic,
     )
     return patient_info
 
 
 @SessionContext()
-async def hsn_appointment_by_id(
-        doctor_id: int,
-        appointment_id: int
-):
+async def hsn_appointment_by_id(doctor_id: int, appointment_id: int):
 
     query: Select = (
         select(AppointmentDBModel)
         .where(
             AppointmentDBModel.is_deleted.is_(False),
-            AppointmentDBModel.id == appointment_id)
+            AppointmentDBModel.id == appointment_id,
+        )
         .options(
-            selectinload(AppointmentDBModel.patient)
-            .selectinload(PatientDBModel.contragent)
+            selectinload(AppointmentDBModel.patient).selectinload(
+                PatientDBModel.contragent
+            )
         )
         .options(
             selectinload(AppointmentDBModel.block_complaint),
@@ -64,12 +79,13 @@ async def hsn_appointment_by_id(
         )
     )
 
-
     cursor: Result = await db_session.execute(query)
     appointment: AppointmentDBModel = cursor.scalars().first()
 
     if not appointment:
-        raise NotFoundException(message="Прием c id:{} не найден".format(appointment_id))
+        raise NotFoundException(
+            message="Прием c id:{} не найден".format(appointment_id)
+        )
 
     if appointment.doctor_id != doctor_id:
         raise ForbiddenException(
@@ -77,7 +93,6 @@ async def hsn_appointment_by_id(
         )
 
     patient_info = await build_patient_info(appointment)
-
 
     appointment_model = PatientAppointmentByIdDto(
         id=appointment.id,
@@ -87,7 +102,9 @@ async def hsn_appointment_by_id(
             name=patient_info.name,
             last_name=patient_info.last_name,
             patronymic=patient_info.patronymic or "",
-            birth_date=contragent_hasher.decrypt(appointment.patient.contragent.birth_date),
+            birth_date=contragent_hasher.decrypt(
+                appointment.patient.contragent.birth_date
+            ),
             gender=appointment.patient.gender,
             location=appointment.patient.location,
             district=appointment.patient.district,
@@ -119,15 +136,17 @@ async def hsn_appointment_by_id(
                         drug=MedicineGroupFlat(
                             id=mp.drug.id,
                             name=mp.drug.name,
-                            drug_group_name=mp.drug.drug_group.name
+                            drug_group_name=mp.drug.drug_group.name,
                         ),
                         dosa=mp.dosa,
-                        note=mp.note
-                    ) for mp in model.medicine_prescriptions
-                ]
-            ) for model in appointment.purposes
+                        note=mp.note,
+                    )
+                    for mp in model.medicine_prescriptions
+                ],
+            )
+            for model in appointment.purposes
         ],
-        status=appointment.status
+        status=appointment.status,
     )
 
     return appointment_model

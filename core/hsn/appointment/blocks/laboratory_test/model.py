@@ -5,7 +5,7 @@ from datetime import date as tdate
 
 
 class AppointmentLaboratoryTestBlock(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     id: int
 

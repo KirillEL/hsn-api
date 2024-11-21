@@ -7,11 +7,13 @@ from fastapi import Request
 @csv_router.get(
     "/all",
     responses={
-        '200': {
-            "content": {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}},
+        "200": {
+            "content": {
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            },
             "description": "CSV файл с пациентами",
         },
-        '400': {"model": ExceptionResponseSchema}
+        "400": {"model": ExceptionResponseSchema},
     },
 )
 async def get_all_appointments(request: Request):

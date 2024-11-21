@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 class Config(BaseSettings):
-    model_config = ConfigDict(extra='ignore')
+    model_config = ConfigDict(extra="ignore")
 
     ENV: Optional[str] = "development"
     DEBUG: Optional[bool] = True
@@ -24,7 +24,9 @@ class Config(BaseSettings):
     DB_PORT: int
     DB_NAME: str
     DB_URI: str
-    DB_TEST_URI: Optional[str] = "postgresql+asyncpg://postgres:Kirik2281@host.docker.internal:5432/hsn_db"
+    DB_TEST_URI: Optional[str] = (
+        "postgresql+asyncpg://postgres:Kirik2281@host.docker.internal:5432/hsn_db"
+    )
 
     ADMIN_PASS: str
 
@@ -49,7 +51,7 @@ def get_config(env_file):
     env = os.getenv("ENV", "local")
     config_type = {
         "local": LocalConfig(_env_file=env_file),
-        "prod": ProductionConfig(_env_file=env_file)
+        "prod": ProductionConfig(_env_file=env_file),
     }
     return config_type[env]
 

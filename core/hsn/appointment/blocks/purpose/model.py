@@ -27,7 +27,7 @@ class AppointmentPurpose(BaseModel):
 
 
 class MedicineGroupFlat(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     id: int
     name: str
@@ -52,7 +52,7 @@ class AppointmentPurposeFlat(BaseModel):
 
 
 class MedicineGroupData(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     id: int
     name: str

@@ -6,7 +6,11 @@ from fastapi.openapi.models import APIKey, APIKeyIn
 from fastapi.security.base import SecurityBase
 from loguru import logger
 
-from api.exceptions import CustomException, UnauthorizedException, UnauthorizedAdminException
+from api.exceptions import (
+    CustomException,
+    UnauthorizedException,
+    UnauthorizedAdminException,
+)
 
 
 class BasePermission(ABC):
@@ -32,7 +36,7 @@ class IsAuthenticatedAdministrator(BasePermission):
             return False
         user_roles = request.user.roles
         for role in user_roles:
-            if role.name == 'admin':
+            if role.name == "admin":
                 return True
 
         return False

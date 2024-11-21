@@ -100,13 +100,13 @@ class ForbiddenException(CustomException):
 
 class ValidationErrorTelegramSendMessageSchema:
     def __init__(
-            self,
-            message: str,
-            doctor_id: int,
-            doctor_name: str,
-            doctor_last_name: str,
-            date: str,
-            description: str | exc.SQLAlchemyError
+        self,
+        message: str,
+        doctor_id: int,
+        doctor_name: str,
+        doctor_last_name: str,
+        date: str,
+        description: str | exc.SQLAlchemyError,
     ):
         self.message = message
         self.doctor_id = doctor_id

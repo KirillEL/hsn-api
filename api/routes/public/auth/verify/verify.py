@@ -8,10 +8,7 @@ class AuthVerifyTokenRequest(BaseModel):
     token: str = Field(..., description="token")
 
 
-@auth_verify_router.post(
-    '',
-    summary="Верификация пользователя"
-)
+@auth_verify_router.post("", summary="Верификация пользователя")
 async def verify_user_route(body: AuthVerifyTokenRequest):
     jwt_decode(body.token)
     return Response(status_code=200)

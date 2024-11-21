@@ -11,4 +11,6 @@ class DeleteMedOrganizationContext(BaseModel):
 
 @SessionContext()
 async def hsn_med_organization_delete(context: DeleteMedOrganizationContext):
-    return await db_base_entity_delete(MedOrganizationDBModel, entity_id=context.id, user_id=context.user_id)
+    return await db_base_entity_delete(
+        MedOrganizationDBModel, entity_id=context.id, user_id=context.user_id
+    )

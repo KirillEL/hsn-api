@@ -9,7 +9,9 @@ from api.exceptions import NotFoundException, InternalServerException
 from api.exceptions.base import ForbiddenException
 from shared.db.db_session import db_session, SessionContext
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
+from shared.db.models.appointment.blocks.block_diagnose import (
+    AppointmentDiagnoseBlockDBModel,
+)
 from pydantic import BaseModel
 
 from shared.db.queries import db_query_entity_by_id
@@ -55,18 +57,23 @@ class HsnCommandAppointmentBlockDiagnoseCreateContext(BaseModel):
 
 @SessionContext()
 async def hsn_command_appointment_block_diagnose_create(
-        doctor_id: int,
-        context: HsnCommandAppointmentBlockDiagnoseCreateContext
+    doctor_id: int, context: HsnCommandAppointmentBlockDiagnoseCreateContext
 ) -> int:
-    appointment: AppointmentDBModel = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment: AppointmentDBModel = await db_query_entity_by_id(
+        AppointmentDBModel, context.appointment_id
+    )
 
     if not appointment:
-        raise NotFoundException(message="Прием c id:{} не найден".format(context.appointment_id))
+        raise NotFoundException(
+            message="Прием c id:{} не найден".format(context.appointment_id)
+        )
 
     if appointment.doctor_id != doctor_id:
-        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
+        raise ForbiddenException(
+            "У вас нет прав для доступа к приему с id:{}".format(context.appointment_id)
+        )
 
-    payload = context.model_dump(exclude={'appointment_id'})
+    payload = context.model_dump(exclude={"appointment_id"})
 
     query: ReturningInsert = (
         insert(AppointmentDiagnoseBlockDBModel)
@@ -78,9 +85,7 @@ async def hsn_command_appointment_block_diagnose_create(
 
     query_update_appointment: Update = (
         update(AppointmentDBModel)
-        .values(
-            block_diagnose_id=new_block_diagnose_id
-        )
+        .values(block_diagnose_id=new_block_diagnose_id)
         .where(AppointmentDBModel.id == context.appointment_id)
     )
     await db_session.execute(query_update_appointment)

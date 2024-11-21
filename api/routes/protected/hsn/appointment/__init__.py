@@ -22,4 +22,4 @@ appointment_router.include_router(block_clinical_condition_router)
 appointment_router.include_router(block_complaint_router)
 appointment_router.include_router(block_purpose_router)
 
-__all__ = ['appointment_router']
+__all__ = ["appointment_router"]

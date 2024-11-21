@@ -3,8 +3,8 @@ from shared.db.models.BASE import BaseDBModel
 
 
 class AppointmentClinicalConditionBlockDBModel(BaseDBModel):
-    __tablename__ = 'appointment_block_clinical_conditions'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "appointment_block_clinical_conditions"
+    __table_args__ = {"schema": "public"}
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 
@@ -35,6 +35,8 @@ class AppointmentClinicalConditionBlockDBModel(BaseDBModel):
     weight = Column(Float, nullable=False)  # Вес в кг
     bmi = Column(Float)  # ИМТ, вычисляемое
     systolic_bp = Column(Integer, nullable=False)  # Систолическое артериальное давление
-    diastolic_bp = Column(Integer, nullable=False)  # Диастолическое артериальное давление
+    diastolic_bp = Column(
+        Integer, nullable=False
+    )  # Диастолическое артериальное давление
     heart_rate = Column(Integer, nullable=False)  # ЧСС
     six_min_walk_distance = Column(String(40))

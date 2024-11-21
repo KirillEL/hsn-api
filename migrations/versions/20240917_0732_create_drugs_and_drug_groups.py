@@ -5,6 +5,7 @@ Revises: 9cebace410bd
 Create Date: 2024-09-17 07:32:49.032466
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,14 +13,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b80b256ac835'
-down_revision: Union[str, None] = '9cebace410bd'
+revision: str = "b80b256ac835"
+down_revision: Union[str, None] = "9cebace410bd"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute("""
+    op.execute(
+        """
             INSERT INTO public.drug_groups (id,name, is_deleted, created_by) VALUES
             (1,'b-АБ', false, 1),
             (2,'Глифозины', false, 1),
@@ -37,30 +39,32 @@ def upgrade() -> None:
             (14,'Ивабрадин', false, 1),
             (15,'Дизагреганты', false, 1),
             (16,'Сердечные гликозиды', false, 1);
-        """)
+        """
+    )
 
     # Получаем ID каждой группы для дальнейшего использования
     groups = {
-        'b-АБ': 1,
-        'Глифозины': 2,
-        'Статины': 3,
-        'АМКР': 4,
-        'АРНИ': 5,
-        'АПФ': 6,
-        'САРТАНЫ': 7,
-        'АСК': 8,
-        'ПОАК или АВК': 9,
-        'БМКК': 10,
-        'Нитраты': 11,
-        'Диуретики': 12,
-        'Антиаритмики': 13,
-        'Ивабрадин': 14,
-        'Дизагреганты': 15,
-        'Сердечные гликозиды': 16
+        "b-АБ": 1,
+        "Глифозины": 2,
+        "Статины": 3,
+        "АМКР": 4,
+        "АРНИ": 5,
+        "АПФ": 6,
+        "САРТАНЫ": 7,
+        "АСК": 8,
+        "ПОАК или АВК": 9,
+        "БМКК": 10,
+        "Нитраты": 11,
+        "Диуретики": 12,
+        "Антиаритмики": 13,
+        "Ивабрадин": 14,
+        "Дизагреганты": 15,
+        "Сердечные гликозиды": 16,
     }
 
     # Далее создаем препараты, связывая их с соответствующими группами
-    op.execute(f"""
+    op.execute(
+        f"""
             INSERT INTO public.drugs (name, drug_group_id, is_deleted) VALUES
             ('Бисопролол', {groups['b-АБ']}, false),
             ('Метопролол', {groups['b-АБ']}, false),
@@ -108,7 +112,8 @@ def upgrade() -> None:
             ('Другое', {groups['Дизагреганты']}, false),
             ('Дигоксин', {groups['Сердечные гликозиды']}, false),
             ('Другое', {groups['Сердечные гликозиды']}, false);
-        """)
+        """
+    )
 
 
 def downgrade() -> None:

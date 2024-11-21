@@ -15,9 +15,11 @@ class HsnCabinetUpdateContext(BaseModel):
 
 @SessionContext()
 async def hsn_cabinet_update(context: HsnCabinetUpdateContext):
-    payload = context.model_dump(exclude={'user_id'})
-    entity_db = await db_base_entity_update(db_model=CabinetDBModel,
-                                            entity_id=context.id,
-                                            user_id=context.user_id,
-                                            params=payload)
+    payload = context.model_dump(exclude={"user_id"})
+    entity_db = await db_base_entity_update(
+        db_model=CabinetDBModel,
+        entity_id=context.id,
+        user_id=context.user_id,
+        params=payload,
+    )
     return Cabinet.model_validate(entity_db)

@@ -23,18 +23,14 @@ DB_PASSWORD = os.environ.get("DB_PASSWORD")
 TEST_USER = os.environ.get("TEST_USER")
 TEST_PASSWORD = os.environ.get("TEST_PASSWORD")
 
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}"
-
-test_engine = create_async_engine(
-    DATABASE_URL,
-    poolclass=NullPool,
-    echo=False
+DATABASE_URL = (
+    f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}"
 )
 
+test_engine = create_async_engine(DATABASE_URL, poolclass=NullPool, echo=False)
+
 test_async_session_factory = sessionmaker(
-    test_engine,
-    class_=AsyncSession,
-    expire_on_commit=False
+    test_engine, class_=AsyncSession, expire_on_commit=False
 )
 
 
@@ -55,10 +51,7 @@ def event_loop(request):
 
 @pytest.fixture(scope="session")
 def test_user():
-    return {
-        "login": TEST_USER,
-        "password": TEST_PASSWORD
-    }
+    return {"login": TEST_USER, "password": TEST_PASSWORD}
 
 
 async def test_login(ac: AsyncClient, test_user):

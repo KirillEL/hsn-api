@@ -7,7 +7,8 @@ from pydantic import BaseModel, ValidationError
 from core.hsn.patient.model import (
     Patient,
     PatientResponse,
-    PatientAppointmentHistoryDto, PatientWithAppointmentHistoryResponse,
+    PatientAppointmentHistoryDto,
+    PatientWithAppointmentHistoryResponse,
 )
 from sqlalchemy import select, exc, desc, Result
 from sqlalchemy.orm import joinedload, selectinload

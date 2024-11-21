@@ -1,15 +1,18 @@
 from .router import block_clinical_condition_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from pydantic import BaseModel, Field
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock, \
-    hsn_command_appointment_block_clinical_condition_create, HsnCommandAppointmentBlockClinicalConditionCreateContext
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+    hsn_command_appointment_block_clinical_condition_create,
+    HsnCommandAppointmentBlockClinicalConditionCreateContext,
+)
 from typing import Optional
 from fastapi import Request
 
 
 class CreateBlockClinicalConditionRequestBody(BaseModel):
     appointment_id: int = Field(gt=0)
-    #heart_failure_om: Optional[bool] = Field(False)
+    # heart_failure_om: Optional[bool] = Field(False)
     orthopnea: Optional[bool] = Field(False)
     paroxysmal_nocturnal_dyspnea: Optional[bool] = Field(False)
     reduced_exercise_tolerance: Optional[bool] = Field(False)
@@ -42,17 +45,18 @@ class CreateBlockClinicalConditionRequestBody(BaseModel):
 
 
 @block_clinical_condition_router.post(
-    "/create",
-    response_model=int,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_clinical_condition_route(
-        request: Request,
-        body: CreateBlockClinicalConditionRequestBody
+    request: Request, body: CreateBlockClinicalConditionRequestBody
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
     doctor_id: int = request.user.doctor.id
-    context = HsnCommandAppointmentBlockClinicalConditionCreateContext(**body.model_dump())
-    return await hsn_command_appointment_block_clinical_condition_create(doctor_id, context)
+    context = HsnCommandAppointmentBlockClinicalConditionCreateContext(
+        **body.model_dump()
+    )
+    return await hsn_command_appointment_block_clinical_condition_create(
+        doctor_id, context
+    )

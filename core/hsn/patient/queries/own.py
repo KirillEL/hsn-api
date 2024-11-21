@@ -152,7 +152,6 @@ async def hsn_query_own_patients(
     if limit is not None:
         paginated_patients = paginated_patients[:limit]
 
-
     converted_patients = [
         await convert_to_patient_response(patient) for patient in paginated_patients
     ]

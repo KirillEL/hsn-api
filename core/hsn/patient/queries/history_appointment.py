@@ -11,23 +11,23 @@ from sqlalchemy import desc
 
 
 @SessionContext()
-async def hsn_query_patient_history_appointments(
-        doctor_id: int,
-        patient_id: int
-):
-    patient_model: PatientDBModel = await db_query_entity_by_id(PatientDBModel, patient_id)
+async def hsn_query_patient_history_appointments(doctor_id: int, patient_id: int):
+    patient_model: PatientDBModel = await db_query_entity_by_id(
+        PatientDBModel, patient_id
+    )
     doctor_model: DoctorDBModel = await db_query_entity_by_id(DoctorDBModel, doctor_id)
 
     if patient_model.cabinet_id != doctor_model.cabinet_id:
-        raise ForbiddenException("у вас нет прав для доступа к пациенту с id:{}".format(patient_model.id))
-
-    query = (
-        select(AppointmentDBModel.id.label("id"), AppointmentDBModel.date.label("date"))
-        .where(
-            AppointmentDBModel.patient_id == patient_model.id,
-            AppointmentDBModel.doctor_id == doctor_model.id,
-            AppointmentDBModel.is_deleted.is_(False)
+        raise ForbiddenException(
+            "у вас нет прав для доступа к пациенту с id:{}".format(patient_model.id)
         )
+
+    query = select(
+        AppointmentDBModel.id.label("id"), AppointmentDBModel.date.label("date")
+    ).where(
+        AppointmentDBModel.patient_id == patient_model.id,
+        AppointmentDBModel.doctor_id == doctor_model.id,
+        AppointmentDBModel.is_deleted.is_(False),
     )
     query = query.order_by(desc(AppointmentDBModel.created_at))
 
@@ -36,6 +36,9 @@ async def hsn_query_patient_history_appointments(
     if not appointments:
         return []
 
-    result = [PatientAppointmentHistoryDto(id=appointment[0], date=appointment[1]) for appointment in appointments]
+    result = [
+        PatientAppointmentHistoryDto(id=appointment[0], date=appointment[1])
+        for appointment in appointments
+    ]
 
     return result

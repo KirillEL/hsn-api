@@ -1,4 +1,14 @@
-from sqlalchemy import Column, Integer, String, BigInteger, Text, Boolean, text, DateTime, Date
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    BigInteger,
+    Text,
+    Boolean,
+    text,
+    DateTime,
+    Date,
+)
 from sqlalchemy.orm import relationship, foreign
 
 from .BASE import BaseDBModel
@@ -7,8 +17,8 @@ from . import UserDBModel
 
 class ContragentDBModel(BaseDBModel):
 
-    __tablename__ = 'contragents'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "contragents"
+    __table_args__ = {"schema": "public"}
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
@@ -19,5 +29,3 @@ class ContragentDBModel(BaseDBModel):
     dod = Column(String(255))
 
     patient = relationship("PatientDBModel", back_populates="contragent", uselist=False)
-
-

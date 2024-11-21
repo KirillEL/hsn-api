@@ -47,10 +47,7 @@ class ContragentUpdateContext(BaseModel):
 
 
 async def check_patient_exists_by_id(patient_id: int):
-    query = (
-        select(PatientDBModel)
-        .where(PatientDBModel.id == patient_id)
-    )
+    query = select(PatientDBModel).where(PatientDBModel.id == patient_id)
     cursor = await db_session.execute(query)
     patient = cursor.scalars().first()
     if patient is None:
@@ -60,30 +57,43 @@ async def check_patient_exists_by_id(patient_id: int):
 @SessionContext()
 async def hsn_command_patient_update_by_id(context: HsnCommandPatientUpdateContext):
     await check_patient_exists_by_id(context.patient_id)
-    patient_update_values = {key: value for key, value in context.dict().items() if
-                             key in PatientDBModel.__table__.columns and value is not None}
+    patient_update_values = {
+        key: value
+        for key, value in context.dict().items()
+        if key in PatientDBModel.__table__.columns and value is not None
+    }
     if patient_update_values:
         await db_session.execute(
-            update(PatientDBModel).values(**patient_update_values, editor_id=context.doctor_id).where(
-                PatientDBModel.id == context.patient_id))
+            update(PatientDBModel)
+            .values(**patient_update_values, editor_id=context.doctor_id)
+            .where(PatientDBModel.id == context.patient_id)
+        )
 
-    query_get_patient_contragent_id = (
-        select(PatientDBModel.contragent_id)
-        .where(PatientDBModel.id == context.patient_id)
+    query_get_patient_contragent_id = select(PatientDBModel.contragent_id).where(
+        PatientDBModel.id == context.patient_id
     )
     cursor = await db_session.execute(query_get_patient_contragent_id)
     contragent_id = cursor.scalar()
 
-    contragent_update_values = {key: contragent_hasher.encrypt(value) for key, value in context.dict().items() if
-                                key in ContragentDBModel.__table__.columns and value is not None}
+    contragent_update_values = {
+        key: contragent_hasher.encrypt(value)
+        for key, value in context.dict().items()
+        if key in ContragentDBModel.__table__.columns and value is not None
+    }
     if contragent_update_values:
-        await db_session.execute(update(ContragentDBModel).values(**contragent_update_values).where(
-            ContragentDBModel.id == contragent_id))
+        await db_session.execute(
+            update(ContragentDBModel)
+            .values(**contragent_update_values)
+            .where(ContragentDBModel.id == contragent_id)
+        )
 
     await db_session.commit()
 
-    result = await db_session.execute(select(PatientDBModel).options(selectinload(PatientDBModel.contragent)).where(
-        PatientDBModel.id == context.patient_id))
+    result = await db_session.execute(
+        select(PatientDBModel)
+        .options(selectinload(PatientDBModel.contragent))
+        .where(PatientDBModel.id == context.patient_id)
+    )
     updated_patient = result.scalars().first()
     if updated_patient:
         converted_patient = await convert_to_patient_response(updated_patient)

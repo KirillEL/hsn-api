@@ -1,6 +1,10 @@
-from core.hsn.appointment.blocks.base_model import AppointmentBlockBooleanTextFieldsResponse
+from core.hsn.appointment.blocks.base_model import (
+    AppointmentBlockBooleanTextFieldsResponse,
+)
 from shared.db.db_session import SessionContext
-from shared.db.models.appointment.blocks.block_diagnose import AppointmentDiagnoseBlockDBModel
+from shared.db.models.appointment.blocks.block_diagnose import (
+    AppointmentDiagnoseBlockDBModel,
+)
 from sqlalchemy import inspect
 
 
@@ -46,7 +50,7 @@ async def hsn_query_block_diagnose_fields():
 
     columns_list_sorted = sorted(
         [column for column in columns_list if column.name in display_names],
-        key=lambda col: list(display_names.keys()).index(col.name)
+        key=lambda col: list(display_names.keys()).index(col.name),
     )
 
     for index, column in enumerate(columns_list_sorted):
@@ -54,12 +58,18 @@ async def hsn_query_block_diagnose_fields():
             field_name = column.name
             if field_name not in exclude_fields:
                 displayName = display_names.get(field_name, "")
-                textName = f"{field_name}_note" if field_name + "_note" in display_names else ""
+                textName = (
+                    f"{field_name}_note"
+                    if field_name + "_note" in display_names
+                    else ""
+                )
 
-                field_responses.append(AppointmentBlockBooleanTextFieldsResponse(
-                    booleanName=field_name,
-                    displayName=displayName,
-                    textName=textName
-                ))
+                field_responses.append(
+                    AppointmentBlockBooleanTextFieldsResponse(
+                        booleanName=field_name,
+                        displayName=displayName,
+                        textName=textName,
+                    )
+                )
 
     return field_responses

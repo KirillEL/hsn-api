@@ -7,7 +7,7 @@ class AppointmentClinicalConditionBlock(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    #heart_failure_om: Optional[bool] = False
+    # heart_failure_om: Optional[bool] = False
     orthopnea: Optional[bool] = False
     paroxysmal_nocturnal_dyspnea: Optional[bool] = False
     reduced_exercise_tolerance: Optional[bool] = False

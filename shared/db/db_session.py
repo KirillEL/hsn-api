@@ -8,14 +8,14 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
-    async_scoped_session
+    async_scoped_session,
 )
 from sqlalchemy.orm import sessionmaker, Session, scoped_session
 
 from api.exceptions import InternalServerException
 from infra import config
 
-session_context: ContextVar[str] = ContextVar('session_context')
+session_context: ContextVar[str] = ContextVar("session_context")
 
 
 def get_session_context() -> str:
@@ -39,9 +39,7 @@ class RouteSession(Session):
 
 
 async_session_factory = sessionmaker(
-    class_=AsyncSession,
-    sync_session_class=RouteSession,
-    expire_on_commit=False
+    class_=AsyncSession, sync_session_class=RouteSession, expire_on_commit=False
 )
 
 db_session: Union[AsyncSession, async_scoped_session] = async_scoped_session(

@@ -4,4 +4,3 @@ from pydantic import BaseModel
 
 DBModelType = TypeVar("DBModelType", bound=BaseDBModel)
 ModelType = TypeVar("ModelType", bound=BaseModel)
-

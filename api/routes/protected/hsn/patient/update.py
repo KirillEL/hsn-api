@@ -9,8 +9,16 @@ from core.hsn.patient.model import PatientResponse
 from core.hsn.patient.queries.own import GenderType, LocationType, LgotaDrugsType
 from . import ModelValidator
 from .router import patient_router
-from api.exceptions import ExceptionResponseSchema, ValidationException, DoctorNotAssignedException
-from core.hsn.patient import Patient, hsn_command_patient_update_by_id, HsnCommandPatientUpdateContext
+from api.exceptions import (
+    ExceptionResponseSchema,
+    ValidationException,
+    DoctorNotAssignedException,
+)
+from core.hsn.patient import (
+    Patient,
+    hsn_command_patient_update_by_id,
+    HsnCommandPatientUpdateContext,
+)
 from fastapi import Request
 from pydantic import BaseModel, Field, model_validator, field_validator
 from typing import Optional
@@ -39,7 +47,6 @@ class UpdatePatientRequestBody(BaseModel):
     patient_note: Optional[str] = Field(None, max_length=1000)
 
 
-
 class UpdatePatientModelValidator(UpdatePatientRequestBody):
     @field_validator("birth_date", "dod")
     def date_format_validation(cls, v):
@@ -47,9 +54,16 @@ class UpdatePatientModelValidator(UpdatePatientRequestBody):
             try:
                 parsed_date = datetime.strptime(v, "%d.%m.%Y")
             except ValueError:
-                raise ValidationException(message="Дата должна быть в формате ДД.ММ.ГГГГ")
-            if cls.__fields__.get('last_hospitalization_date') and parsed_date > datetime.now():
-                raise ValidationException(message="Дата последней госпитализации не должна быть позже чем текущая дата")
+                raise ValidationException(
+                    message="Дата должна быть в формате ДД.ММ.ГГГГ"
+                )
+            if (
+                cls.__fields__.get("last_hospitalization_date")
+                and parsed_date > datetime.now()
+            ):
+                raise ValidationException(
+                    message="Дата последней госпитализации не должна быть позже чем текущая дата"
+                )
         return v
 
     @field_validator("phone")
@@ -66,21 +80,23 @@ class UpdatePatientModelValidator(UpdatePatientRequestBody):
             current_date = datetime.now()
             age = (current_date - birth_date).days / 365.25
             if age < 0:
-                raise ValidationException(message="Дата рождения не должна быть в будущем.")
+                raise ValidationException(
+                    message="Дата рождения не должна быть в будущем."
+                )
             if age > 100:
-                raise ValidationException(message="Возраст не должен превышать 100 лет.")
+                raise ValidationException(
+                    message="Возраст не должен превышать 100 лет."
+                )
         return self
 
 
 @patient_router.patch(
     "/{patient_id}",
     response_model=PatientResponse,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_patient_by_id_route(
-        request: Request,
-        patient_id: int,
-        body: UpdatePatientRequestBody
+    request: Request, patient_id: int, body: UpdatePatientRequestBody
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException
@@ -90,7 +106,7 @@ async def update_patient_by_id_route(
         context = HsnCommandPatientUpdateContext(
             doctor_id=request.user.doctor.id,
             patient_id=patient_id,
-            **validated_body.model_dump()
+            **validated_body.model_dump(),
         )
         return await hsn_command_patient_update_by_id(context)
     except ValidationException as ve:
@@ -100,9 +116,7 @@ async def update_patient_by_id_route(
             doctor_id=request.user.doctor.id,
             doctor_name=request.user.doctor.name,
             doctor_last_name=request.user.doctor.last_name,
-            date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            description=ve.message
+            date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            description=ve.message,
         )
-        tg_bot.send_message(
-            message=str(message_model)
-        )
+        tg_bot.send_message(message=str(message_model))

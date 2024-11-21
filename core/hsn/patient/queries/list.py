@@ -9,12 +9,7 @@ from sqlalchemy.orm import joinedload, selectinload
 
 @SessionContext()
 async def hsn_patient_list(limit: int = None, offset: int = None, pattern: str = None):
-    query = (
-        select(PatientDBModel)
-        .options(
-            selectinload(PatientDBModel.contragent)
-        )
-    )
+    query = select(PatientDBModel).options(selectinload(PatientDBModel.contragent))
 
     if hasattr(PatientDBModel, "is_deleted"):
         query = query.where(PatientDBModel.is_deleted.is_(False))

@@ -4,8 +4,11 @@ from pydantic import Field, BaseModel
 from fastapi import Request
 from starlette import status
 
-from core.hsn.appointment.blocks.purpose import AppointmentPurposeFlat, HsnAppointmentPurposeCreateContext, \
-    hsn_command_appointment_purpose_create
+from core.hsn.appointment.blocks.purpose import (
+    AppointmentPurposeFlat,
+    HsnAppointmentPurposeCreateContext,
+    hsn_command_appointment_purpose_create,
+)
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 
@@ -25,17 +28,15 @@ class CreateAppointmentPurposeRequestBody(BaseModel):
     "/create",
     response_model=int,
     responses={"400": {"model": ExceptionResponseSchema}},
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_appointment_purpose_route(
-        request: Request,
-        body: CreateAppointmentPurposeRequestBody
+    request: Request, body: CreateAppointmentPurposeRequestBody
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
     context = HsnAppointmentPurposeCreateContext(
-        doctor_id=request.user.doctor.id,
-        **body.model_dump()
+        doctor_id=request.user.doctor.id, **body.model_dump()
     )
     return await hsn_command_appointment_purpose_create(context)

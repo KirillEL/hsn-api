@@ -13,8 +13,7 @@ from shared.db.queries import db_query_entity_by_id
 
 @SessionContext()
 async def hsn_query_block_ekg_by_appointment_id(
-        doctor_id: int,
-        appointment_id: int
+    doctor_id: int, appointment_id: int
 ) -> AppointmentEkgBlock | None:
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
 
@@ -22,7 +21,9 @@ async def hsn_query_block_ekg_by_appointment_id(
         raise NotFoundException("Прием с id:{} не найден".format(appointment_id))
 
     if appointment.doctor_id != doctor_id:
-        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(appointment_id))
+        raise ForbiddenException(
+            "У вас нет прав для доступа к приему с id:{}".format(appointment_id)
+        )
 
     query: Select = (
         select(AppointmentDBModel.block_ekg_id)
@@ -35,9 +36,8 @@ async def hsn_query_block_ekg_by_appointment_id(
     if not block_ekg_id:
         return None
 
-    query_get_block: Select = (
-        select(AppointmentEkgBlockDBModel)
-        .where(AppointmentEkgBlockDBModel.id == block_ekg_id)
+    query_get_block: Select = select(AppointmentEkgBlockDBModel).where(
+        AppointmentEkgBlockDBModel.id == block_ekg_id
     )
     cursor: Result = await db_session.execute(query_get_block)
     block_ekg: AppointmentEkgBlockDBModel = cursor.scalars().first()

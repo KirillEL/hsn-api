@@ -11,17 +11,18 @@ from shared.db.queries import db_query_entity_by_id
 
 
 @SessionContext()
-async def hsn_query_purposes_by_appointment_id(
-        doctor_id: int,
-        appointment_id: int
-):
+async def hsn_query_purposes_by_appointment_id(doctor_id: int, appointment_id: int):
     results_dict = {}
     appointment = await db_query_entity_by_id(AppointmentDBModel, appointment_id)
     if not appointment:
-        raise NotFoundException(message="Прием c id: {} не найден".format(appointment_id))
+        raise NotFoundException(
+            message="Прием c id: {} не найден".format(appointment_id)
+        )
 
     if appointment.doctor_id != doctor_id:
-        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(appointment_id))
+        raise ForbiddenException(
+            "У вас нет прав для доступа к приему с id:{}".format(appointment_id)
+        )
 
     query = (
         select(AppointmentPurposeDBModel)
@@ -46,7 +47,7 @@ async def hsn_query_purposes_by_appointment_id(
                     "id": med_prescription.drug.id,
                     "dosa": med_prescription.dosa,
                     "note": med_prescription.note or "",
-                    "name": med_prescription.drug.name
+                    "name": med_prescription.drug.name,
                 }
 
     return results_dict

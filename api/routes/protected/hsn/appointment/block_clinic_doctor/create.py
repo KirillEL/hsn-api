@@ -1,10 +1,20 @@
 from typing import Optional
 
-from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException, ValidationException
-from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType, LgotaDrugsType
+from api.exceptions import (
+    ExceptionResponseSchema,
+    DoctorNotAssignedException,
+    ValidationException,
+)
+from core.hsn.appointment.blocks.clinic_doctor.model import (
+    DisabilityType,
+    LgotaDrugsType,
+)
 from .router import block_clinic_doctor_router
-from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock, \
-    hsn_command_appointment_block_clinic_doctor_create, HsnCommandAppointmentBlockClinicDoctorCreateContext
+from core.hsn.appointment.blocks.clinic_doctor import (
+    AppointmentClinicDoctorBlock,
+    hsn_command_appointment_block_clinic_doctor_create,
+    HsnCommandAppointmentBlockClinicDoctorCreateContext,
+)
 from pydantic import BaseModel, Field, field_validator
 from datetime import date as tdate, datetime
 from fastapi import Request
@@ -20,7 +30,7 @@ class CreateBlockClinicDoctorRequestBody(BaseModel):
     count_hospitalization: Optional[int] = Field(None, gt=0)
     last_hospitalization_date: Optional[tdate] = Field(None)
 
-    @field_validator('last_hospitalization_date')
+    @field_validator("last_hospitalization_date")
     def check_date_format(cls, value):
         try:
             datetime.strptime(value, "%d.%m.%Y")
@@ -30,17 +40,14 @@ class CreateBlockClinicDoctorRequestBody(BaseModel):
 
 
 @block_clinic_doctor_router.post(
-    "/create",
-    response_model=int,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    "/create", response_model=int, responses={"400": {"model": ExceptionResponseSchema}}
 )
 async def create_block_clinic_doctor_route(
-        request: Request,
-        body: CreateBlockClinicDoctorRequestBody
+    request: Request, body: CreateBlockClinicDoctorRequestBody
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
     context = HsnCommandAppointmentBlockClinicDoctorCreateContext(**body.model_dump())
     doctor_id: int = request.user.doctor.id
-    return await hsn_command_appointment_block_clinic_doctor_create(doctor_id,context)
+    return await hsn_command_appointment_block_clinic_doctor_create(doctor_id, context)

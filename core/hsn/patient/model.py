@@ -95,7 +95,7 @@ class PatientFlat(BaseModel):
 
 
 class PatientAppointmentHistoryDto(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     id: int
     date: str
@@ -184,7 +184,6 @@ class PatientWithAppointmentHistoryResponse(PatientWithoutFullNameResponse):
     appointment_histories: Optional[list[PatientAppointmentHistoryDto]] = []
 
 
-
 class PatientAvailableColumnsResponse(BaseModel):
     title: str
     value: str
@@ -197,7 +196,9 @@ class TableColumns(BaseModel):
 
 
 class PatientTableColumns(BaseModel):
-    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True, extra='ignore')
+    model_config = ConfigDict(
+        from_attributes=True, arbitrary_types_allowed=True, extra="ignore"
+    )
 
     id: int
     user_id: int
@@ -205,7 +206,7 @@ class PatientTableColumns(BaseModel):
 
 
 class PatientTableResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
     id: int
     table_columns: list[TableColumns]
 
@@ -213,7 +214,6 @@ class PatientTableResponse(BaseModel):
 class DictPatientResponse(TypedDict):
     data: List[PatientResponse | PatientWithoutFullNameResponse]
     total: int
-
 
 
 class PatientAppointmentHistoryResponse(PatientAppointmentHistoryDto):

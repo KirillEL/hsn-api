@@ -16,10 +16,7 @@ class HsnCabinetCreateContext(BaseModel):
 
 
 async def check_med_organization_exists(med_id: int):
-    query = (
-        select(MedOrganizationDBModel)
-        .where(MedOrganizationDBModel.id == med_id)
-    )
+    query = select(MedOrganizationDBModel).where(MedOrganizationDBModel.id == med_id)
     result = await db_session.execute(query)
     med_organization = result.scalars().first()
     if med_organization is None:
@@ -29,19 +26,16 @@ async def check_med_organization_exists(med_id: int):
 @SessionContext()
 async def hsn_cabinet_create(context: HsnCabinetCreateContext) -> Cabinet:
     await check_med_organization_exists(context.med_id)
-    payload = context.model_dump(exclude={'user_id'})
+    payload = context.model_dump(exclude={"user_id"})
 
     query = (
         insert(CabinetDBModel)
-        .values(
-            **payload,
-            author_id=context.user_id
-        )
+        .values(**payload, author_id=context.user_id)
         .returning(CabinetDBModel)
     )
     cursor = await db_session.execute(query)
     new_cabinet = cursor.scalars().first()
-    
+
     try:
         await db_session.commit()
         logger.debug(f"New Cabinet created: {new_cabinet.id}")

@@ -11,11 +11,11 @@ class Cabinet(BaseModel):
 
     id: int
     number: str
-    med_id: Optional[int] = None 
+    med_id: Optional[int] = None
 
     is_deleted: bool
     created_at: datetime
-    
+
     created_by: UserAuthor
 
     updated_at: Optional[datetime] = None
@@ -32,6 +32,7 @@ class CabinetFlat(BaseModel):
     number: str
     med_id: int
     is_deleted: bool
+
 
 class CabinetWithMedOrganizationFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True)

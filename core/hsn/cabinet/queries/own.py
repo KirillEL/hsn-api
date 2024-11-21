@@ -14,10 +14,10 @@ async def hsn_cabinet_own(doctor_id: int):
         .options(joinedload(DoctorDBModel.cabinet))
         .where(DoctorDBModel.id == doctor_id)
     )
-    logger.info(f'query: {query}')
+    logger.info(f"query: {query}")
     cursor = await db_session.execute(query)
     doctor = cursor.scalars().first()
-    logger.info(f'doctor: {doctor.__dict__}')
+    logger.info(f"doctor: {doctor.__dict__}")
     cabinet = doctor.cabinet
-    logger.info(f'cabinet: {cabinet.__dict__}')
+    logger.info(f"cabinet: {cabinet.__dict__}")
     return Cabinet.model_validate(cabinet)

@@ -7,14 +7,14 @@ from .commands.delete import CabinetDeleteContext, hsn_cabinet_delete
 from .queries.own import hsn_cabinet_own
 
 __all__ = [
-    'HsnCabinetCreateContext',
-    'hsn_query_cabinet_list',
-    'hsn_query_cabinet_by_id',
-    'Cabinet',
-    'hsn_cabinet_create',
-    'CabinetDeleteContext',
-    'hsn_cabinet_delete',
-    'HsnCabinetUpdateContext',
-    'hsn_cabinet_update',
-    'hsn_cabinet_own'
+    "HsnCabinetCreateContext",
+    "hsn_query_cabinet_list",
+    "hsn_query_cabinet_by_id",
+    "Cabinet",
+    "hsn_cabinet_create",
+    "CabinetDeleteContext",
+    "hsn_cabinet_delete",
+    "HsnCabinetUpdateContext",
+    "hsn_cabinet_update",
+    "hsn_cabinet_own",
 ]

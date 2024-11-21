@@ -9,7 +9,9 @@ from api.exceptions import NotFoundException, AppointmentNotBelongsToUserExcepti
 from api.exceptions.base import ForbiddenException
 from core.hsn.appointment.blocks.clinic_doctor import AppointmentClinicDoctorBlock
 from shared.db.models.appointment.appointment import AppointmentDBModel
-from shared.db.models.appointment.blocks.block_clinic_doctor import AppointmentBlockClinicDoctorDBModel
+from shared.db.models.appointment.blocks.block_clinic_doctor import (
+    AppointmentBlockClinicDoctorDBModel,
+)
 from shared.db.db_session import db_session, SessionContext
 from shared.db.queries import db_query_entity_by_id
 
@@ -27,18 +29,23 @@ class HsnBlockClinicDoctorUpdateContext(BaseModel):
 
 @SessionContext()
 async def hsn_block_clinic_doctor_update(
-        doctor_id: int,
-        context: HsnBlockClinicDoctorUpdateContext
+    doctor_id: int, context: HsnBlockClinicDoctorUpdateContext
 ) -> AppointmentClinicDoctorBlock:
-    appointment = await db_query_entity_by_id(AppointmentDBModel, context.appointment_id)
+    appointment = await db_query_entity_by_id(
+        AppointmentDBModel, context.appointment_id
+    )
 
     if not appointment:
-        raise NotFoundException("Прием с id:{} не найден".format(context.appointment_id))
+        raise NotFoundException(
+            "Прием с id:{} не найден".format(context.appointment_id)
+        )
 
     if appointment.doctor_id != doctor_id:
-        raise ForbiddenException("У вас нет прав для доступа к приему с id:{}".format(context.appointment_id))
+        raise ForbiddenException(
+            "У вас нет прав для доступа к приему с id:{}".format(context.appointment_id)
+        )
 
-    payload = context.model_dump(exclude={'appointment_id'}, exclude_none=True)
+    payload = context.model_dump(exclude={"appointment_id"}, exclude_none=True)
 
     query: Select = (
         select(AppointmentDBModel.block_clinic_doctor_id)
@@ -49,7 +56,9 @@ async def hsn_block_clinic_doctor_update(
     block_clinic_doctor_id: int = cursor.scalar()
 
     if not block_clinic_doctor_id:
-        raise NotFoundException(message="У приема с id:{} нет данного блока".format(context.appointment_id))
+        raise NotFoundException(
+            message="У приема с id:{} нет данного блока".format(context.appointment_id)
+        )
 
     query_update: ReturningUpdate = (
         update(AppointmentBlockClinicDoctorDBModel)
@@ -59,6 +68,8 @@ async def hsn_block_clinic_doctor_update(
     )
     cursor: Result = await db_session.execute(query_update)
     await db_session.commit()
-    update_block_clinic_doctor: AppointmentBlockClinicDoctorDBModel = cursor.scalars().first()
+    update_block_clinic_doctor: AppointmentBlockClinicDoctorDBModel = (
+        cursor.scalars().first()
+    )
 
     return AppointmentClinicDoctorBlock.model_validate(update_block_clinic_doctor)

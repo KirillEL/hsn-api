@@ -5,13 +5,15 @@ from sqlalchemy.ext.asyncio import AsyncResult
 from api.exceptions import InternalServerException, NotFoundException
 from api.exceptions.base import UnprocessableEntityException
 from shared.db.db_session import db_session, SessionContext
-from shared.db.models.appointment.appointment import AppointmentDBModel, AppointmentStatus
+from shared.db.models.appointment.appointment import (
+    AppointmentDBModel,
+    AppointmentStatus,
+)
 
 
 @SessionContext()
 async def hsn_query_appointment_status(
-        doctor_id: int,
-        patient_appointment_id: int
+    doctor_id: int, patient_appointment_id: int
 ) -> AppointmentStatus:
     query: Select = (
         select(AppointmentDBModel)

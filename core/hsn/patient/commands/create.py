@@ -5,7 +5,12 @@ from sqlalchemy.sql.dml import ReturningInsert
 from shared.redis import redis_service
 from tg_api import tg_bot
 from api.exceptions.base import UnprocessableEntityException
-from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientWithoutFullNameResponse
+from core.hsn.patient.model import (
+    Contragent,
+    PatientFlat,
+    PatientResponse,
+    PatientWithoutFullNameResponse,
+)
 from shared.db.db_session import db_session, SessionContext
 from pydantic import BaseModel, Field, ValidationError
 from typing import Optional
@@ -17,7 +22,12 @@ from datetime import date as tdate, datetime
 from core.user.queries.me import hsn_user_get_me
 from loguru import logger
 from utils.hash_helper import contragent_hasher
-from api.exceptions import BadRequestException, ValidationException, NotFoundException, InternalServerException
+from api.exceptions import (
+    BadRequestException,
+    ValidationException,
+    NotFoundException,
+    InternalServerException,
+)
 from sqlalchemy.orm import joinedload, selectinload
 
 
@@ -46,21 +56,26 @@ class HsnPatientCreateContext(BaseModel):
     patient_note: Optional[str] = None
 
 
-async def convert_to_patient_response(patient,
-                                      type: str = "full_name") -> PatientResponse | PatientWithoutFullNameResponse:
+async def convert_to_patient_response(
+    patient, type: str = "full_name"
+) -> PatientResponse | PatientWithoutFullNameResponse:
 
     decrypted_name = contragent_hasher.decrypt(patient.contragent.name)
     decrypted_last_name = contragent_hasher.decrypt(patient.contragent.last_name)
     decrypted_patronymic = contragent_hasher.decrypt(patient.contragent.patronymic)
 
     decrypted_birth_date_str = contragent_hasher.decrypt(patient.contragent.birth_date)
-    decrypted_birth_date = datetime.strptime(decrypted_birth_date_str, "%d.%m.%Y").strftime("%d.%m.%Y")
+    decrypted_birth_date = datetime.strptime(
+        decrypted_birth_date_str, "%d.%m.%Y"
+    ).strftime("%d.%m.%Y")
 
     decrypted_dod = None
     if patient.contragent.dod:
         decrypted_dod_str = contragent_hasher.decrypt(patient.contragent.dod)
         if decrypted_dod_str:  # Ensure the string is not empty
-            decrypted_dod = datetime.strptime(decrypted_dod_str, "%d.%m.%Y").strftime("%d.%m.%Y")
+            decrypted_dod = datetime.strptime(decrypted_dod_str, "%d.%m.%Y").strftime(
+                "%d.%m.%Y"
+            )
 
     full_name = f"{decrypted_last_name} {decrypted_name}"
     if decrypted_patronymic:
@@ -68,7 +83,11 @@ async def convert_to_patient_response(patient,
 
     birth_date_obj = datetime.strptime(decrypted_birth_date, "%d.%m.%Y").date()
     today = tdate.today()
-    age = today.year - birth_date_obj.year - ((today.month, today.day) < (birth_date_obj.month, birth_date_obj.day))
+    age = (
+        today.year
+        - birth_date_obj.year
+        - ((today.month, today.day) < (birth_date_obj.month, birth_date_obj.day))
+    )
 
     if type == "full_name":
         patient_response = PatientResponse(
@@ -122,12 +141,19 @@ async def convert_to_patient_response(patient,
 
 async def create_contragent(contragent_payload: dict[str, any]) -> int:
     hashed_payload = {
-        'name': contragent_hasher.encrypt(str(contragent_payload['name'])),
-        'last_name': contragent_hasher.encrypt(str(contragent_payload['last_name'])),
-        'patronymic': contragent_hasher.encrypt(
-            str(contragent_payload['patronymic']) if contragent_payload['patronymic'] else ""),
-        'birth_date': contragent_hasher.encrypt(str(contragent_payload['birth_date'])),
-        'dod': contragent_hasher.encrypt(str(contragent_payload['dod'])) if contragent_payload['dod'] else ""
+        "name": contragent_hasher.encrypt(str(contragent_payload["name"])),
+        "last_name": contragent_hasher.encrypt(str(contragent_payload["last_name"])),
+        "patronymic": contragent_hasher.encrypt(
+            str(contragent_payload["patronymic"])
+            if contragent_payload["patronymic"]
+            else ""
+        ),
+        "birth_date": contragent_hasher.encrypt(str(contragent_payload["birth_date"])),
+        "dod": (
+            contragent_hasher.encrypt(str(contragent_payload["dod"]))
+            if contragent_payload["dod"]
+            else ""
+        ),
     }
     query = (
         insert(ContragentDBModel)
@@ -142,20 +168,27 @@ async def create_contragent(contragent_payload: dict[str, any]) -> int:
 
 
 @SessionContext()
-async def hsn_patient_create(
-        context: HsnPatientCreateContext
-) -> PatientResponse:
-    logger.info(f'Начало создания пациента')
+async def hsn_patient_create(context: HsnPatientCreateContext) -> PatientResponse:
+    logger.info(f"Начало создания пациента")
     _ = await redis_service.delete_data(f"patients:doctor:{context.doctor_id}")
     patient_payload = context.model_dump(
-        exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'doctor_id'})
+        exclude={
+            "name",
+            "last_name",
+            "patronymic",
+            "birth_date",
+            "dod",
+            "cabinet_id",
+            "doctor_id",
+        }
+    )
 
     contragent_payload: dict[str, any] = {
-        'name': context.name,
-        'last_name': context.last_name,
-        'patronymic': context.patronymic if context.patronymic else "",
-        'birth_date': context.birth_date,
-        'dod': context.dod if context.dod else None
+        "name": context.name,
+        "last_name": context.last_name,
+        "patronymic": context.patronymic if context.patronymic else "",
+        "birth_date": context.birth_date,
+        "dod": context.dod if context.dod else None,
     }
     new_contragent_id: int = await create_contragent(contragent_payload)
 
@@ -165,7 +198,7 @@ async def hsn_patient_create(
             author_id=context.doctor_id,
             cabinet_id=context.cabinet_id,
             **patient_payload,
-            contragent_id=new_contragent_id
+            contragent_id=new_contragent_id,
         )
         .returning(PatientDBModel.id)
     )
@@ -175,7 +208,6 @@ async def hsn_patient_create(
     patient_id: int = cursor.scalar()
     logger.info("CREATED PATIENT ID: {}".format(patient_id))
 
-
     query_get: Select = (
         select(PatientDBModel)
         .options(selectinload(PatientDBModel.contragent))
@@ -184,7 +216,6 @@ async def hsn_patient_create(
 
     cursor: Result = await db_session.execute(query_get)
     patient: PatientDBModel = cursor.scalars().first()
-
 
     patient_response = await convert_to_patient_response(patient)
 

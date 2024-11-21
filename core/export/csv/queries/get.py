@@ -20,37 +20,40 @@ async def export_patients(request: Request, doctor_id: int):
     output = StringIO()
     writer = csv.writer(output)
 
-    writer.writerow(["id",
-                     "ФИО",
-                     "Пол",
-                     "Возраст",
-                     "Дата рождения",
-                     "Дата смерти",
-                     "Локация",
-                     "Район",
-                     "Адрес",
-                     "Телефон"
-                     ])
+    writer.writerow(
+        [
+            "id",
+            "ФИО",
+            "Пол",
+            "Возраст",
+            "Дата рождения",
+            "Дата смерти",
+            "Локация",
+            "Район",
+            "Адрес",
+            "Телефон",
+        ]
+    )
 
     for patient in patients:
-        writer.writerow([
-            patient.id,
-            patient.full_name,
-            patient.age,
-            patient.birth_date,
-            patient.dod,
-            patient.location,
-            patient.district,
-            patient.address,
-            patient.phone
-        ])
+        writer.writerow(
+            [
+                patient.id,
+                patient.full_name,
+                patient.age,
+                patient.birth_date,
+                patient.dod,
+                patient.location,
+                patient.district,
+                patient.address,
+                patient.phone,
+            ]
+        )
 
     output.seek(0)
 
     return StreamingResponse(
         output,
         media_type="text/csv",
-        headers={
-            "Content-Disposition": "attachment; filename=patients.csv"
-        }
+        headers={"Content-Disposition": "attachment; filename=patients.csv"},
     )

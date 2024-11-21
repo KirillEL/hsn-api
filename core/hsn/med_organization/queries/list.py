@@ -6,10 +6,12 @@ from core.hsn.med_organization import MedOrganization
 
 
 @SessionContext()
-async def hsn_query_med_organization_list(limit: int = None, offset: int = None, pattern: str = None):
+async def hsn_query_med_organization_list(
+    limit: int = None, offset: int = None, pattern: str = None
+):
     query = select(MedOrganizationDBModel)
 
-    if hasattr(MedOrganizationDBModel, 'is_deleted'):
+    if hasattr(MedOrganizationDBModel, "is_deleted"):
         query = query.where(MedOrganizationDBModel.is_deleted.is_(False))
 
     if limit is not None:

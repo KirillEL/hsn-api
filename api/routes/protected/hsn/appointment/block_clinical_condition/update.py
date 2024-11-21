@@ -2,9 +2,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock, \
-    HsnCommandBlockClinicalConditionUpdateContext, hsn_command_block_clinical_condition_update
-from core.hsn.appointment.blocks.clinical_condition.model import AppointmentClinicalConditionBlockResponse
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+    HsnCommandBlockClinicalConditionUpdateContext,
+    hsn_command_block_clinical_condition_update,
+)
+from core.hsn.appointment.blocks.clinical_condition.model import (
+    AppointmentClinicalConditionBlockResponse,
+)
 from .router import block_clinical_condition_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request
@@ -46,19 +51,16 @@ class UpdateBlockClinicalConditionRequestBody(BaseModel):
 @block_clinical_condition_router.patch(
     "/update/{appointment_id}",
     response_model=AppointmentClinicalConditionBlockResponse,
-    responses={"400": {"model": ExceptionResponseSchema}}
+    responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_block_clinical_condition_route(
-        request: Request,
-        appointment_id: int,
-        body: UpdateBlockClinicalConditionRequestBody
+    request: Request, appointment_id: int, body: UpdateBlockClinicalConditionRequestBody
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException
 
     context = HsnCommandBlockClinicalConditionUpdateContext(
-        appointment_id=appointment_id,
-        **body.model_dump()
+        appointment_id=appointment_id, **body.model_dump()
     )
     doctor_id: int = request.user.doctor.id
-    return await hsn_command_block_clinical_condition_update(doctor_id,context)
+    return await hsn_command_block_clinical_condition_update(doctor_id, context)

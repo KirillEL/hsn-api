@@ -2,11 +2,13 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from core.hsn.appointment.blocks.clinical_condition import AppointmentClinicalConditionBlock
+from core.hsn.appointment.blocks.clinical_condition import (
+    AppointmentClinicalConditionBlock,
+)
 
 
 class AppointmentComplaintBlock(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
     id: int
     has_fatigue: Optional[bool] = False
@@ -45,5 +47,7 @@ class AppointmentComplaintWithClinicalCondition(BaseModel):
     block_clinical_condition: Optional[AppointmentClinicalConditionBlock] = None
 
 
-class AppointmentComplaintWithClinicalConditionResponse(AppointmentComplaintWithClinicalCondition):
+class AppointmentComplaintWithClinicalConditionResponse(
+    AppointmentComplaintWithClinicalCondition
+):
     pass

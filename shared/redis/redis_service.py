@@ -15,11 +15,9 @@ class RedisService:
         logger.debug("Connecting to Redis: {}".format(self._redis_url))
         self._redis_client = await from_url(self._redis_url, decode_responses=True)
 
-
     async def close(self):
         if self._redis_client:
             await self._redis_client.close()
-
 
     async def get_data(self, key: str):
         if not self._redis_client:
@@ -28,7 +26,9 @@ class RedisService:
         data = await self._redis_client.get(key)
         return json.loads(data) if data else None
 
-    async def set_data_with_ttl(self, key: str, value: dict | list[dict], expire: int = 300):
+    async def set_data_with_ttl(
+        self, key: str, value: dict | list[dict], expire: int = 300
+    ):
         if not self._redis_client:
             await self.connect()
 
