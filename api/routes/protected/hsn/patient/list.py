@@ -25,9 +25,10 @@ class SortParams(BaseModel):
 class GetOwnPatientsQueryParams(BaseModel):
     limit: Optional[int] = None
     offset: Optional[int] = None
-    full_name: Optional[List[str]] = None
-    gender: Optional[List[str]] = None
-    location: Optional[List[str]] = None
+    name: Optional[str] = None
+    last_name: Optional[str] = None
+    patronymic: Optional[str] = None
+    birth: Optional[str] = None
     columnKey: Optional[str] = None
     order: Optional[str] = None
 
@@ -42,18 +43,20 @@ async def get_own_patients_route(
         request: Request,
         limit: Optional[int] = Query(None),
         offset: Optional[int] = Query(None),
-        full_name: Optional[List[str]] = Query(None, alias='filters[full_name][0]'),
-        gender: Optional[List[str]] = Query(None, alias="filters[gender][0]"),
-        location: Optional[List[str]] = Query(None, alias="filters[location][0]"),
+        name: Optional[str] = Query(None),
+        last_name: Optional[str] = Query(None),
+        patronymic: Optional[str] = Query(None),
+        birth: Optional[str] = Query(None),
         columnKey: Optional[str] = Query(None, alias="sortParams[columnKey]"),
         order: Optional[str] = Query(None, alias="sortParams[order]")
 ):
     params = GetOwnPatientsQueryParams(
         limit=limit,
         offset=offset,
-        gender=gender,
-        full_name=full_name,
-        location=location,
+        name=name,
+        last_name=last_name,
+        patronymic=patronymic,
+        birth=birth,
         columnKey=columnKey,
         order=order
     )
@@ -65,9 +68,10 @@ async def get_own_patients_route(
         request.user.doctor.id,
         limit=params.limit,
         offset=params.offset,
-        gender=params.gender,
-        full_name=params.full_name,
-        location=params.location,
+        name=params.name,
+        last_name=params.last_name,
+        patronymic=params.patronymic,
+        birth=params.birth,
         columnKey=params.columnKey,
         order=params.order
     )

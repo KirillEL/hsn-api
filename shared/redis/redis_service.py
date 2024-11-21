@@ -34,5 +34,17 @@ class RedisService:
 
         await self._redis_client.set(key, json.dumps(value), ex=expire)
 
+    async def delete_data(self, key: str):
+        """
+        Удаляет данные из Redis по указанному ключу.
+        :param key: Ключ для удаления.
+        """
+        if not self._redis_client:
+            await self.connect()
+
+        deleted = await self._redis_client.delete(key)
+        logger.debug(f"Deleted {deleted} entries for key: {key}")
+        return deleted
+
 
 redis_service: RedisService = RedisService()

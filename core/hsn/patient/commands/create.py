@@ -2,6 +2,7 @@ from asyncpg import InternalServerError
 from sqlalchemy.ext.asyncio import AsyncResult
 from sqlalchemy.sql.dml import ReturningInsert
 
+from shared.redis import redis_service
 from tg_api import tg_bot
 from api.exceptions.base import UnprocessableEntityException
 from core.hsn.patient.model import Contragent, PatientFlat, PatientResponse, PatientWithoutFullNameResponse
@@ -47,6 +48,7 @@ class HsnPatientCreateContext(BaseModel):
 
 async def convert_to_patient_response(patient,
                                       type: str = "full_name") -> PatientResponse | PatientWithoutFullNameResponse:
+
     decrypted_name = contragent_hasher.decrypt(patient.contragent.name)
     decrypted_last_name = contragent_hasher.decrypt(patient.contragent.last_name)
     decrypted_patronymic = contragent_hasher.decrypt(patient.contragent.patronymic)
@@ -144,6 +146,7 @@ async def hsn_patient_create(
         context: HsnPatientCreateContext
 ) -> PatientResponse:
     logger.info(f'Начало создания пациента')
+    _ = await redis_service.delete_data(f"patients:doctor:{context.doctor_id}")
     patient_payload = context.model_dump(
         exclude={'name', 'last_name', 'patronymic', 'birth_date', 'dod', 'cabinet_id', 'doctor_id'})
 
