@@ -31,7 +31,7 @@ class PatientDBModel(BaseDBModel):
     district = Column(String(255), nullable=False)
     address = Column(String(255), nullable=False)
     phone = Column(String(20), nullable=False)
-    clinic = Column(String(255), nullable=False)
+    clinic = Column(String(255), nullable=True)
 
     referring_doctor = Column(Text)
     referring_clinic_organization = Column(Text)

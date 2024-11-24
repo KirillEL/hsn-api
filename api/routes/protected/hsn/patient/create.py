@@ -25,7 +25,7 @@ from pydantic import (
 )
 
 
-class CreatePatientRequestBody(BaseModel):
+class CreatePatientRequest(BaseModel):
     name: str = Field(max_length=255)
     last_name: str = Field(max_length=255)
     patronymic: Optional[str] = Field(None, max_length=255)
@@ -36,7 +36,7 @@ class CreatePatientRequestBody(BaseModel):
     district: str = Field(max_length=255)
     address: str = Field(max_length=255)
     phone: str
-    clinic: str
+    clinic: Optional[str] = Field(None, max_length=255)
     referring_doctor: Optional[str] = Field(None)
     referring_clinic_organization: Optional[str] = Field(None)
     disability: DisabilityType = Field(DisabilityType.NO.value)
@@ -49,7 +49,7 @@ class CreatePatientRequestBody(BaseModel):
     patient_note: Optional[str] = Field(None, max_length=1000)
 
 
-class ModelValidator(CreatePatientRequestBody):
+class ModelValidator(CreatePatientRequest):
     @field_validator("birth_date", "dod")
     def date_format_validation(cls, v):
         if v is not None:
@@ -94,7 +94,7 @@ class ModelValidator(CreatePatientRequestBody):
     summary="Создание нового пациента",
     status_code=status.HTTP_201_CREATED,
 )
-async def patient_create_route(request: Request, body: CreatePatientRequestBody):
+async def patient_create_route(request: Request, body: CreatePatientRequest):
     try:
         validated_body = ModelValidator.model_validate(body.model_dump())
         context = HsnPatientCreateContext(

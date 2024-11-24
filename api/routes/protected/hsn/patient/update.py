@@ -25,7 +25,7 @@ from typing import Optional
 import re
 
 
-class UpdatePatientRequestBody(BaseModel):
+class UpdatePatientRequest(BaseModel):
     name: Optional[str] = Field(None, max_length=255)
     last_name: Optional[str] = Field(None, max_length=255)
     patronymic: Optional[str] = Field(None, max_length=255)
@@ -36,7 +36,7 @@ class UpdatePatientRequestBody(BaseModel):
     district: Optional[str] = Field(None, max_length=255)
     address: Optional[str] = Field(None, max_length=255)
     phone: Optional[str] = Field(None, max_length=20)
-    clinic: Optional[str] = Field(None)
+    clinic: Optional[str] = Field(None, max_length=255)
     referring_doctor: Optional[str] = Field(None)
     referring_clinic_organization: Optional[str] = Field(None)
     disability: Optional[DisabilityType] = Field(None)
@@ -47,7 +47,7 @@ class UpdatePatientRequestBody(BaseModel):
     patient_note: Optional[str] = Field(None, max_length=1000)
 
 
-class UpdatePatientModelValidator(UpdatePatientRequestBody):
+class UpdatePatientModelValidator(UpdatePatientRequest):
     @field_validator("birth_date", "dod")
     def date_format_validation(cls, v):
         if v is not None:
@@ -96,7 +96,7 @@ class UpdatePatientModelValidator(UpdatePatientRequestBody):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_patient_by_id_route(
-    request: Request, patient_id: int, body: UpdatePatientRequestBody
+    request: Request, patient_id: int, body: UpdatePatientRequest
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException

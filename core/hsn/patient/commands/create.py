@@ -45,7 +45,7 @@ class HsnPatientCreateContext(BaseModel):
     district: str
     address: str
     phone: str
-    clinic: str
+    clinic: Optional[str] = None
     referring_doctor: Optional[str] = None
     referring_clinic_organization: Optional[str] = None
     disability: str
