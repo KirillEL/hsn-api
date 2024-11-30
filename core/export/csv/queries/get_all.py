@@ -297,19 +297,18 @@ async def export_all_appointments(request: Request, doctor_id: int):
 
     # Записываем данные
     for appointment in appointments:
-        if appointment.status == "completed":
-            row = []
-            row.extend(extract_general_info(appointment))
-            row.extend(extract_diagnose_info(appointment.block_diagnose))
-            row.extend(extract_laboratory_test_info(appointment.block_laboratory_test))
-            row.extend(extract_block_ekg_info(appointment.block_ekg))
-            row.extend(extract_complaint_info(appointment.block_complaint))
-            row.extend(
-                extract_block_clinical_condition_info(
-                    appointment.block_clinical_condition
-                )
+        row = []
+        row.extend(extract_general_info(appointment))
+        row.extend(extract_diagnose_info(appointment.block_diagnose))
+        row.extend(extract_laboratory_test_info(appointment.block_laboratory_test))
+        row.extend(extract_block_ekg_info(appointment.block_ekg))
+        row.extend(extract_complaint_info(appointment.block_complaint))
+        row.extend(
+            extract_block_clinical_condition_info(
+                appointment.block_clinical_condition
             )
-            ws.append(row)
+        )
+        ws.append(row)
 
     # Сохраняем Excel-файл в буфер
     output = BytesIO()
