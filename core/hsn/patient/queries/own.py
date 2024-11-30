@@ -1,3 +1,4 @@
+from urllib.parse import unquote
 from enum import Enum
 
 from shared.db.queries import db_query_entity_by_id
@@ -78,8 +79,14 @@ async def hsn_query_own_patients(
     order: str = None,
 ) -> DictPatientResponse:
     doctor_model: DoctorDBModel = await db_query_entity_by_id(DoctorDBModel, doctor_id)
+    if name:
+        name = unquote(name)
 
-    logger.debug(f"doctor_id: {doctor_id}")
+    if last_name:
+        last_name = unquote(last_name)
+
+    if patronymic:
+        patronymic = unquote(patronymic)
 
     redis_key: str = f"patients:doctor:{doctor_id}"
 
