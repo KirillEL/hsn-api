@@ -11,6 +11,7 @@ from core.hsn.appointment.blocks.clinical_condition import (
     AppointmentClinicalConditionBlock,
 )
 from core.hsn.appointment.blocks.complaint import AppointmentComplaintBlock
+from core.hsn.appointment.blocks.diagnose import AppointmentDiagnoseBlock
 from core.hsn.appointment.blocks.ekg import AppointmentEkgBlock
 from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTestBlock
 
@@ -142,6 +143,8 @@ def extract_general_info(appointment):
 
 
 def extract_clinic_doctor_info(block):
+    if not block:
+        return [""]*7
     return [
         block.reffering_doctor if block.reffering_doctor else "",
         block.reffering_clinic_organization if block.reffering_clinic_organization else "",
@@ -153,7 +156,9 @@ def extract_clinic_doctor_info(block):
     ]
 
 
-def extract_diagnose_info(block):
+def extract_diagnose_info(block: AppointmentDiagnoseBlock):
+    if not block:
+        return [""] * 8
     return [
         block.diagnose if block.diagnose else "",
         block.classification_func_classes if block.classification_func_classes else "",
@@ -167,6 +172,8 @@ def extract_diagnose_info(block):
 
 
 def extract_laboratory_test_info(block: AppointmentLaboratoryTestBlock):
+    if not block:
+        return [""]*23
     return [
         block.nt_pro_bnp if block.nt_pro_bnp else "",
         block.nt_pro_bnp_date if block.nt_pro_bnp_date else "",
@@ -196,6 +203,8 @@ def extract_laboratory_test_info(block: AppointmentLaboratoryTestBlock):
 
 
 def extract_complaint_info(block: AppointmentComplaintBlock):
+    if not block:
+        return [""]*8
     return [
         block.has_fatigue if block.has_fatigue else "",
         block.has_dyspnea if block.has_dyspnea else "",
@@ -210,6 +219,8 @@ def extract_complaint_info(block: AppointmentComplaintBlock):
 
 
 def extract_block_clinical_condition_info(block: AppointmentClinicalConditionBlock):
+    if not block:
+        return [""] * 27
     return [
         block.orthopnea if block.orthopnea else "",
         block.paroxysmal_nocturnal_dyspnea if block.paroxysmal_nocturnal_dyspnea else "",
@@ -243,6 +254,8 @@ def extract_block_clinical_condition_info(block: AppointmentClinicalConditionBlo
 
 
 def extract_block_ekg_info(block: AppointmentEkgBlock):
+    if not block:
+        return [""]* 29
     return [
         block.date_ekg if block.date_ekg else "",
         block.sinus_ritm if block.sinus_ritm else "",
