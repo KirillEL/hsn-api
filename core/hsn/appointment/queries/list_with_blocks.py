@@ -9,7 +9,7 @@ from core.hsn.appointment.model import (
     PatientFlatForAppointmentList,
 )
 from shared.db.db_session import SessionContext, db_session
-from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel, DrugDBModel
+from shared.db.models import PatientDBModel, MedicinesPrescriptionDBModel, DrugDBModel, DoctorDBModel
 from shared.db.models.appointment.appointment import AppointmentDBModel
 from shared.db.models.appointment.purpose import AppointmentPurposeDBModel
 from utils import contragent_hasher
@@ -24,6 +24,9 @@ async def hsn_query_appointment_with_blocks_list(context: HsnAppointmentListCont
             selectinload(AppointmentDBModel.patient).selectinload(
                 PatientDBModel.contragent
             )
+        )
+        .options(
+            selectinload(AppointmentDBModel.doctor).load_only(DoctorDBModel.id, DoctorDBModel.name, DoctorDBModel.last_name)
         )
         .options(
             selectinload(AppointmentDBModel.block_complaint),
@@ -63,6 +66,7 @@ async def hsn_query_appointment_with_blocks_list(context: HsnAppointmentListCont
             id=appointment.id,
             full_name=f'{patient_info.name} {patient_info.last_name} {patient_info.patronymic or ""}'.rstrip(),
             doctor_id=appointment.doctor_id,
+            doctor=appointment.doctor,
             date=appointment.date,
             date_next=str(appointment.date_next) if appointment.date_next else None,
             block_laboratory_test=appointment.block_laboratory_test,

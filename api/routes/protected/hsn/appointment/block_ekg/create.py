@@ -29,7 +29,7 @@ class CreateBlockEkgRequestBody(BaseModel):
     trepetanie_predcerdiy: bool = Field(False)
     another_changes: Optional[str] = Field(None, max_length=1000)
 
-    date_echo_ekg: str = Field(default=None)
+    date_echo_ekg: str = Field(default="")
     fv: float = Field(None, gt=0)
     sdla: Optional[float] = Field(None, gt=0)
     lp: Optional[float] = Field(None, gt=0)

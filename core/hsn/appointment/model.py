@@ -63,11 +63,18 @@ class PatientFlatForAppointmentList(BaseModel):
     patronymic: Optional[str] = None
 
 
+class _DoctorInfoDto(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+    id: int
+    name: str
+    last_name: str
+
 class PatientAppointmentFlat(BaseModel):
     model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
 
     id: int
     doctor_id: int
+    doctor: Optional[_DoctorInfoDto] = None
     full_name: str
     date: str
     date_next: Optional[str] = None

@@ -18,8 +18,9 @@ from core.hsn.appointment.blocks.laboratory_test import AppointmentLaboratoryTes
 # Заголовки Excel-файла
 EXCEL_HEADERS = [
     "ID",
-    "ID Врача",
-    "ФИО",
+    "Имя врача",
+    "Фамилия врача",
+    "ФИО пациента",
     "Дата приема",
     "Дата след приема",
     # patient info
@@ -135,7 +136,8 @@ EXCEL_HEADERS = [
 def extract_general_info(appointment):
     return [
         appointment.id,
-        appointment.doctor_id,
+        appointment.doctor.name,
+        appointment.doctor.last_name,
         appointment.full_name,
         appointment.date,
         appointment.date_next if appointment.date_next else "",
@@ -192,7 +194,7 @@ def extract_laboratory_test_info(block: AppointmentLaboratoryTestBlock):
         block.mochevaya_kislota if block.mochevaya_kislota else "",
         block.skf if block.skf else "",
         block.kreatinin if block.kreatinin else "",
-        block.bk_dat if block.bk_dat else "",
+        block.bk_date if block.bk_date else "",
         block.protein if block.protein else "",
         block.urine_eritrocit if block.urine_eritrocit else "",
         block.urine_leycocit if block.urine_leycocit else "",
@@ -268,7 +270,7 @@ def extract_block_ekg_info(block: AppointmentEkgBlock):
         block.fabrilycia_predcerdiy if block.fabrilycia_predcerdiy else "",
         block.trepetanie_predcerdiy if block.trepetanie_predcerdiy else "",
         block.another_changes if block.another_changes else "",
-        block.date_echo_ekg if block.date_echo_ekf else "",
+        block.date_echo_ekg if block.date_echo_ekg else "",
         block.fv if block.fv else "",
         block.sdla if block.sdla else "",
         block.lp if block.lp else "",
