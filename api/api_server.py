@@ -1,5 +1,7 @@
 import sys
 from contextlib import asynccontextmanager
+from http import HTTPStatus
+from lib2to3.btm_utils import reduce_tree
 
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,7 +24,6 @@ from .middlewares import AuthMiddleware, AuthBackend
 from core.on_startup import (
     hsn_create_admin,
     hsn_create_role_doctor,
-    create_med_prescriptions,
 )
 
 
@@ -33,9 +34,9 @@ def init_routers(app_: FastAPI) -> None:
 def on_auth_error(request: Request, exc: Exception) -> JSONResponse:
     status_code, error_code, message = 401, None, str(exc)
     if isinstance(exc, CustomException):
-        status_code = int(exc.code)
-        error_code = exc.error_code
-        message = exc.message
+        status_code: int = int(exc.code)
+        error_code: HTTPStatus | None = exc.error_code
+        message: str = exc.message
 
     return JSONResponse(
         status_code=status_code, content={"error_code": error_code, "message": message}

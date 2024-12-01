@@ -21,6 +21,7 @@ services:
       - database
     volumes:
       - '.:/app'
+      - './logs:/app/logs'
 
   database:
     image: postgres
