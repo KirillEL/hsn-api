@@ -25,6 +25,8 @@ faker = "^25.2.0"
 requests = "^2.32.3"
 openpyxl = "^3.1.5"
 aioredis = "^2.0.1"
+prometheus-fastapi-instrumentator = "^7.0.0"
+prometheus-client = "^0.21.0"
 
 [tool.poetry.dev-dependencies]
 SQLAlchemy = "^2.0.25"

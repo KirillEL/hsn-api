@@ -9,6 +9,8 @@ from fastapi.middleware import Middleware
 from typing import List
 
 from loguru import logger
+from prometheus_client import Counter
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from infra.config import config
 from fastapi.openapi.docs import get_swagger_ui_html
@@ -26,6 +28,12 @@ from core.on_startup import (
     hsn_create_role_doctor,
 )
 
+error_counter = Counter(
+    "http_errors_total",
+    "Count of HTTP errors by endpoint and status",
+    ["endpoint", "status"],
+)
+
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(main_router)
@@ -37,6 +45,9 @@ def on_auth_error(request: Request, exc: Exception) -> JSONResponse:
         status_code: int = int(exc.code)
         error_code: HTTPStatus | None = exc.error_code
         message: str = exc.message
+
+    
+    error_counter.labels(request.url.path, exc.error_code).inc()
 
     return JSONResponse(
         status_code=status_code, content={"error_code": error_code, "message": message}
@@ -67,6 +78,7 @@ def init_listeners(app_: FastAPI) -> None:
     @app_.exception_handler(CustomException)
     async def custom_exception_handler(request: Request, exc: CustomException):
         logger.error(f"Exception: {exc.error_code}; Message: {exc.message}")
+        error_counter.labels(request.url.path, exc.error_code).inc()
         return JSONResponse(
             status_code=exc.code,
             content={"error_code": exc.error_code, "message": exc.message},
@@ -99,3 +111,14 @@ def init_application() -> FastAPI:
 
 
 app: FastAPI = init_application()
+
+Instrumentator().instrument(app=app).expose(app)
+
+http_request_total = Counter("http_request_total", "Total HTTP Requests", ["method", "endpoint"])
+
+@app.middleware("http")
+async def count_requests(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path != "/metrics" and not request.url.path.endswith("/fields"):
+        http_request_total.labels(request.method, request.url.path).inc()
+    return response
