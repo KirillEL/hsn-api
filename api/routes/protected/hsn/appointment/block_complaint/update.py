@@ -2,12 +2,11 @@ from typing import Optional
 
 from fastapi import Request
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.complaint import (
-    AppointmentComplaintBlock,
+from domains.core.hsn.appointment.blocks.complaint import (
     HsnCommandBlockComplaintUpdateContext,
     hsn_command_block_complaint_update,
 )
-from core.hsn.appointment.blocks.complaint.model import (
+from domains.core.hsn.appointment.blocks.complaint.model import (
     AppointmentComplaintBlockResponse,
 )
 from .router import block_complaint_router

@@ -1,5 +1,5 @@
-from core.hsn.appointment import hsn_query_appointment_status
-from shared.db.models.appointment.appointment import AppointmentStatus
+from domains.core.hsn.appointment import hsn_query_appointment_status
+from domains.shared.db.models.appointment.appointment import AppointmentStatus
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request

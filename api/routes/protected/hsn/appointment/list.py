@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from core.hsn.appointment.model import PatientAppointmentFlat, AppointmentsListDto
+from domains.core.hsn.appointment.model import AppointmentsListDto
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request, Depends
@@ -30,7 +30,7 @@ async def get_appointment_list_route(
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException
-    from core.hsn.appointment import (
+    from domains.core.hsn.appointment import (
         HsnAppointmentListContext,
         hsn_query_appointment_list,
     )

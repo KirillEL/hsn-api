@@ -1,10 +1,7 @@
-from typing import List
-
-from core.hsn.appointment.blocks.base_model import (
-    AppointmentBlockTextDateFieldsResponse,
+from domains.core.hsn.appointment.blocks.base_model import (
     AppointmentBlockTextDateLaboratoryTestFieldsResponse,
 )
-from core.hsn.appointment.blocks.laboratory_test import (
+from domains.core.hsn.appointment.blocks.laboratory_test import (
     hsn_query_block_laboratory_test_fields,
 )
 from .router import block_laboratory_test_router

@@ -2,12 +2,11 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from core.hsn.appointment.blocks.clinical_condition import (
-    AppointmentClinicalConditionBlock,
+from domains.core.hsn.appointment.blocks.clinical_condition import (
     HsnCommandBlockClinicalConditionUpdateContext,
     hsn_command_block_clinical_condition_update,
 )
-from core.hsn.appointment.blocks.clinical_condition.model import (
+from domains.core.hsn.appointment.blocks.clinical_condition.model import (
     AppointmentClinicalConditionBlockResponse,
 )
 from .router import block_clinical_condition_router

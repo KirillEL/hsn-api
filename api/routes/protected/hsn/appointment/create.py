@@ -1,9 +1,7 @@
-from core.hsn.appointment import (
-    Appointment,
+from domains.core.hsn.appointment import (
     HsnCommandPatientAppointmentCreateContext,
     hsn_command_patient_appontment_create,
 )
-from core.hsn.appointment.model import AppointmentCreateResponse
 from .router import appointment_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request, status

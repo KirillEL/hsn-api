@@ -1,9 +1,9 @@
 from typing import List
 
-from core.hsn.appointment.blocks.base_model import (
+from domains.core.hsn.appointment.blocks.base_model import (
     AppointmentBlockBooleanTextFieldsResponse,
 )
-from core.hsn.appointment.blocks.diagnose import hsn_query_block_diagnose_fields
+from domains.core.hsn.appointment.blocks.diagnose import hsn_query_block_diagnose_fields
 from .router import block_diagnose_router
 from api.exceptions import ExceptionResponseSchema
 

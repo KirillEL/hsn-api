@@ -4,18 +4,16 @@ from api.exceptions.base import ValidationErrorTelegramSendMessageSchema
 from tg_api import tg_bot
 from loguru import logger
 
-from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
-from core.hsn.patient.model import PatientResponse
-from core.hsn.patient.queries.own import GenderType, LocationType, LgotaDrugsType
-from . import ModelValidator
+from domains.core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
+from domains.core.hsn.patient.model import PatientResponse
+from domains.core.hsn.patient.queries.own import GenderType, LocationType, LgotaDrugsType
 from .router import patient_router
 from api.exceptions import (
     ExceptionResponseSchema,
     ValidationException,
     DoctorNotAssignedException,
 )
-from core.hsn.patient import (
-    Patient,
+from domains.core.hsn.patient import (
     hsn_command_patient_update_by_id,
     HsnCommandPatientUpdateContext,
 )

@@ -1,10 +1,7 @@
-from typing import List
-
-from core.hsn.appointment.blocks.complaint.model import (
-    AppointmentBlockBooleanFieldsResponse,
+from domains.core.hsn.appointment.blocks.complaint.model import (
     AppointmentBlockEkgBooleanFieldsResponse,
 )
-from core.hsn.appointment.blocks.ekg import hsn_query_block_ekg_fields
+from domains.core.hsn.appointment.blocks.ekg import hsn_query_block_ekg_fields
 from .router import block_ekg_router
 from api.exceptions import ExceptionResponseSchema
 

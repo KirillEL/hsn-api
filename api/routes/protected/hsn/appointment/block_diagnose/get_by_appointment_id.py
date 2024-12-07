@@ -1,9 +1,8 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.diagnose import (
-    AppointmentDiagnoseBlock,
+from domains.core.hsn.appointment.blocks.diagnose import (
     hsn_query_block_diagnose_by_appointment_id,
 )
-from core.hsn.appointment.blocks.diagnose.model import AppointmentBlockDiagnoseResponse
+from domains.core.hsn.appointment.blocks.diagnose.model import AppointmentBlockDiagnoseResponse
 from .router import block_diagnose_router
 from fastapi import Request
 

@@ -1,20 +1,16 @@
 from datetime import datetime
 
-from loguru import logger
-
 from .router import block_laboratory_test_router
 from api.exceptions import (
     ExceptionResponseSchema,
     ValidationException,
     DoctorNotAssignedException,
 )
-from core.hsn.appointment.blocks.laboratory_test import (
-    AppointmentLaboratoryTestBlock,
+from domains.core.hsn.appointment.blocks.laboratory_test import (
     hsn_command_appointment_block_laboratory_test_create,
     HsnCommandAppointmentBlockLaboratoryTestCreateContext,
 )
 from pydantic import BaseModel, Field, field_validator
-from datetime import date as tdate
 from typing import Optional
 from fastapi import Request
 

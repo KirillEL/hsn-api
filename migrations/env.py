@@ -1,12 +1,10 @@
 import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from shared.db.models.BASE import BaseDBModel
-from shared.db.models import *
+from domains.shared.db.models.BASE import BaseDBModel
 from infra import config as infra_config
 from sqlalchemy.ext.asyncio import create_async_engine
 

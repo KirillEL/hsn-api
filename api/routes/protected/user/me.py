@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
-from core.hsn.doctor.model import Role
-from core.user.queries.me import hsn_user_get_me
+from domains.core.hsn.doctor.model import Role
+from domains.core.user.queries.me import hsn_user_get_me
 from .router import user_router
-from api.exceptions import ExceptionResponseSchema, NotFoundException
+from api.exceptions import ExceptionResponseSchema
 from fastapi import Request
 from typing import Optional
 

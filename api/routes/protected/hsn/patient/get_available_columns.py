@@ -1,5 +1,5 @@
-from core.hsn.patient import hsn_query_patient_available_columns
-from core.hsn.patient.model import PatientAvailableColumnsResponse
+from domains.core.hsn.patient import hsn_query_patient_available_columns
+from domains.core.hsn.patient.model import PatientAvailableColumnsResponse
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema
 

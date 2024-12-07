@@ -1,16 +1,14 @@
-from datetime import datetime
 from typing import Optional
 
 from fastapi import Request
 from pydantic import BaseModel, Field
 
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.ekg import (
-    AppointmentEkgBlock,
+from domains.core.hsn.appointment.blocks.ekg import (
     HsnCommandBlockEkgUpdateContext,
     hsn_command_block_ekg_update,
 )
-from core.hsn.appointment.blocks.ekg.model import AppointmentEkgBlockResponse
+from domains.core.hsn.appointment.blocks.ekg.model import AppointmentEkgBlockResponse
 from .router import block_ekg_router
 
 

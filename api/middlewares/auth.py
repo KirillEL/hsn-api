@@ -1,10 +1,7 @@
-import typing
-
 from starlette.requests import HTTPConnection
 
-from core.user import UserFlat, hsn_user_get_me
-from core.user.model import User
-from core.user.queries.by_id import user_query_by_id
+from domains.core.user import hsn_user_get_me
+from domains.core.user.model import User
 from infra import config
 import jwt
 from typing import Optional, Tuple

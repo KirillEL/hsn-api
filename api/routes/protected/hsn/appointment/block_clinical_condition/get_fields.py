@@ -1,9 +1,9 @@
 from typing import List
 
-from core.hsn.appointment.blocks.clinical_condition import (
+from domains.core.hsn.appointment.blocks.clinical_condition import (
     hsn_query_block_clinical_condition_fields,
 )
-from core.hsn.appointment.blocks.complaint.model import (
+from domains.core.hsn.appointment.blocks.complaint.model import (
     AppointmentBlockBooleanFieldsResponse,
 )
 from .router import block_clinical_condition_router

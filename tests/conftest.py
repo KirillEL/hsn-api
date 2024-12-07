@@ -1,5 +1,5 @@
 import asyncio
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 from dotenv import load_dotenv
 import pytest
 from httpx import AsyncClient
@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from api.api_server import app
-from shared.db.db_session import db_session
+from domains.shared.db.db_session import db_session
 
 load_dotenv()
 

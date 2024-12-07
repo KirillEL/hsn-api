@@ -3,10 +3,10 @@ from typing import Optional
 from fastapi import Request, Query
 from pydantic import BaseModel
 
-from core.hsn.patient.model import (
+from domains.core.hsn.patient.model import (
     DictPatientResponse,
 )
-from core.hsn.patient.queries.own import hsn_query_own_patients
+from domains.core.hsn.patient.queries.own import hsn_query_own_patients
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 

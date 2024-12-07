@@ -1,5 +1,5 @@
-from core.hsn.drug_group.queries import hsn_query_drug_group_fields
-from core.hsn.drug_group.schemas import DrugGroupFieldsResponse
+from domains.core.hsn.drug_group.queries import hsn_query_drug_group_fields
+from domains.core.hsn.drug_group.schemas import DrugGroupFieldsResponse
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request

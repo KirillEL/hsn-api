@@ -1,5 +1,5 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.export.csv.queries.get_all import export_all_appointments
+from domains.core.export.csv.queries.get_all import export_all_appointments
 from .router import csv_router
 from fastapi import Request
 

@@ -1,9 +1,8 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.ekg import (
-    AppointmentEkgBlock,
+from domains.core.hsn.appointment.blocks.ekg import (
     hsn_query_block_ekg_by_appointment_id,
 )
-from core.hsn.appointment.blocks.ekg.model import AppointmentEkgBlockResponse
+from domains.core.hsn.appointment.blocks.ekg.model import AppointmentEkgBlockResponse
 from .router import block_ekg_router
 from fastapi import Request
 

@@ -1,8 +1,7 @@
 from .router import block_clinical_condition_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from pydantic import BaseModel, Field
-from core.hsn.appointment.blocks.clinical_condition import (
-    AppointmentClinicalConditionBlock,
+from domains.core.hsn.appointment.blocks.clinical_condition import (
     hsn_command_appointment_block_clinical_condition_create,
     HsnCommandAppointmentBlockClinicalConditionCreateContext,
 )

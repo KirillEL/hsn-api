@@ -4,14 +4,13 @@ from api.exceptions import (
     ValidationException,
     DoctorNotAssignedException,
 )
-from core.hsn.appointment.blocks.ekg import (
-    AppointmentEkgBlock,
+from domains.core.hsn.appointment.blocks.ekg import (
     hsn_command_appointment_block_ekg_create,
     HsnCommandAppointmentBlockEkgCreateContext,
 )
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional
-from datetime import date as tdate, datetime
+from datetime import datetime
 from fastapi import Request
 
 

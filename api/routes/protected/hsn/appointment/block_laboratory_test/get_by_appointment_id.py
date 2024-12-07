@@ -1,9 +1,8 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.laboratory_test import (
-    AppointmentLaboratoryTestBlock,
+from domains.core.hsn.appointment.blocks.laboratory_test import (
     hsn_query_block_laboratory_test_by_appointment_id,
 )
-from core.hsn.appointment.blocks.laboratory_test.model import (
+from domains.core.hsn.appointment.blocks.laboratory_test.model import (
     AppointmentLaboratoryTestBlockResponse,
 )
 from .router import block_laboratory_test_router

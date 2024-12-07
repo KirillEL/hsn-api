@@ -1,15 +1,9 @@
-import csv
-from io import StringIO
-
 from api.exceptions import (
     ExceptionResponseSchema,
-    NotFoundException,
     DoctorNotAssignedException,
 )
-from core.export.csv.queries.get import export_patients
-from core.hsn.patient import hsn_query_own_patients
+from domains.core.export.csv.queries.get import export_patients
 from .router import csv_router
-from starlette.responses import StreamingResponse
 from fastapi import Request
 
 

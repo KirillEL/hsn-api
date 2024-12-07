@@ -2,12 +2,11 @@ from typing import Optional
 
 from fastapi import Request
 
-from core.hsn.appointment.blocks.diagnose import (
-    AppointmentDiagnoseBlock,
+from domains.core.hsn.appointment.blocks.diagnose import (
     HsnCommandBlockDiagnoseUpdateContext,
     hsn_command_block_diagnose_update,
 )
-from core.hsn.appointment.blocks.diagnose.model import (
+from domains.core.hsn.appointment.blocks.diagnose.model import (
     ClassificationFuncClassesType,
     ClassificationAdjacentReleaseType,
     ClassificationNcStageType,

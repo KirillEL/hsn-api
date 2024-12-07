@@ -1,5 +1,4 @@
-from core.hsn.patient import hsn_query_patient_columns
-from core.hsn.patient.model import PatientTableResponse
+from domains.core.hsn.patient import hsn_query_patient_columns
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema
 from fastapi import Request

@@ -1,4 +1,4 @@
-from datetime import date as tdate, datetime
+from datetime import datetime
 from typing import Optional
 import re
 from fastapi import Request, status
@@ -6,22 +6,17 @@ from loguru import logger
 
 from api.exceptions.base import ValidationErrorTelegramSendMessageSchema
 from tg_api import tg_bot
-from core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
-from core.hsn.patient.model import PatientFlat, PatientResponse
-from core.hsn.patient.queries.own import GenderType, LgotaDrugsType, LocationType
-from shared.db.models.patient import PatientDBModel
-from sqlalchemy import insert
-from shared.db.db_session import db_session
+from domains.core.hsn.appointment.blocks.clinic_doctor.model import DisabilityType
+from domains.core.hsn.patient.model import PatientResponse
+from domains.core.hsn.patient.queries.own import GenderType, LgotaDrugsType, LocationType
 from .router import patient_router
-from core.hsn.patient import Patient, HsnPatientCreateContext, hsn_patient_create
+from domains.core.hsn.patient import HsnPatientCreateContext, hsn_patient_create
 from api.exceptions import ExceptionResponseSchema, ValidationException
 from pydantic import (
     BaseModel,
     Field,
-    validator,
     field_validator,
     model_validator,
-    ValidationError,
 )
 
 

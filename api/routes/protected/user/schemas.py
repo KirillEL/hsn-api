@@ -1,4 +1,4 @@
-from core.user import UserFlat
+from domains.core import UserFlat
 
 
 class UserResponse(UserFlat):

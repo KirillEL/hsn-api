@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator, root_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from starlette import status
 from fastapi import Request
 
-from core.hsn.appointment import (
+from domains.core.hsn.appointment import (
     HsnCommandAppointmentInitContext,
     hsn_command_appointment_initialize,
 )

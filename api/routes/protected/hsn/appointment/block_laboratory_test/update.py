@@ -2,14 +2,13 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import Request
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic import BaseModel, Field, field_validator
 
-from core.hsn.appointment.blocks.laboratory_test import (
-    AppointmentLaboratoryTestBlock,
+from domains.core.hsn.appointment.blocks.laboratory_test import (
     HsnCommandBlockLaboratoryTestUpdateContext,
     hsn_command_block_laboratory_test_update,
 )
-from core.hsn.appointment.blocks.laboratory_test.model import (
+from domains.core.hsn.appointment.blocks.laboratory_test.model import (
     AppointmentLaboratoryTestBlockResponse,
 )
 from .router import block_laboratory_test_router

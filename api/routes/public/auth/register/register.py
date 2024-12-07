@@ -1,13 +1,14 @@
 from typing import Optional
 import re
-from core.hsn.doctor.model import Role, UserAndDoctor
+from domains.core.hsn.doctor.model import UserAndDoctor
 
 from .router import auth_register_router
 from pydantic import BaseModel, Field, field_validator
 from api.exceptions import ExceptionResponseSchema, ValidationException
-from fastapi import Request
-from core.user import user_command_create
-from core.user import UserDoctorCreateContext
+from domains.core.user.commands.create import (
+    user_command_create,
+    UserDoctorCreateContext,
+)
 
 
 class UserCreateRequest(BaseModel):

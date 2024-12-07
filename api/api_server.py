@@ -1,9 +1,7 @@
-import sys
 from contextlib import asynccontextmanager
 from http import HTTPStatus
-from lib2to3.btm_utils import reduce_tree
 
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
 from typing import List
@@ -12,18 +10,11 @@ from loguru import logger
 from prometheus_client import Counter
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from infra.config import config
-from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from starlette.responses import JSONResponse
-from starlette.status import HTTP_401_UNAUTHORIZED
 from api.routes import main_router
 from api.exceptions import CustomException
-from shared.db.db_session import engine
-from shared.db.models import UserDBModel
-from shared.redis import redis_service
 from .middlewares import AuthMiddleware, AuthBackend
-from core.on_startup import (
+from domains.core.on_startup import (
     hsn_create_admin,
     hsn_create_role_doctor,
 )
@@ -46,7 +37,6 @@ def on_auth_error(request: Request, exc: Exception) -> JSONResponse:
         error_code: HTTPStatus | None = exc.error_code
         message: str = exc.message
 
-    
     error_counter.labels(request.url.path, exc.error_code).inc()
 
     return JSONResponse(
@@ -114,7 +104,10 @@ app: FastAPI = init_application()
 
 Instrumentator().instrument(app=app).expose(app)
 
-http_request_total = Counter("http_request_total", "Total HTTP Requests", ["method", "endpoint"])
+http_request_total = Counter(
+    "http_request_total", "Total HTTP Requests", ["method", "endpoint"]
+)
+
 
 @app.middleware("http")
 async def count_requests(request: Request, call_next):

@@ -1,4 +1,4 @@
-from core.hsn.appointment.blocks.purpose import (
+from domains.core.hsn.appointment.blocks.purpose import (
     HsnAppointmentPurposeUpdateContext,
     hsn_appointment_purpose_update,
     AppointmentPurposeFlat,

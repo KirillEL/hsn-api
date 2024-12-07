@@ -1,8 +1,6 @@
-from core.hsn.appointment.blocks.purpose import (
-    AppointmentPurposeFlat,
+from domains.core.hsn.appointment.blocks.purpose import (
     hsn_query_purposes_by_appointment_id,
 )
-from core.hsn.appointment.blocks.purpose.model import AppointmentPurposeResponseFlat
 from .router import block_purpose_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request

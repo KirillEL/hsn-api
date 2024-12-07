@@ -1,12 +1,11 @@
-from core.hsn.appointment.blocks.diagnose.model import (
+from domains.core.hsn.appointment.blocks.diagnose.model import (
     ClassificationFuncClassesType,
     ClassificationAdjacentReleaseType,
     ClassificationNcStageType,
 )
 from .router import block_diagnose_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.diagnose import (
-    AppointmentDiagnoseBlock,
+from domains.core.hsn.appointment.blocks.diagnose import (
     hsn_command_appointment_block_diagnose_create,
     HsnCommandAppointmentBlockDiagnoseCreateContext,
 )

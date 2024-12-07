@@ -1,5 +1,5 @@
-from core.hsn.appointment.blocks.complaint import hsn_query_block_complaint_fields
-from core.hsn.appointment.blocks.complaint.model import (
+from domains.core.hsn.appointment.blocks.complaint import hsn_query_block_complaint_fields
+from domains.core.hsn.appointment.blocks.complaint.model import (
     AppointmentBlockBooleanFieldsResponse,
 )
 from .router import block_complaint_router

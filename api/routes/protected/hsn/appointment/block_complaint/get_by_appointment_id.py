@@ -1,9 +1,8 @@
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
-from core.hsn.appointment.blocks.complaint import (
-    AppointmentComplaintBlock,
+from domains.core.hsn.appointment.blocks.complaint import (
     hsn_query_block_complaint_by_appointment_id,
 )
-from core.hsn.appointment.blocks.complaint.model import (
+from domains.core.hsn.appointment.blocks.complaint.model import (
     AppointmentComplaintBlockResponse,
 )
 from .router import block_complaint_router

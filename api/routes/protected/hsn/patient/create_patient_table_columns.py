@@ -1,8 +1,8 @@
-from core.hsn.patient import hsn_patient_columns_create, HsnPatientColumnsCreateContext
-from core.hsn.patient.model import PatientTableColumns, TableColumns
+from domains.core.hsn.patient import hsn_patient_columns_create, HsnPatientColumnsCreateContext
+from domains.core.hsn.patient.model import PatientTableColumns, TableColumns
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel
 from fastapi import Request
 
 

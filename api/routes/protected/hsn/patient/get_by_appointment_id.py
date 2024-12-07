@@ -1,5 +1,5 @@
-from core.hsn.patient import hsn_query_patient_by_appointment_id
-from core.hsn.patient.model import PatientResponse, PatientWithoutFullNameResponse
+from domains.core.hsn.patient import hsn_query_patient_by_appointment_id
+from domains.core.hsn.patient.model import PatientWithoutFullNameResponse
 from .router import patient_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException
 from fastapi import Request

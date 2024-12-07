@@ -4,8 +4,7 @@ from pydantic import Field, BaseModel
 from fastapi import Request
 from starlette import status
 
-from core.hsn.appointment.blocks.purpose import (
-    AppointmentPurposeFlat,
+from domains.core.hsn.appointment.blocks.purpose import (
     HsnAppointmentPurposeCreateContext,
     hsn_command_appointment_purpose_create,
 )

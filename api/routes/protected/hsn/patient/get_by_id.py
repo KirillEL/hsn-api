@@ -1,5 +1,5 @@
-from core.hsn.patient import hsn_query_patient_by_id
-from core.hsn.patient.model import (
+from domains.core.hsn.patient import hsn_query_patient_by_id
+from domains.core.hsn.patient.model import (
     PatientWithAppointmentHistoryResponse,
 )
 from .router import patient_router

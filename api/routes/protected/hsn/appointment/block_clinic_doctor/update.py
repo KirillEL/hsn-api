@@ -1,17 +1,13 @@
 from typing import Optional
 
-from core.hsn.appointment.blocks.clinic_doctor import (
-    AppointmentClinicDoctorBlock,
+from domains.core.hsn.appointment.blocks.clinic_doctor import (
     HsnBlockClinicDoctorUpdateContext,
     hsn_block_clinic_doctor_update,
 )
-from core.hsn.appointment.blocks.clinic_doctor.model import (
+from domains.core.hsn.appointment.blocks.clinic_doctor.model import (
     DisabilityType,
     LgotaDrugsType,
     AppointmentClinicDoctorBlockResponse,
-)
-from core.hsn.appointment.blocks.clinical_condition import (
-    HsnCommandBlockClinicalConditionUpdateContext,
 )
 from .router import block_clinic_doctor_router
 from api.exceptions import ExceptionResponseSchema, DoctorNotAssignedException

@@ -5,13 +5,12 @@ from api.exceptions import (
     DoctorNotAssignedException,
     ValidationException,
 )
-from core.hsn.appointment.blocks.clinic_doctor.model import (
+from domains.core.hsn.appointment.blocks.clinic_doctor.model import (
     DisabilityType,
     LgotaDrugsType,
 )
 from .router import block_clinic_doctor_router
-from core.hsn.appointment.blocks.clinic_doctor import (
-    AppointmentClinicDoctorBlock,
+from domains.core.hsn.appointment.blocks.clinic_doctor import (
     hsn_command_appointment_block_clinic_doctor_create,
     HsnCommandAppointmentBlockClinicDoctorCreateContext,
 )

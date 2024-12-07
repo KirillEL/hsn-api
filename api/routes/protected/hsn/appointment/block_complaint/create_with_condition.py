@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from fastapi import Request
 
-from core.hsn.appointment.blocks.complaint import (
+from domains.core.hsn.appointment.blocks.complaint import (
     hsn_command_block_complaint_and_clinical_condition_create,
     HsnCommandBlockComplaintAndClinicalCondtionCreateContext,
 )
