@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y wget gnupg2 lsb-release \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /app
+COPY ./hsn-api/ /app
 WORKDIR /app
 ENV ENV=local
 
