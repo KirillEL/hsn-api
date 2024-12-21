@@ -9,7 +9,7 @@ def main():
         host=config.APP_HOST,
         port=config.APP_PORT,
         reload=True,
-        workers=1,
+        workers=1
     )
     log_file = os.getenv("LOG_FILE_PATH", "logs/errors.log")
     os.makedirs(os.path.dirname(log_file), exist_ok=True)

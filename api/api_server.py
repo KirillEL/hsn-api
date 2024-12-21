@@ -54,6 +54,7 @@ def init_middlewares() -> List[Middleware]:
                 "http://localhost:1111",
                 "http://localhost:3000",
                 "http://5.35.99.226:3000",
+                "https://nsk-hsn.ru"
             ],
             allow_credentials=True,
             allow_methods=["PUT", "POST", "GET", "DELETE", "OPTIONS", "PATCH"],
@@ -90,6 +91,7 @@ def init_application() -> FastAPI:
         description="HSN_API",
         version="1.0.0",
         docs_url="/api/v1/docs",
+        openapi_url="/api/v1/openapi.json",
         middleware=init_middlewares(),
         lifespan=lifespan,
     )

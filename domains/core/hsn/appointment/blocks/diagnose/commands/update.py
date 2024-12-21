@@ -42,6 +42,8 @@ class HsnCommandBlockDiagnoseUpdateContext(BaseModel):
     hbp_note: Optional[str] = None
     another: Optional[bool] = None
     another_note: Optional[str] = None
+    dislipidemia: Optional[bool] = None
+    dislipidemia_note: Optional[str] = None
 
 
 @SessionContext()

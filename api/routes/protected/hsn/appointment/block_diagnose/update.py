@@ -50,6 +50,8 @@ class UpdateBlockDiagnoseRequestBody(BaseModel):
     hbp_note: Optional[str] = Field(None, max_length=1000)
     another: Optional[bool] = Field(False)
     another_note: Optional[str] = Field(None, max_length=1000)
+    dislipidemia: Optional[bool] = Field(False)
+    dislipidemia_note: Optional[str] = Field(None, max_length=1000)
 
 
 @block_diagnose_router.patch(
