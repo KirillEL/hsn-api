@@ -17,7 +17,7 @@ from api.exceptions import (
 )
 
 
-class AppointmentInitializeRequestBody(BaseModel):
+class AppointmentInitializeRequest(BaseModel):
     patient_id: int = Field(gt=0)
     date: Optional[str] = Field(None)
     date_next: Optional[str] = Field(None)
@@ -55,7 +55,7 @@ class AppointmentInitializeRequestBody(BaseModel):
     tags=["Прием"],
 )
 async def appointment_initialize_route(
-    request: Request, body: AppointmentInitializeRequestBody
+    request: Request, body: AppointmentInitializeRequest
 ):
     if not request.user.doctor:
         raise DoctorNotAssignedException

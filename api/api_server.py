@@ -9,7 +9,7 @@ from typing import List
 from loguru import logger
 from prometheus_client import Counter
 from prometheus_fastapi_instrumentator import Instrumentator
-
+import os
 from starlette.responses import JSONResponse
 from api.routes import main_router
 from api.exceptions import CustomException
@@ -99,10 +99,23 @@ def init_application() -> FastAPI:
     init_routers(app_=application)
     init_listeners(app_=application)
 
+    log_file = os.getenv("LOG_FILE_PATH", "logs/errors.log")
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+    logger.add(
+        log_file,
+        level="WARNING",
+        rotation="1 week",
+        retention="1 month",
+        compression="zip",
+        backtrace=True,
+        diagnose=True,
+        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | {message}"
+    )
+
     return application
 
 
-app: FastAPI = init_application()
+app = init_application()
 
 Instrumentator().instrument(app=app).expose(app)
 

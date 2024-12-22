@@ -1,13 +1,11 @@
 from typing import Optional
 
 from cryptography.fernet import Fernet
-from loguru import logger
-
-import base64
+from infra.config import config
 
 
 class ContragentHasher:
-    def __init__(self, key: bytes):
+    def __init__(self, key: bytes) -> None:
         self.fernet = Fernet(key)
 
     def encrypt(self, value: str) -> Optional[str]:
@@ -21,7 +19,4 @@ class ContragentHasher:
         return self.fernet.decrypt(value.encode()).decode()
 
 
-from infra.config import config
-
-
-contragent_hasher: ContragentHasher = ContragentHasher(config.KEY.encode())
+contragent_hasher = ContragentHasher(config.KEY.encode())

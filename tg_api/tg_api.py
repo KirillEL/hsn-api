@@ -38,7 +38,7 @@ class TelegramBot:
             logger.warning(f"Bot is disabled, message didnt send")
 
 
-tg_bot: TelegramBot = TelegramBot(
+tg_bot = TelegramBot(
     bot_token=config.TG_BOT_TOKEN,
     is_enabled=config.IS_BOT_ENABLED,
     chat_id=config.TG_CHAT_ID,
